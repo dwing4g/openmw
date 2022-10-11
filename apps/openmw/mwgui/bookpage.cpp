@@ -496,6 +496,7 @@ namespace MWGui
         void writeImpl(StyleImpl* style, Utf8Stream::Point _begin, Utf8Stream::Point _end)
         {
             Utf8Stream stream(_begin, _end);
+            Utf8Stream::UnicodeChar lastChar = 0;
 
             while (!stream.eof())
             {
@@ -508,7 +509,7 @@ namespace MWGui
                     continue;
                 }
 
-                if (ucsBreakingSpace(stream.peek()) && !mPartialWord.empty())
+                if (!mPartialWord.empty())
                     add_partial_text();
 
                 int word_width = 0;
@@ -531,7 +532,9 @@ namespace MWGui
                     MWGui::GlyphInfo info = GlyphInfo(style->mFont, stream.peek());
                     if (info.charFound)
                         word_width += static_cast<int>(info.advance + info.bearingX);
-                    stream.consume();
+                    lastChar = stream.consume();
+                    if (lastChar >= 0x2000 || stream.eof() || stream.peek() >= 0x2000) // for wide char
+                        break;
                 }
 
                 Utf8Stream::Point extent = stream.current();

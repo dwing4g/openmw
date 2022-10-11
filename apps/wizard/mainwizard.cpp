@@ -405,6 +405,14 @@ void Wizard::MainWizard::writeSettings()
     {
         mGameSettings.setValue(QLatin1String("encoding"), QLatin1String("win1251"));
     }
+    else if (language == QLatin1String("Chinese(GBK)"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), QLatin1String("gbk"));
+    }
+    else if (language == QLatin1String("UTF-8"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), QLatin1String("utf8"));
+    }
     else
     {
         mGameSettings.setValue(QLatin1String("encoding"), QLatin1String("win1252"));

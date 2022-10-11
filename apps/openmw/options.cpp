@@ -90,6 +90,8 @@ namespace OpenMW
 
         addOption("encoding", bpo::value<std::string>()->default_value("win1252"),
             "Character encoding used in OpenMW game messages:\n"
+            "\n\tutf8 - Unicode\n"
+            "\n\tgbk - Chinese(GBK)\n"
             "\n\twin1250 - Central and Eastern European such as Polish, Czech, Slovak, Hungarian, Slovene, Bosnian, "
             "Croatian, Serbian (Latin script), Romanian and Albanian languages\n"
             "\n\twin1251 - Cyrillic alphabet such as Russian, Bulgarian, Serbian Cyrillic and other languages\n"

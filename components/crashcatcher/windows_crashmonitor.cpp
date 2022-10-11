@@ -152,7 +152,7 @@ namespace Crash
 
             if (CheckRemoteDebuggerPresent(mAppProcessHandle, &debuggerPresent) && debuggerPresent)
                 return false;
-            if (SendMessageTimeoutA(mAppWindowHandle, WM_NULL, 0, 0, 0, 5000, nullptr) == 0)
+            if (SendMessageTimeoutA(mAppWindowHandle, WM_NULL, 0, 0, 0, 15000, nullptr) == 0)
                 return GetLastError() == ERROR_TIMEOUT;
         }
         return false;
