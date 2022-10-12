@@ -80,10 +80,23 @@ namespace MWGui
 
     void MessageBoxManager::createMessageBox(std::string_view message, bool stat)
     {
+        size_t i = 0, n = 0, s = message.size();
+        char* const buf = (char*)_alloca(s * 2);
+        for (i = 0; i < s; i++)
+        {
+            unsigned char c = message[i];
+            if (c >= 0xe0 && i != 0) // leading char in 3 bytes or more for UTF-8
+                buf[n++] = ' '; // add space for auto wrap line in MyGUI
+            buf[n++] = c;
+        }
+        message = std::string_view(buf, n);
+
         auto box = std::make_unique<MessageBox>(*this, message);
         box->mCurrentTime = 0;
         auto realMessage = MyGUI::LanguageManager::getInstance().replaceTags({ message.data(), message.size() });
-        box->mMaxTime = realMessage.length() * mMessageBoxSpeed;
+        for (i = 0, n = 5, s = realMessage.length(); i < s; i++)
+            n += realMessage[i] < 0x2000 ? 1 : 2; // wide chars need more time to read
+        box->mMaxTime = n * mMessageBoxSpeed;
 
         if (stat)
             mStaticMessageBox = box.get();
