@@ -77,25 +77,40 @@ namespace MWGui
                 MWBase::Environment::get().getWindowManager()->isGuiMode());
         }
     }
-
-    void MessageBoxManager::createMessageBox(std::string_view message, bool stat)
+    /*
+    static std::string addSpaceForMessage(std::string_view message)
     {
-        size_t i = 0, n = 0, s = message.size();
+        size_t n = 0, s = message.size();
         char* const buf = (char*)_alloca(s * 2);
-        for (i = 0; i < s; i++)
+        bool lastWideChar = false;
+        for (size_t i = 0; i < s; i++)
         {
             unsigned char c = message[i];
             if (c >= 0xe0 && i != 0) // leading char in 3 bytes or more for UTF-8
-                buf[n++] = ' '; // add space for auto wrap line in MyGUI
+            {
+                lastWideChar = true;
+                if (n > 0 && buf[n - 1] != ' ')
+                    buf[n++] = ' '; // add space for auto wrap line in MyGUI
+            }
+            else if (c < 0x80 && lastWideChar)
+            {
+                lastWideChar = false;
+                if (c != ' ')
+                    buf[n++] = ' '; // add space for auto wrap line in MyGUI
+            }
             buf[n++] = c;
         }
-        message = std::string_view(buf, n);
-
+        return std::string(buf, n);
+    }
+    */
+    void MessageBoxManager::createMessageBox(std::string_view message, bool stat)
+    {
         auto box = std::make_unique<MessageBox>(*this, message);
         box->mCurrentTime = 0;
         auto realMessage = MyGUI::LanguageManager::getInstance().replaceTags({ message.data(), message.size() });
-        for (i = 0, n = 5, s = realMessage.length(); i < s; i++)
-            n += realMessage[i] < 0x2000 ? 1 : 2; // wide chars need more time to read
+        size_t n = 5;
+        for (size_t i = 0, s = realMessage.length(); i < s; i++)
+            n += realMessage[i] < 0x2000 ? 1 : 3; // wide chars need more time to read
         box->mMaxTime = n * mMessageBoxSpeed;
 
         if (stat)

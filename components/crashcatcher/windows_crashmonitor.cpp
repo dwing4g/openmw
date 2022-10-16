@@ -31,7 +31,7 @@ namespace Crash
         return reinterpret_cast<IsHungAppWindowFn>(GetProcAddress(user32Handle, "IsHungAppWindow"));
     }
 
-    static const IsHungAppWindowFn sIsHungAppWindow = getIsHungAppWindow();
+    static const IsHungAppWindowFn sIsHungAppWindow = nullptr; // getIsHungAppWindow();
 
     CrashMonitor::CrashMonitor(HANDLE shmHandle)
         : mShmHandle(shmHandle)

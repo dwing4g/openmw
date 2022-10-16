@@ -73,14 +73,14 @@ for line in io.lines(arg[1]) do
 		else
 			ss[#ss + 1] = "\r\n"
 		end
-	elseif line:find "%x%x%x%x%x%x%x%x: " then
-		line = sub(line, 11)
-		local tag, param = line:match "^%s*([%u%d_][%u%d_][%u%d_][%u%d_])%s+(.+)$"
+	else
+		line = line:gsub("^%x*:%s*", "")
+		local tag, param = line:match "^[%u%d_][%u%d_][%u%d_][%u%d_]%.([%u%d_][%u%d_][%u%d_][%u%d_])%s*(.+)$"
 		if tag then
 			f:write(tag)
-			local p = param:find "^%s*(\")"
-			if p then
-				local isEnd, s = readString(param, p + 1)
+			local c = param:sub(1, 1)
+			if c == "\"" then
+				local isEnd, s = readString(param, 2)
 				if isEnd == true then
 					writeInt4(#s)
 					f:write(s)
@@ -89,49 +89,67 @@ for line in io.lines(arg[1]) do
 				else
 					error("ERROR: invalid string at line " .. i)
 				end
-			else
-				local s, e = param:match "^%s*%[(.-)%](.*)$"
+			elseif c == "[" then
+				local s, e = param:match "^%[(.-)%](.*)$"
 				if s then
-					if #e > 0 then
-						if q then
-							error("ERROR: invalid open at line " .. i)
-						end
-						q = f:seek()
-					end
+					if e ~= "" then error("ERROR: invalid binary end at line " .. i) end
 					s = readBinary(s)
 					if s then
-						if #e > 0 and #s ~= 8 then
-							error("ERROR: invalid class at line " .. i)
-						end
 						writeInt4(#s)
 						f:write(s)
 					else
 						error("ERROR: invalid binary at line " .. i)
 					end
-				elseif param:find "^%s*{%s*$" then
-					q = f:seek()
-					f:write "\0\0\0\0\0\0\0\0\0\0\0\0"
 				else
-					error("ERROR: invalid param at line " .. i)
+					error("ERROR: invalid binary bracket at line " .. i)
 				end
-			end
-		elseif line:match "^%s*}%s*$" then
-			if q then
-				local p = f:seek()
-				f:seek("set", q)
-				writeInt4(p - q - 12)
-				f:seek("set", p)
-				q = nil
 			else
-				error("ERROR: invalid close at line " .. i)
+				error("ERROR: invalid param at line " .. i)
 			end
 		else
-			error("ERROR: invalid tag at line " .. i)
+			tag, param = line:match "^%-([%u%d_][%u%d_][%u%d_][%u%d_])%s*(.*)$"
+			if tag then
+				if q then
+					local p = f:seek()
+					f:seek("set", q)
+					writeInt4(p - q - 12)
+					f:seek("set", p)
+					q = nil
+				end
+				f:write(tag)
+				q = f:seek()
+				if param ~= "" then
+					local s, e = param:match "^%[(.-)%]%s*(.*)$"
+					if s then
+						if e ~= "" then error("ERROR: invalid class param end at line " .. i) end
+						s = readBinary(s)
+						if s then
+							if #s ~= 8 then error("ERROR: invalid class param length at line " .. i) end
+							writeInt4(#s)
+							f:write(s)
+						else
+							error("ERROR: invalid class param binary at line " .. i)
+						end
+					else
+						error("ERROR: invalid class param at line " .. i)
+					end
+				else
+					f:write "\0\0\0\0\0\0\0\0\0\0\0\0"
+				end
+			else
+				error("ERROR: invalid header at line " .. i)
+			end
 		end
-	else
-		error("ERROR: invalid header at line " .. i)
 	end
 	i = i + 1
+end
+if ss then
+	error("ERROR: invalid string end at line " .. i)
+end
+if q then
+	local p = f:seek()
+	f:seek("set", q)
+	writeInt4(p - q - 12)
 end
 
 f:close()

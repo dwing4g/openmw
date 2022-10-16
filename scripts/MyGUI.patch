@@ -1,0 +1,47 @@
+ MyGUIEngine/src/MyGUI_TextView.cpp | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/MyGUIEngine/src/MyGUI_TextView.cpp b/MyGUIEngine/src/MyGUI_TextView.cpp
+index 71253543d..5049016b4 100644
+--- a/MyGUIEngine/src/MyGUI_TextView.cpp
++++ b/MyGUIEngine/src/MyGUI_TextView.cpp
+@@ -128,7 +128,7 @@ namespace MyGUI
+ 			return;*/
+ 
+ 		result.height += _height;
+-
++		bool roll_back_space = true;
+ 		for (; index != end; ++index)
+ 		{
+ 			Char character = *index;
+@@ -211,6 +211,12 @@ namespace MyGUI
+ 			if (FontCodeType::Space == character || FontCodeType::Tab == character)
+ 			{
+ 				roll_back.set(line_info.symbols.size(), index, count, width);
++				roll_back_space = true;
++			}
++			else if (character >= 0x2000)
++			{
++				roll_back.set(line_info.symbols.size(), index, count, width);
++				roll_back_space = false;
+ 			}
+ 
+ 			float char_width = info->width;
+@@ -234,6 +240,7 @@ namespace MyGUI
+ 
+ 			// перенос слов
+ 			if (_maxWidth != -1
++				&& width > 0
+ 				&& (width + char_fullAdvance) > _maxWidth
+ 				&& !roll_back.empty())
+ 			{
+@@ -259,7 +266,8 @@ namespace MyGUI
+ 				// отменяем откат
+ 				roll_back.clear();
+ 
+-				continue;
++				if (roll_back_space)
++					continue;
+ 			}
+ 
+ 			line_info.symbols.push_back(CharInfo(info->uvRect, char_width, char_height, char_advance, char_bearingX, char_bearingY));
