@@ -16,8 +16,8 @@ namespace Misc
     inline std::time_t toTimeT(std::filesystem::file_time_type tp)
     {
         using namespace std::chrono;
-#if __cpp_lib_chrono >= 201907
-        const auto systemTime = clock_cast<system_clock>(tp);
+#if false // __cpp_lib_chrono >= 201907
+        const auto systemTime = clock_cast<system_clock>(tp); // it maybe throw exception
 #else
         auto systemTime = time_point_cast<system_clock::duration>(
             tp - std::filesystem::file_time_type::clock::now() + system_clock::now());

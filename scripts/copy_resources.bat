@@ -9,7 +9,7 @@ xcopy /y /e files\lua_api\*                  MSVC2022_64\Debug\resources\lua_api
 xcopy /y /e files\shaders\*                  MSVC2022_64\Debug\resources\shaders\
 xcopy /y    files\opencs\defaultfilters      MSVC2022_64\Debug\resources\
 xcopy /y    files\launcher\images\openmw.png MSVC2022_64\Debug\resources\
-xcopy /y    files\MyGUIEngine.dll            MSVC2022_64\Debug\
+rem xcopy /y files\MyGUIEngine_d.dll         MSVC2022_64\Debug\
 xcopy /y    readme-zh_CN.txt                 MSVC2022_64\Debug\
 
 xcopy /y /e files\data\*                     MSVC2022_64\RelWithDebInfo\resources\vfs\

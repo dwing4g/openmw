@@ -1,72 +1,80 @@
-Camera: "OpenMW Camera"
-settingsPageDescription: "OpenMW Camera settings"
+Camera: "OpenMW镜头"
+settingsPageDescription: "OpenMW镜头设置"
 
-thirdPersonSettings: "Third person mode"
+thirdPersonSettings: "第三人称视角"
 
-viewOverShoulder: "View over the shoulder"
+viewOverShoulder: "越肩视角"
 viewOverShoulderDescription: |
-    Controls third person view mode.
-      No: view is centered on the character's head. Crosshair is hidden.
-      Yes: while weapon sheathed the camera is positioned behind the character's shoulder, crosshair is always visible.
+    控制你的第三人称视角镜头
+      禁用: 视角正对着角色的后脑勺,隐藏HUD准心
+      启用: 镜头越过角色的肩膀,总是显示HUD准心
 
-shoulderOffsetX: "Shoulder view horizontal offset"
+shoulderOffsetX: "越肩视角水平方向设置"
 shoulderOffsetXDescription: >
-    Horizontal offset of the over-the-shoulder view.
-    For the left shoulder use a negative value.
+    越肩视角的水平方向偏移
+    左肩对应右肩需要设定为负值
 
-shoulderOffsetY: "Shoulder view vertical offset"
+shoulderOffsetY: "越肩视角垂直方向设置"
 shoulderOffsetYDescription: >
-    Vertical offset of the over-the-shoulder view.
+    越肩视角的垂直方向偏移
 
-autoSwitchShoulder: "Auto switch shoulder"
+autoSwitchShoulder: "自动切换左右越肩视角"
 autoSwitchShoulderDescription: >
-    When there are obstacles that would push the camera close to the player character,
-    this setting makes the camera automatically switch to the shoulder farther away from the obstacles.
+    当玩家一侧贴在障碍物旁时
+    将镜头移动到另一侧
+    此设置可将镜头自动切换到
+    远离障碍物的一侧
 
-zoomOutWhenMoveCoef: "Zoom out when move coef"
+zoomOutWhenMoveCoef: "移动时退出缩放"
 zoomOutWhenMoveCoefDescription: >
-    Moves the camera away (positive value) or towards (negative value) the player character while the character is moving.
-    Works only if "view over the shoulder" is enabled. Set this to zero to disable (default: 20.0).
+    在角色移动时,
+    将摄影机偏离(正值)或偏向(负值)玩家角色
+    仅在启用“越肩视角”时有效
+    将此设置为0以禁用 (默认: 20.0)
 
-previewIfStandStill: "Preview if stand still"
+previewIfStandStill: "站定不动时预览角色"
 previewIfStandStillDescription: >
-    Prevents the player character from turning towards the camera direction while they're idle and have their weapon sheathed.
+    防止玩家角色在空闲且收起武器时
+    转向摄影机方向
 
-deferredPreviewRotation: "Deferred preview rotation"
+deferredPreviewRotation: "预览旋转"
 deferredPreviewRotationDescription: |
-    If enabled then the character smoothly rotates to the view direction after exiting preview or vanity mode.
-    If disabled then the camera rotates rather than the character.
+    如果启用,则角色在退出预览视角后
+    将平滑地旋转到正常视角
+    如果禁用,则相机旋转而不是角色旋转
 
-ignoreNC: "Ignore 'No Collision' flag"
+ignoreNC: "忽略“无碰撞”标识"
 ignoreNCDescription: >
-    Prevents the camera from clipping through objects that have NC (No Collision) flag turned on in the NIF model.
+    防止镜头穿过在NIF模型中
+    启用无碰撞标志的对象。
 
-move360: "Move 360"
+move360: "360度自由移动"
 move360Description: >
-    Makes the movement direction independent from the camera direction while the player character's weapon
-    is sheathed. For example, the player character will look at the camera while running backwards.
+    使玩家收起武器时的移动方向独立于摄像机
+    比如当玩家向后移动时会面向镜头
 
-move360TurnSpeed: "Move 360 turning speed"
-move360TurnSpeedDescription: "Turning speed multiplier (default: 5.0)."
+move360TurnSpeed: "360度移动转向速度"
+move360TurnSpeedDescription: "转向的速度 (默认: 5.0)."
 
-slowViewChange: "Smooth view change"
-slowViewChangeDescription: "Makes the transition from 1st person to 3rd person view non-instantaneous."
+slowViewChange: "顺滑的视角切换"
+slowViewChangeDescription: "使一三人称视角转换时的镜头平滑移动"
 
-povAutoSwitch: "First person auto switch"
-povAutoSwitchDescription: "Auto switch to the first person view if there is an obstacle right behind the player."
+povAutoSwitch: "自动切换第一人称视角"
+povAutoSwitchDescription: >
+    如果玩家身后紧贴着障碍物
+    则自动切换到第一人称视角。
 
+headBobbingSettings: "第一人称视角下头部摆动"
 
-headBobbingSettings: "Head bobbing in first person view"
-
-headBobbing_enabled: "Enabled"
+headBobbing_enabled: "是否启用"
 headBobbing_enabledDescription: ""
 
-headBobbing_step: "Base step length"
-headBobbing_stepDescription: "The length of each step (default: 90.0)."
+headBobbing_step: "脚步长度"
+headBobbing_stepDescription: "步行动画中每一步的长度(默认：90.0)。"
 
-headBobbing_height: "Step height"
-headBobbing_heightDescription: "The amplitude of the head bobbing (default: 3.0)."
+headBobbing_height: "脚步高度"
+headBobbing_heightDescription: "步行动画中每一步的高度(默认: 3.0)。"
 
-headBobbing_roll: "Max roll angle"
-headBobbing_rollDescription: "The maximum roll angle in degrees (default: 0.2)."
+headBobbing_roll: "最大晃动角度"
+headBobbing_rollDescription: "最大晃动角度(默认: 0.2)。"
 

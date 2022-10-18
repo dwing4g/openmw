@@ -1,8 +1,9 @@
--- luajit check_topic.lua tes3cn.txt tes3cn_topic.txt
+-- luajit check_topic.lua topics.txt > errors.txt
 
 local string = string
 local byte = string.byte
 local char = string.char
+local format = string.format
 local sub = string.sub
 local table = table
 local concat = table.concat
@@ -12,13 +13,18 @@ local tonumber = tonumber
 local ipairs = ipairs
 local pairs = pairs
 local error = error
-local next = next
 local arg = arg
 
 local src_filenames = {
 	"Morrowind.txt",
---	"Bloodmoon.txt",
---	"Tribunal.txt",
+	"Tribunal.txt",
+	"Bloodmoon.txt",
+}
+
+local dst_filenames = {
+	{ "tes3cn_Morrowind.txt", "tes3cn_Morrowind_fix.txt" },
+	{ "tes3cn_Tribunal.txt",  "tes3cn_Tribunal_fix.txt" },
+	{ "tes3cn_Bloodmoon.txt", "tes3cn_Bloodmoon_fix.txt" },
 }
 
 -- 044CAAC2: DIAL.NAME "...$00"
@@ -63,30 +69,42 @@ local function readString(s, i)
 	return r, concat(t)
 end
 
-local function loadTopics(filename, topicMap, topicMapR) -- topic => INAM, INAM => { topics }
+local function inTableValue(t, v)
+	for _, tv in ipairs(t) do
+		if tv == v then return true end
+	end
+end
+
+local function loadTopics(filename, topicMap, topicMapR, dials) -- topic => INAM, INAM => { topics }
 	io.stderr:write("loading ", filename, " ... ")
+	local localTopicMap = {}
 	local n, topic = 0
 	for line in io.lines(filename) do
 		local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
 		if s then
-			topic = s:gsub("%$00$", ""):lower()
+			topic = s:gsub("%$00$", "")
 		else
 			s = line:match "^%x+:%s*DIAL%.DATA %[(.-)%]"
 			if s then
-				if s ~= "00" then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
+				if s ~= "00" and topic then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
+					dials[topic] = true
 					topic = nil
 				end
 			elseif topic then
 				s = line:match "^%x+:%s*INFO%.INAM%s*\"(.*)\"$"
 				if s then
 					s = s:gsub("%$00$", "")
-					if topicMap[topic] then
+					topic = topic:lower()
+					if localTopicMap[topic] then
 						io.stderr:write("WARN: duplicated topic: ", topic, " => ", s, "\n")
 					end
+					localTopicMap[topic] = s
 					topicMap[topic] = s
 					local topicR = topicMapR[s]
 					if topicR then
-						topicR[#topicR + 1] = topic
+						if not inTableValue(topicR, topic) then
+							topicR[#topicR + 1] = topic
+						end
 					else
 						topicMapR[s] = { topic }
 					end
@@ -99,18 +117,26 @@ local function loadTopics(filename, topicMap, topicMapR) -- topic => INAM, INAM 
 	io.stderr:write(n, " topics\n")
 end
 
-local topicMap, topicMapR = {}, {}
+local topicMap, topicMapR, dials = {}, {}, {}
 for _, filename in ipairs(src_filenames) do
-	loadTopics(filename, topicMap, topicMapR)
+	loadTopics(filename, topicMap, topicMapR, dials)
 end
 
-local checkTopicMap, checkTopicMapR = {}, {}
-loadTopics(arg[1], checkTopicMap, checkTopicMapR)
+local checkTopicMap, checkTopicMapR, checkDials = {}, {}, {}
+for _, filename in ipairs(dst_filenames) do
+	loadTopics(filename[1], checkTopicMap, checkTopicMapR, checkDials)
+end
 
-local f = io.open(arg[2], "rb")
+for dial in pairs(checkDials) do
+	if not dials[dial] then
+		io.stderr:write("WARN: unmatched DIAL.NAME: ", dial, "\n")
+	end
+end
+
+local f = io.open(arg[1], "rb")
 if not f then
-	io.stderr:write("creating ", arg[2], " ... ")
-	f = io.open(arg[2], "wb")
+	io.stderr:write("creating ", arg[1], " ... ")
+	f = io.open(arg[1], "wb")
 	local n = 0
 	for topic, inam in pairs(topicMap) do
 		f:write("[", topic, "] =>")
@@ -134,17 +160,17 @@ end
 f:close()
 local topicPairs = {}
 local i = 1
-io.stderr:write("loading ", arg[2], " ... ")
-for line in io.lines(arg[2]) do
+io.stderr:write("loading ", arg[1], " ... ")
+for line in io.lines(arg[1]) do
 	local topic, checkTopic, more = line:match "^%s*%[(.-)%]%s*=>%s*%[(.-)%](.*)$"
 	if not topic or more:find "%S" then
 		error("ERROR: invalid topic file at line " .. i)
 	end
 	if not topicMap[topic] then
-		error("ERROR: invalid topic at line " .. i)
+		error("ERROR: invalid topic [" .. topic .. "] at line " .. i)
 	end
 	if not checkTopicMap[checkTopic] then
-		error("ERROR: invalid check topic at line " .. i)
+		error("ERROR: invalid check topic [" .. checkTopic .. "] at line " .. i)
 	end
 	topicPairs[topic] = checkTopic
 	i = i + 1
@@ -155,11 +181,11 @@ local function createTopicTree(topicMap, topicTree)
 	for topic in pairs(topicMap) do
 		local curNode = topicTree
 		for i = 1, #topic do
-			local word = topic:sub(i, i)
-			local nextNode = curNode[word]
+			local c = topic:sub(i, i)
+			local nextNode = curNode[c]
 			if not nextNode then
 				nextNode = {}
-				curNode[word] = nextNode
+				curNode[c] = nextNode
 			end
 			curNode = nextNode
 		end
@@ -191,8 +217,8 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 	io.stderr:write("loading ", filename, " ... ")
 	local i, n, ss, inam, dial = 1, 0
 	for line in io.lines(filename) do
-		local topic = line:match "[Aa]dd[Tt]opic \"\"(.-)\"\""
-		if topic and not topicMap[topic:lower()] then
+		local topic = line:match "[Aa]dd[Tt]opic%s*\"\"(.-)\"\""
+		if topic and not topicMap[topic:lower()] and not line:find ";%s*[Aa]dd[Tt]opic%s*\"\"" then
 			io.stderr:write("WARN: not found topic at line ", i, ": ", line, "\n")
 		end
 		if ss then
@@ -202,10 +228,8 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 				s = concat(ss)
 				ss = nil
 				local key = inam .. " @ " .. dial
-				if texts[key] then
-					io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key)
-					if texts[key] == s then io.stderr:write " but the same text" end
-					io.stderr:write "\n"
+				if texts[key] and texts[key] ~= s then
+					io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key, "\n")
 				end
 				texts[key] = s
 				inam = nil
@@ -216,32 +240,36 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 		else
 			local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
 			if s then
-				dial = s:gsub("%$00$", ""):lower()
-				if not topicMap[dial] then
-					dial = nil
-				end
-			elseif dial then
-				local s = line:match "^%x+:%s*INFO%.INAM%s*\"(.*)\"$"
+				dial = s:gsub("%$00$", "")
+			else
+				s = line:match "^%x+:%s*DIAL%.DATA %[(.-)%]"
 				if s then
-					inam = s:gsub("%$00$", "")
-				elseif inam then
-					s = line:match "^%x+:%s*INFO%.NAME%s*\"(.*)$"
+					if s == "01" then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
+						dial = nil
+					elseif s == "00" then
+						dial = dial:lower()
+					end
+				elseif dial then
+					local s = line:match "^%x+:%s*INFO%.INAM%s*\"(.*)\"$"
 					if s then
-						local isEnd, s = readString(s, 1)
-						if isEnd == true then
-							local key = inam .. " @ " .. dial
-							if texts[key] then
-								io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key)
-								if texts[key] == s then io.stderr:write " but the same text" end
-								io.stderr:write "\n"
+						inam = s:gsub("%$00$", "")
+					elseif inam then
+						s = line:match "^%x+:%s*INFO%.NAME%s*\"(.*)$"
+						if s then
+							local isEnd, s = readString(s, 1)
+							if isEnd == true then
+								local key = inam .. " @ " .. dial
+								if texts[key] and texts[key] ~= s then
+									io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key, "\n")
+								end
+								texts[key] = s
+								inam = nil
+								n = n + 1
+							elseif isEnd == false then
+								ss = { s, "\r\n" }
+							else
+								error("ERROR: invalid string at line " .. i)
 							end
-							texts[key] = s
-							inam = nil
-							n = n + 1
-						elseif isEnd == false then
-							ss = { s, "\r\n" }
-						else
-							error("ERROR: invalid string at line " .. i)
 						end
 					end
 				end
@@ -260,13 +288,16 @@ for _, filename in ipairs(src_filenames) do
 	loadTexts(filename, texts, topicMap)
 end
 local checkTexts = {}
-loadTexts(arg[1], checkTexts, checkTopicMap)
+for _, filename in ipairs(dst_filenames) do
+	loadTexts(filename[1], checkTexts, checkTopicMap)
+end
 
 local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ DIAL.NAME" => { topics }
 	for key, text in pairs(texts) do
-		local topics, inams = {}, {}
+		local topics = {}
 		local i, j, n = 1, 1, #text
 		local curNode, bestTopic = topicTree
+		text = text:lower()
 		while j <= n do
 			local c = text:sub(i, i)
 			local nextNode = curNode[c]
@@ -277,16 +308,7 @@ local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ D
 			else
 				local topic = not c:find "%w" and curNode[0] or bestTopic
 				if topic then
-					local inam = topicMap[topic]
-					local lastTopic = inams[inam]
-					if lastTopic then
-						if lastTopic ~= topic then
-							io.stderr:write("WARN: duplicated INFO.INAM '", inam, "' for DIAL.NAME: [", lastTopic, "] and [", topic, "]\n")
-						end
-					else
-						inams[inam] = topic
-						topics[#topics + 1] = topic
-					end
+					topics[#topics + 1] = topic
 					j = i
 				else
 					j = j + 1
@@ -300,18 +322,8 @@ local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ D
 				end
 			end
 		end
-		local topic = bestTopic
-		if topic then
-			local inam = topicMap[topic]
-			local lastTopic = inams[inam]
-			if lastTopic then
-				if lastTopic ~= topic then
-					io.stderr:write("WARN: duplicated INFO.INAM '", inam, "' for DIAL.NAME: [", lastTopic, "] and [", topic, "]\n")
-				end
-			else
-				inams[inam] = topic
-				topics[#topics + 1] = topic
-			end
+		if bestTopic then
+			topics[#topics + 1] = bestTopic
 		end
 		matches[key] = topics
 	end
@@ -333,20 +345,22 @@ findTopics(checkTexts, checkMatches, checkTopicTree, checkTopicMap)
 -- dumpMatchTexts(matches, texts)
 -- dumpMatchTexts(checkMatches, checkTexts)
 
-local n = 0
+local fixedTexts = {}
+local n1, n2 = 0, 0
 for key, topics in pairs(matches) do
 	local inam, topic = key:match "^(%S+) @ (.+)$"
 	if not inam then error("ERROR: invalid key: " .. key) end
 	local checkTopic = topicPairs[topic]
+	if not checkTopic then checkTopic = dials[topic] and topic end
 	if not checkTopic then error("ERROR: not found topic in topicPairs: [" .. topic .. "]") end
 	local checkKey = inam .. " @ " .. checkTopic
 	local checkTopics = checkMatches[checkKey]
 	if not checkTopics then
 		write("========== NOT FOUND KEY '", checkKey, "':\n")
 		write(texts[key], "\n\n")
-		n = n + 1
+		n1 = n1 + 1
 	else
-		local notfounds = {}, {}
+		local notFounds = {}, {}
 		for _, topic in ipairs(topics) do
 			local found
 			local checkTopic = topicPairs[topic]
@@ -358,17 +372,18 @@ for key, topics in pairs(matches) do
 					end
 				end
 			end
-			if not found then
-				notfounds[topic] = checkTopic
+			if not found and not notFounds[topic] then
+				notFounds[topic] = checkTopic
+				notFounds[#notFounds + 1] = checkTopic
 			end
 		end
-		if next(notfounds) then
+		if #notFounds > 0 then
 			write("========== TOPIC UNMATCHED '", checkKey, "':\n")
 			write(texts[key])
 			write "\n---------- topics:"
 			for _, topic in ipairs(topics) do
-				if notfounds[topic] then
-					write(" [", topic, "]=>[", notfounds[topic], "]")
+				if notFounds[topic] then
+					write(" [", topic, "]=>[", notFounds[topic], "]")
 				else
 					write(" [", topic, "]")
 				end
@@ -378,9 +393,119 @@ for key, topics in pairs(matches) do
 				write(" [", topic, "]")
 			end
 			write("\n", checkTexts[checkKey], "\n\n")
-			n = n + 1
+			local t = { checkTexts[checkKey], " {" }
+			for _, checkTopic in ipairs(notFounds) do
+				t[#t + 1] = checkTopic
+				t[#t + 1] = ","
+			end
+			t[#t] = "}"
+			fixedTexts[checkKey] = concat(t)
+			n2 = n2 + 1
 		end
 	end
 end
 
-io.stderr:write("========== CHECK DONE ========== (", n, " errors)\n")
+io.stderr:write("========== CHECK DONE ========== (", n1, " + ", n2, " errors)\n")
+
+local function addEscape(s) -- for GBK
+	local t = {}
+	local b, i, n = 1, 1, #s
+	local c, d, e
+	while i <= n do
+		c, e = byte(s, i), 0
+		if c <= 0x7e then
+			if c >= 0x20 or c == 9 then e = 1 -- \t
+			elseif c == 13 and i < n and byte(s, i + 1) == 10 then e = 2 -- \r\n
+			end
+		elseif i < n and c >= 0x81 and c <= 0xfe and c ~= 0x7f then
+			local d = byte(s, i + 1)
+			if d >= 0x40 and d <= 0xfe and d ~= 0x7f then e = 2 end
+		end
+		if e == 0 then
+			if b < i then t[#t + 1] = sub(s, b, i - 1) end
+			i = i + 1
+			b = i
+			t[#t + 1] = format("$%02X", c)
+		else
+			if e == 1 and (c == 0x22 or c == 0x24) then -- ",$ => "",$$
+				if b < i then t[#t + 1] = sub(s, b, i - 1) end
+				b = i
+				t[#t + 1] = char(c)
+			end
+			i = i + e
+		end
+	end
+	if b < i then t[#t + 1] = sub(s, b, i - 1) end
+	return concat(t)
+end
+
+local function fixTexts(src_filename, dst_filename)
+	io.stderr:write("loading ", src_filename, " ... \n")
+	io.stderr:write("creating ", dst_filename, " ... ")
+	local f = io.open(dst_filename, "wb")
+	if not f then error "ERROR: can not create file" end
+	local i, n, ss, inam, dial, out = 1, 0
+	for line in io.lines(src_filename) do
+		out = false
+		if ss then
+			out = ss == 1
+			local isEnd = readString(line, 1)
+			if isEnd then
+				ss = nil
+				inam = nil
+			end
+		else
+			local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
+			if s then
+				dial = s:gsub("%$00$", "")
+			else
+				s = line:match "^%x+:%s*DIAL%.DATA %[(.-)%]"
+				if s then
+					if s == "01" then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
+						dial = nil
+					elseif s == "00" then
+						dial = dial:lower()
+					end
+				elseif dial then
+					local s = line:match "^%x+:%s*INFO%.INAM%s*\"(.*)\"$"
+					if s then
+						inam = s:gsub("%$00$", "")
+					elseif inam then
+						local prefix, s = line:match "^(%x+:%s*INFO%.NAME%s*\")(.*)$"
+						if s then
+							local key = inam .. " @ " .. dial
+							local isEnd = readString(s, 1)
+							if isEnd == true then
+								inam = nil
+							elseif isEnd == false then
+								ss = true
+							else
+								error("ERROR: invalid string at line " .. i)
+							end
+							if fixedTexts[key] then
+								f:write(prefix, addEscape(fixedTexts[key]), "\"\r\n")
+								out = true
+								if ss then ss = 1 end
+								n = n + 1
+							end
+						end
+					end
+				end
+			end
+		end
+		if not out then
+			f:write(line, "\r\n")
+		end
+		i = i + 1
+	end
+	f:close()
+	io.stderr:write("fixed ", n, " texts\n")
+end
+
+if next(fixedTexts) then
+	for _, filename in ipairs(dst_filenames) do
+		if filename[2] then
+			fixTexts(filename[1], filename[2])
+		end
+	end
+end

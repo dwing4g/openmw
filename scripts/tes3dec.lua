@@ -17,7 +17,7 @@ local error = error
 local ENCODING = arg[2] or "1252" -- "1252", "gbk", "utf8"
 
 local isStr, addEscape
-if ENCODING == "1252" then
+if ENCODING == "1252" then --TODO: 0x92 0xA0 0xE0 0xE1 0xE9 0xF3 used in TR_Mainland.esm
 	isStr = function(s)
 		local n = #s
 		while n > 0 and byte(s, n) == 0 do n = n - 1 end
@@ -61,6 +61,7 @@ if ENCODING == "1252" then
 elseif ENCODING == "gbk" then
 	isStr = function(s)
 		local n = #s
+		if n == 4 and byte(s, 4) == 0 and byte(s, 1) > 0x7f then return end
 		while n > 0 and byte(s, n) == 0 do n = n - 1 end
 		if n == 0 and #s > 0 then return end
 		local b = 0
@@ -181,10 +182,10 @@ local function readInt4(limit)
 end
 
 local stringTags = {
-	"SCHD"
+	"NAME", "SCHD", "TEXT",
 }
 local binaryTags = {
-	"ACID", "BYDT", "CAST", "COUN", "DATA", "DISP", "EFID", "FLAG", "FLTV", "FRMR",
+	"ACID", "BYDT", "CAST", "COUN", "DATA", "DISP", "DODT", "EFID", "FLAG", "FLTV", "FRMR",
 	"ICNT", "INDX", "INTV", "MGEF", "NAM0", "NAM9", "NPDT",
 	"RGNC", "SPAW", "STAR", "STBA", "WNAM", "XSCL",
 }

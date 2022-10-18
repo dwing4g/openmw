@@ -1,9 +1,9 @@
-Abovewater: "Abovewater"
-Author: "Author"
-Configuration: "Configuration"
-Description: "Description"
-InExteriors: "Exteriors"
-InInteriors: "Interiors"
+Abovewater: "水面"
+Author: "作者"
+Configuration: "配置"
+Description: "说明"
+InExteriors: "室外"
+InInteriors: "室内"
 KeyboardControls: |
     Keyboard controls:
 
@@ -11,10 +11,10 @@ KeyboardControls: |
     Shift+Left-Arrow > Deactive shader
     Shift+Up-Arrow > Move shader up
     Shift+Down-Arrow > Move shader down
-PostProcessHUD: "Postprocess HUD"
-ResetShader: "Reset shader to default state"
-ShaderLocked: "Locked"
-ShaderLockedDescription: "Cannot be toggled or moved, controlled by external Lua script"
-ShaderResetUniform: "r"
-Underwater: "Underwater"
-Version: "Version"
+PostProcessHUD: "后处理HUD"
+ResetShader: "将着色器重置为默认状态"
+ShaderLocked: "已锁定"
+ShaderLockedDescription: "无法转换或移动，该目标由外部Lua脚本所控制。"
+ShaderResetUniform: "重置着色器"
+Underwater: "水下"
+Version: "版本"

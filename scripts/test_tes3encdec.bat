@@ -33,6 +33,10 @@ fc /b tes3cn_Bloodmoon.esp tes3cn_Bloodmoon.esp.new
 fc /b tes3cn.esp           tes3cn.esp.new
 fc /b 1.omwsave            1.omwsave.new
 
-rem luajit check_topic.lua tes3cn_Morrowind.txt topics.txt > errors.txt
+rem luajit count_text.lua
+rem luajit check_topic.lua topics.txt > errors.txt
+rem luajit tes3enc.lua tes3cn_Morrowind_fix.txt tes3cn_Morrowind_fix.esp
+rem luajit tes3enc.lua tes3cn_Tribunal_fix.txt  tes3cn_Tribunal_fix.esp
+rem luajit tes3enc.lua tes3cn_Bloodmoon_fix.txt tes3cn_Bloodmoon_fix.esp
 
 pause

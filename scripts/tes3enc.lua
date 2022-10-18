@@ -15,10 +15,19 @@ local error = error
 
 local f = io.open(arg[2], "wb")
 
+local goodGBK = {
+	["\x86\xaa"] = true, -- 啰
+	["\x8b\xa0"] = true, -- 嫚
+	["\x9a\x47"] = true, -- 欸
+	["\xb2\x74"] = true, -- 瞭
+	["\xb5\x6f"] = true, -- 祇
+}
+local badGBK = {}
+
 local function readString(s, i)
 	local t = {}
 	local b, n = i, #s
-	local c, d
+	local c, d, e
 	local r = false
 	while i <= n do
 		c = byte(s, i)
@@ -42,6 +51,20 @@ local function readString(s, i)
 			else
 				i = i + 1
 				b = i
+			end
+		elseif badGBK then
+			if not e then
+				if c >= 0x81 and i + 1 <= n then
+					e = true
+					if c <= 0xa0 or c >= 0xf8 or byte(s, i + 1) <= 0xa0 then
+						c = s:sub(i, i + 1)
+						if not goodGBK[c] then
+							badGBK[c] = true
+						end
+					end
+				end
+			elseif e then
+				e = nil
 			end
 		end
 		i = i + 1
@@ -154,3 +177,11 @@ end
 
 f:close()
 io.stderr:write("done! ", clock() - t, " seconds\n")
+
+if badGBK and next(badGBK) and arg[1]:find "tes3cn" then
+	io.stderr:write "chars not in GB2312: ["
+	for c in pairs(badGBK) do
+		io.stderr:write(c)
+	end
+	io.stderr:write "]\n"
+end
