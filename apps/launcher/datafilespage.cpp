@@ -247,9 +247,9 @@ void Launcher::DataFilesPage::populateFileViews(const QString& contentModelName)
         }
 
         // deactivate data-local and global data directory: they are always included
-        const auto tmp = currentDir.toUtf8();
+        const auto tmp = currentDir.toStdWString();
         if (currentDir == mDataLocal
-            || std::filesystem::path(Misc::StringUtils::stringToU8String(tmp)) == globalDataDir)
+            || std::filesystem::path(tmp) == globalDataDir)
         {
             auto flags = item->flags();
             item->setFlags(flags & ~(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled));
@@ -697,7 +697,7 @@ void Launcher::DataFilesPage::addArchivesFromDir(const QString& path)
     for (const auto& fileinfo : dir.entryInfoList())
     {
         const auto absPath = fileinfo.absoluteFilePath();
-        if (Bsa::CompressedBSAFile::detectVersion(absPath.toStdString()) == Bsa::BSAVER_UNKNOWN)
+        if (Bsa::CompressedBSAFile::detectVersion(absPath.toStdWString()) == Bsa::BSAVER_UNKNOWN)
             continue;
 
         const auto fileName = fileinfo.fileName();

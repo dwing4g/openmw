@@ -14,7 +14,8 @@ local ipairs = ipairs
 local arg = arg
 local error = error
 
-local ENCODING = arg[2] or "1252" -- "1252", "gbk", "utf8"
+local ENCODING = arg[2] or "1252" -- "1252", "gbk", "jis", "utf8"
+local RAW = arg[3] == "raw"
 
 local isStr, addEscape
 if ENCODING == "1252" then --TODO: 0x92 0xA0 0xE0 0xE1 0xE9 0xF3 used in TR_Mainland.esm
@@ -109,6 +110,63 @@ elseif ENCODING == "gbk" then
 		if b < i then t[#t + 1] = sub(s, b, i - 1) end
 		return concat(t):gsub("\r", "") -- windows console will add \r
 	end
+elseif ENCODING == "jis" then
+	isStr = function(s)
+		local n = #s
+		if n == 4 and byte(s, 4) == 0 and byte(s, 1) > 0x7f then return end
+		while n > 0 and byte(s, n) == 0 do n = n - 1 end
+		if n == 0 and #s > 0 then return end
+		local b = 0
+		for i = 1, n do
+			local c = byte(s, i)
+			if b == 1 then
+				if c < 0x40 or c > 0xfc or c == 0x7f then return end
+				b = 0
+			elseif c >= 0x7f then
+				if c < 0xa1 or c > 0xdf then -- 1-byte japanese char
+					if c < 0x81 or c > 0xfc or c == 0x7f then return end
+					b = 1
+				end
+			elseif c < 0x20 and c ~= 9 and c ~= 10 and c ~= 13 then	return
+			end
+		end
+		return b == 0
+	end
+	addEscape = function(s)
+		local t = {}
+		local b, i, n = 1, 1, #s
+		local c, d, e
+		while i <= n do
+			c, e = byte(s, i), 0
+			if c <= 0x7e then
+				if c >= 0x20 or c == 9 then e = 1 -- \t
+				elseif c == 13 and i < n and byte(s, i + 1) == 10 then e = 2 -- \r\n
+				end
+			elseif i < n and c >= 0x81 and c <= 0xfc and c ~= 0x7f then
+				if c >= 0xa1 and c <= 0xdf then -- 1-byte japanese char
+					e = 1
+				else
+					local d = byte(s, i + 1)
+					if d >= 0x40 and d <= 0xfc and d ~= 0x7f then e = 2 end
+				end
+			end
+			if e == 0 then
+				if b < i then t[#t + 1] = sub(s, b, i - 1) end
+				i = i + 1
+				b = i
+				t[#t + 1] = format("$%02X", c)
+			else
+				if e == 1 and (c == 0x22 or c == 0x24) then -- ",$ => "",$$
+					if b < i then t[#t + 1] = sub(s, b, i - 1) end
+					b = i
+					t[#t + 1] = char(c)
+				end
+				i = i + e
+			end
+		end
+		if b < i then t[#t + 1] = sub(s, b, i - 1) end
+		return concat(t):gsub("\r", "") -- windows console will add \r
+	end
 else -- "utf8"
 	isStr = function(s)
 		local n = #s
@@ -182,7 +240,7 @@ local function readInt4(limit)
 end
 
 local stringTags = {
-	"NAME", "SCHD", "TEXT",
+	"NAME", "SCHD", "SCTX", "TEXT",
 }
 local binaryTags = {
 	"ACID", "BYDT", "CAST", "COUN", "DATA", "DISP", "DODT", "EFID", "FLAG", "FLTV", "FRMR",
@@ -237,7 +295,7 @@ local function readFields(class, posEnd)
 		end
 		local tag = f:read(4)
 		if not tag:find "^[%u%d_]+$" then error(format("ERROR: %08X: unknown tag: %q", pos, tag)) end
-		write(format("%08X: %s.%s ", pos, class, tag))
+		write(RAW and format(" %s.%s ", class, tag) or format("%08X: %s.%s ", pos, class, tag))
 		local n = readInt4(0x100000)
 		local s = f:read(n)
 		if not binaryTags[tag] and (stringTags[tag] or isStr(s)) then
@@ -262,7 +320,7 @@ local function readClasses(posEnd)
 		local tag = f:read(4)
 		if not tag:find "^[%u%d_]+$" then error(format("ERROR: %08X: unknown tag: %q", pos, tag)) end
 		count[tag] = (count[tag] or 0) + 1
-		write(format("%08X:-%s", pos, tag))
+		write(RAW and format("-%s", tag) or format("%08X:-%s", pos, tag))
 		local n = readInt4(0x1000000)
 		local b = f:read(8)
 		if b ~= "\0\0\0\0\0\0\0\0" then

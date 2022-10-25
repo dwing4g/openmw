@@ -125,7 +125,7 @@ std::string_view StatelessUtf8Encoder::getUtf8(
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
             int n = MultiByteToWideChar(936, 0, input.data(), input.size(), wchars, input.size());
             resize(n * 3, bufferAllocationPolicy, buffer);
-            n = WideCharToMultiByte(65001, 0, wchars, n, buffer.data(), n * 3, 0, 0);
+            n = WideCharToMultiByte(CP_UTF8, 0, wchars, n, buffer.data(), n * 3, 0, 0);
             return std::string_view(buffer.data(), n);
         }
     }
@@ -175,7 +175,7 @@ std::string_view StatelessUtf8Encoder::getLegacyEnc(
         if (mTranslationArray[0] == ToUTF8::GBK)
         {
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
-            int n = MultiByteToWideChar(65001, 0, input.data(), input.size(), wchars, input.size());
+            int n = MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(), wchars, input.size());
             resize(n * 2, bufferAllocationPolicy, buffer);
             n = WideCharToMultiByte(936, 0, wchars, n, buffer.data(), n * 2, 0, 0);
             return std::string_view(buffer.data(), n);

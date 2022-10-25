@@ -161,21 +161,49 @@ f:close()
 local topicPairs = {}
 local i = 1
 io.stderr:write("loading ", arg[1], " ... ")
+local err = 0
+local check0, check1 = {}, {}
 for line in io.lines(arg[1]) do
 	local topic, checkTopic, more = line:match "^%s*%[(.-)%]%s*=>%s*%[(.-)%](.*)$"
 	if not topic or more:find "%S" then
-		error("ERROR: invalid topic file at line " .. i)
+		io.stderr:write("ERROR: invalid topic file at line ", i, "\n")
+		err = err + 1
 	end
+	if check0[topic] then
+		io.stderr:write("ERROR: duplicated topic [", topic, "] at line ", i, "\n")
+		err = err + 1
+	end
+	if check1[checkTopic] then
+		io.stderr:write("ERROR: duplicated checkTopic [", checkTopic, "] at line ", i, "\n")
+		err = err + 1
+	end
+	check0[topic] = true
+	check1[checkTopic] = true
 	if not topicMap[topic] then
-		error("ERROR: invalid topic [" .. topic .. "] at line " .. i)
+		io.stderr:write("ERROR: invalid topic [", topic, "] at line ", i, "\n")
+		err = err + 1
 	end
 	if not checkTopicMap[checkTopic] then
-		error("ERROR: invalid check topic [" .. checkTopic .. "] at line " .. i)
+		local checkTopics = checkTopicMapR[topicMap[topic]]
+		local t = {}
+		if checkTopics then
+			t[#t + 1] = ", maybe:"
+			for _, topic in ipairs(checkTopics) do
+				t[#t + 1] = " ["
+				t[#t + 1] = topic
+				t[#t + 1] = "]"
+			end
+		end
+		io.stderr:write("ERROR: invalid check topic [", checkTopic, "] at line ", i, concat(t), "\n")
+		err = err + 1
 	end
 	topicPairs[topic] = checkTopic
 	i = i + 1
 end
 io.stderr:write(i - 1, " topics\n")
+if err ~= 0 then
+	error("ERROR: " .. err .. " errors")
+end
 
 local function createTopicTree(topicMap, topicTree)
 	for topic in pairs(topicMap) do
@@ -294,6 +322,10 @@ end
 
 local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ DIAL.NAME" => { topics }
 	for key, text in pairs(texts) do
+		local t, oldFixes = text:match "^(.-)%s*({[^{}]*})$"
+		if t then
+			text = t
+		end
 		local topics = {}
 		local i, j, n = 1, 1, #text
 		local curNode, bestTopic = topicTree
@@ -392,8 +424,13 @@ for key, topics in pairs(matches) do
 			for _, topic in ipairs(checkTopics) do
 				write(" [", topic, "]")
 			end
-			write("\n", checkTexts[checkKey], "\n\n")
-			local t = { checkTexts[checkKey], " {" }
+			local checkText = checkTexts[checkKey]
+			write("\n", checkText, "\n\n")
+			local t, oldFixes = checkText:match "^(.-)%s*({[^{}]*})$"
+			if t then
+				checkText = t
+			end
+			t = { checkText, " {" }
 			for _, checkTopic in ipairs(notFounds) do
 				t[#t + 1] = checkTopic
 				t[#t + 1] = ","

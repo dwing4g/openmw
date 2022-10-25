@@ -12,7 +12,7 @@ QSet<QString> CellNameLoader::getCellNames(QStringList& contentPaths)
     {
         if (contentPath.endsWith(".omwscripts", Qt::CaseInsensitive))
             continue;
-        esmReader.open(contentPath.toStdString());
+        esmReader.open(contentPath.toStdWString());
 
         // Loop through all records
         while (esmReader.hasMoreRecs())

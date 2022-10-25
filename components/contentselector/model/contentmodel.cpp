@@ -468,7 +468,7 @@ void ContentSelectorModel::ContentModel::addFiles(const QString& path, bool newf
             ESM::ESMReader fileReader;
             ToUTF8::Utf8Encoder encoder(ToUTF8::calculateEncoding(mEncoding.toStdString()));
             fileReader.setEncoder(&encoder);
-            fileReader.open(std::string(dir.absoluteFilePath(path2).toUtf8().constData()));
+            fileReader.open(dir.absoluteFilePath(path2).toStdWString());
 
             EsmFile* file = new EsmFile(path2);
 

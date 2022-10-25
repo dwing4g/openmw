@@ -77,32 +77,7 @@ namespace MWGui
                 MWBase::Environment::get().getWindowManager()->isGuiMode());
         }
     }
-    /*
-    static std::string addSpaceForMessage(std::string_view message)
-    {
-        size_t n = 0, s = message.size();
-        char* const buf = (char*)_alloca(s * 2);
-        bool lastWideChar = false;
-        for (size_t i = 0; i < s; i++)
-        {
-            unsigned char c = message[i];
-            if (c >= 0xe0 && i != 0) // leading char in 3 bytes or more for UTF-8
-            {
-                lastWideChar = true;
-                if (n > 0 && buf[n - 1] != ' ')
-                    buf[n++] = ' '; // add space for auto wrap line in MyGUI
-            }
-            else if (c < 0x80 && lastWideChar)
-            {
-                lastWideChar = false;
-                if (c != ' ')
-                    buf[n++] = ' '; // add space for auto wrap line in MyGUI
-            }
-            buf[n++] = c;
-        }
-        return std::string(buf, n);
-    }
-    */
+
     void MessageBoxManager::createMessageBox(std::string_view message, bool stat)
     {
         auto box = std::make_unique<MessageBox>(*this, message);

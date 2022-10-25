@@ -1,16 +1,22 @@
 ﻿■ OpenMW 中文支持版本 ■
 
-遵照GPL协议开源: https://github.com/dwing4g/openmw
+此OpenMW汉化版本的程序遵照GPL协议开源: https://github.com/dwing4g/openmw
 
 ■ 首次运行说明(必读)
-0. 首先确保操作系统是 Windows 7 以上, 必须是 x64 版本, 不支持32位的Windows.
-1. 首次运行前先确定是否安装了较新版本的VC动态库, 可尝试启动 openmw-iniimporter,
+1. 首先确保操作系统是 Windows 7 以上, 必须是 x64 版本, 不支持32位的 Windows.
+
+2. 如果想快捷安装配置并尽快进入游戏, 可以把 OpenMW 文件夹放到原版游戏文件夹内, 跟原版游戏的 Data Files 文件夹并列存放.
+   然后运行 OpenMW 文件夹内的 reset_cfg 安装(重置)配置文件, 成功后运行 openmw 即可开始游戏, 无需再看下面的步骤.
+   如果运行 openmw 提示"无法定位程序输入点..."则需要安装VC运行库, 安装包的官方下载地址: https://aka.ms/vs/17/release/vc_redist.x64.exe
+   如果需要配置游戏中的MOD及各种选项, 可运行 openmw-launcher.
+
+3. 以下是非快捷安装的步骤. 首次运行前先确定是否安装了较新版本的VC动态库, 可尝试启动 openmw-iniimporter,
    如果提示"无法定位程序输入点..."则需要安装, 安装包的官方下载地址: https://aka.ms/vs/17/release/vc_redist.x64.exe
    如果有个窗口一闪而过则说明已经装好.
-2. 启动 openmw-launcher, 如果提示"Could not create directory ...", 则需要再次启动一次, 或者以管理员权限再次启动.
+4. 启动 openmw-launcher, 如果提示"Could not create directory ...", 则需要再次启动一次, 或者以管理员权限再次启动.
    如果提示"Run Installation Wizard", 则点击进入设置向导, 依次点击: Next -> Existing Installation, Next -> Browse,
    找到游戏本体中的"Morrowind.esm", Next -> 选"Chinese(GBK)", Next -> 3个"Import..."都选上, Next -> Finish
-3. 进入 OpenMW Launcher 主界面, 确保以下几个设置:
+5. 进入 OpenMW Launcher 主界面, 确保以下几个设置:
    (1) Settings页面的首个下拉列表选择了"Chinese(GBK)".
    (2) Data Files/Content Files页面中如果列表框是空的, 点击右上角的"Refresh Data Files", 在左上角下拉列表选择"Morrowind.esm",
        下面的列表框就会出现一些esm和esp文件, 通常必选"Tribunal.esm"和"Bloodmoon.esm"两个官方资料片,
@@ -19,20 +25,15 @@
    (4) Graphics页面中可设置游戏分辨率(Resolution).
    (5) Advanced/Interface页面中的"GUI scaling factor"可调大一些, 尤其是高分辨率模式下, "Font size"也可以调大.
    (6) 最后点下方的"Close"保存设置并退出.
-4. 打开"文档"文件夹, 找到"My Games\OpenMW\openmw.cfg"文件, 用记事本打开,如果没有这行则手动加上: fallback=Fonts_Font_0,zh_CN
-5. 以上都设置好后, 以后每次开启游戏都只需启动 openmw 即可.
-6. 首次进入游戏, 先进入"Options", 确保以下几个设置:
+6. 打开"文档"文件夹, 找到"My Games\OpenMW\openmw.cfg"文件, 用记事本打开,如果没有这行则手动加上: fallback=Fonts_Font_0,zh_CN
+7. 以上都设置好后, 以后每次开启游戏都只需启动 openmw 即可.
+8. 首次进入游戏, 先进入"Options", 确保以下几个设置:
    (1) 在"首选项"页面中, 打开"字幕".
    (2) 在"Language(语言)"页面中, 左边的下拉框选择"Chinese (China)", 修改此项需要重启游戏才能生效.
 
-
 ■ 其它说明
-1. 虽然也能支持UTF-8编码的汉化, 但必要性不大, 可以先继续用GBK编码.
-   字体可以修改, 找到 resources\vfs\fonts\zh_CN.omwfont, 修改里面的字体文件名"LXGWWenKaiGB-Regular.ttf", 同时放入字体文件即可.
-2. resources\vfs\l10n\ 里有一些 zh_CN.yaml 但大部分还没翻译成中文.
-   openmw.cfg 里也有些英文需要汉化, 如职业选择的问答题.
-   以上文件修改成中文后需要以UTF-8编码保存.
-
+1. 游戏中的字体可以修改, 把 ttf/ttc 格式的字体文件放入 resources\vfs\fonts\ 中, 并找到里面的 zh_CN.omwfont 文件, 替换其中的字体文件名"LXGWWenKaiGB-Regular.ttf"即可.
+   默认字体 LXGWWenKaiGB-Regular.ttf 是免费开源的, 来自 https://github.com/lxgw/LxgwWenkaiGB
 
 ■ 编译源码的一些说明:
 1. 需要准备 7z.exe, 安装 Python3, Git for Windows, Visual Studio 2022 (include CMake)
@@ -41,6 +42,11 @@
 4. 如果需要编译 MyGUI, 需要先下载编译FreeType, 然后使用命令: cmake -DMYGUI_RENDERSYSTEM=1 -DFREETYPE_INCLUDE_DIRS=... -DFREETYPE_LIBRARY=...
 
 ■ 汉化版的ChangeLog:
+
+● 2022-10-24 v5
+1. files: 快捷安装/重置配置的脚本 reset_cfg.bat 及默认配置文件 *_reset.cfg
+2. scripts: 改进 tes3dec.lua 支持 Shift-JIS 编码
+3. launcher: 修正 data 目录含宽字符的读取bug
 
 ● 2022-10-18 v4
 1. scripts: 改进检查esp导出文本的工具 check_topic.lua 并支持补充可能遗漏的关键词
