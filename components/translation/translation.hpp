@@ -34,6 +34,9 @@ namespace Translation
         ToUTF8::Utf8Encoder* mEncoder;
         ContainerType mCellNamesTranslations, mTopicIDs, mPhraseForms;
     };
+
+    bool isFirstChar(unsigned int first, char checkChar);
+    // void translateCellName(std::string& str);
 }
 
 #endif

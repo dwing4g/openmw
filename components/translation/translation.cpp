@@ -1,6 +1,9 @@
-#include "translation.hpp"
+﻿#include "translation.hpp"
 
 #include <fstream>
+#include <string>
+#include <unordered_map>
+#include <stdio.h>
 
 namespace Translation
 {
@@ -106,4 +109,110 @@ namespace Translation
     {
         return !mCellNamesTranslations.empty() || !mTopicIDs.empty() || !mPhraseForms.empty();
     }
+
+    bool isFirstChar(unsigned int first, char checkChar)
+    {
+        static unsigned int* pinyin = 0;
+        if (!pinyin)
+        {
+            pinyin = (unsigned int*)calloc(0x7000, sizeof(unsigned int)); // [0x3000, 0xA000)
+            FILE* fp = fopen("pinyin.txt", "rb");
+            if (fp)
+            {
+                std::unordered_map<unsigned int, unsigned int> map; // āáǎà ōóǒò ēéěè
+                map.insert(std::make_pair(0xc481, 'a'));
+                map.insert(std::make_pair(0xc3a1, 'a'));
+                map.insert(std::make_pair(0xc78e, 'a'));
+                map.insert(std::make_pair(0xc3a0, 'a'));
+                map.insert(std::make_pair(0xc58d, 'e'));
+                map.insert(std::make_pair(0xc3b3, 'e'));
+                map.insert(std::make_pair(0xc792, 'e'));
+                map.insert(std::make_pair(0xc3b2, 'e'));
+                map.insert(std::make_pair(0xc493, 'o'));
+                map.insert(std::make_pair(0xc3a9, 'o'));
+                map.insert(std::make_pair(0xc49b, 'o'));
+                map.insert(std::make_pair(0xc3a8, 'o'));
+                for (char buf[1024]; fgets(buf, 1024, fp);)
+                {
+                    if (*buf != 'U')
+                        continue;
+                    unsigned int v = 0, i = 2;
+                    for (int c; (c = buf[i]) && c != ':'; i++)
+                        v = (v << 4) + (c < 'A' ? c - '0' : c - 'A' + 10);
+                    if (v < 0x3000 || v >= 0xA000)
+                        continue;
+                    for (bool f = true;;)
+                    {
+                        int c = buf[i++];
+                        if (!c || c == '#')
+                            break;
+                        if (c == ' ' || c == ',')
+                            f = true;
+                        else if (f)
+                        {
+                            if (c >= 'a' && c <= 'z')
+                            {
+                                pinyin[v - 0x3000] |= 1U << (c - 'a');
+                                f = false;
+                            }
+                            else
+                            {
+                                auto it = map.find(((unsigned char)c << 8) + (unsigned char)buf[i]);
+                                if (it != map.end())
+                                {
+                                    pinyin[v - 0x3000] |= 1U << (it->second - 'a');
+                                    f = false;
+                                }
+                            }
+                        }
+                    }
+                }
+                fclose(fp);
+            }
+        }
+
+        if (first >= 0x3000 && first < 0xA000)
+        {
+            unsigned int v = pinyin[first - 0x3000];
+            if (!((v >> (checkChar - 'a')) & 1) && (v || checkChar != 'v'))
+                return false;
+        }
+        else if (first != (unsigned char)checkChar && (first >= 'a' && first <= 'z' || checkChar != 'v'))
+            return false;
+        return true;
+    }
+    /*
+    void translateCellName(std::string& str)
+    {
+        static std::unordered_map<std::string, std::string>* cellname = 0;
+        if (!cellname)
+        {
+            cellname = new std::unordered_map<std::string, std::string>;
+            FILE* fp = fopen("cellname.txt", "rb");
+            if (fp)
+            {
+                std::string src;
+                for (char buf[1024]; fgets(buf, 1024, fp);)
+                {
+                    size_t n = strlen(buf);
+                    while (n > 0 && ((unsigned char*)buf)[n - 1] <= 0x20)
+                        n--;
+                    buf[n] = 0;
+                    if (*buf == '>')
+                        src.assign(buf + 1, n - 1);
+                    else if (*buf == '=' && !src.empty())
+                    {
+                        (*cellname)[src] = std::string(buf + 1, n - 1);
+                        src.clear();
+                    }
+                }
+                fclose(fp);
+            }
+        }
+
+        auto it = cellname->find(str);
+        if (it != cellname->end())
+            str = it->second;
+    }
+    */
 }

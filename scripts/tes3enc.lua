@@ -15,7 +15,8 @@ local error = error
 
 local f = io.open(arg[2], "wb")
 
-local goodGBK = {
+local goodGBK = { -- "霞鹜文楷 GB"字体支持的非GB2312字符
+	["\x85\xde"] = true, -- 呣
 	["\x86\xaa"] = true, -- 啰
 	["\x8b\xa0"] = true, -- 嫚
 	["\x9a\x47"] = true, -- 欸

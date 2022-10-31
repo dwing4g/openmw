@@ -1,4 +1,4 @@
-#include "componentselectionpage.hpp"
+﻿#include "componentselectionpage.hpp"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -13,7 +13,7 @@ Wizard::ComponentSelectionPage::ComponentSelectionPage(QWidget* parent)
     setupUi(this);
 
     setCommitPage(true);
-    setButtonText(QWizard::CommitButton, tr("&Install"));
+    setButtonText(QWizard::CommitButton, tr("安装(&I)"));
 
     registerField(QLatin1String("installation.components"), componentsList);
 
@@ -43,7 +43,7 @@ void Wizard::ComponentSelectionPage::updateButton(QListWidgetItem*)
     if (unchecked)
     {
         setCommitPage(false);
-        setButtonText(QWizard::NextButton, tr("&Skip"));
+        setButtonText(QWizard::NextButton, tr("跳过(&S)"));
     }
     else
     {
@@ -80,7 +80,7 @@ void Wizard::ComponentSelectionPage::initializePage()
 
         if (mWizard->mInstallations[path].hasMorrowind)
         {
-            morrowindItem->setText(tr("Morrowind\t\t(installed)"));
+            morrowindItem->setText(tr("Morrowind\t\t(已安装)"));
             morrowindItem->setFlags((morrowindItem->flags() & ~Qt::ItemIsEnabled) | Qt::ItemIsUserCheckable);
             morrowindItem->setData(Qt::CheckStateRole, Qt::Unchecked);
         }
@@ -94,7 +94,7 @@ void Wizard::ComponentSelectionPage::initializePage()
 
         if (mWizard->mInstallations[path].hasTribunal)
         {
-            tribunalItem->setText(tr("Tribunal\t\t(installed)"));
+            tribunalItem->setText(tr("Tribunal\t\t(已安装)"));
             tribunalItem->setFlags((tribunalItem->flags() & ~Qt::ItemIsEnabled) | Qt::ItemIsUserCheckable);
             tribunalItem->setData(Qt::CheckStateRole, Qt::Unchecked);
         }
@@ -108,7 +108,7 @@ void Wizard::ComponentSelectionPage::initializePage()
 
         if (mWizard->mInstallations[path].hasBloodmoon)
         {
-            bloodmoonItem->setText(tr("Bloodmoon\t\t(installed)"));
+            bloodmoonItem->setText(tr("Bloodmoon\t\t(已安装)"));
             bloodmoonItem->setFlags((bloodmoonItem->flags() & ~Qt::ItemIsEnabled) | Qt::ItemIsUserCheckable);
             bloodmoonItem->setData(Qt::CheckStateRole, Qt::Unchecked);
         }
@@ -134,17 +134,17 @@ bool Wizard::ComponentSelectionPage::validatePage()
             if (mWizard->mInstallations[path].hasBloodmoon)
             {
                 QMessageBox msgBox;
-                msgBox.setWindowTitle(tr("About to install Tribunal after Bloodmoon"));
+                msgBox.setWindowTitle(tr("关于在血月(Bloodmoon)后安装审判席(Tribunal)"));
                 msgBox.setIcon(QMessageBox::Information);
                 msgBox.setStandardButtons(QMessageBox::Cancel);
                 msgBox.setText(
-                    tr("<html><head/><body><p><b>You are about to install Tribunal</b></p> \
-                                  <p>Bloodmoon is already installed on your computer.</p> \
-                                  <p>However, it is recommended that you install Tribunal before Bloodmoon.</p> \
-                                  <p>Would you like to re-install Bloodmoon?</p></body></html>"));
+                    tr("<html><head/><body><p><b>即将安装审判席(Tribunal)</b></p> \
+                                  <p>血月(Bloodmoon)已经安装在你的电脑中。</p> \
+                                  <p>然而，建议你在血月(Bloodmoon)前安装审判席(Tribunal)。</p> \
+                                  <p>你想要重新安装血月(Bloodmoon)吗？</p></body></html>"));
 
                 QAbstractButton* reinstallButton
-                    = msgBox.addButton(tr("Re-install &Bloodmoon"), QMessageBox::ActionRole);
+                    = msgBox.addButton(tr("重新安装血月(&B)"), QMessageBox::ActionRole);
                 msgBox.exec();
 
                 if (msgBox.clickedButton() == reinstallButton)

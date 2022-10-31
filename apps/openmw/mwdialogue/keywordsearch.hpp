@@ -191,6 +191,56 @@ namespace MWDialogue
             std::sort(out.begin(), out.end(), sortMatches);
         }
 
+        static bool removeUnusedPostfix(std::string& text, std::vector<Match>& matches)
+        {
+            if (text.empty() || text.back() != '}')
+                return false;
+            const auto pos = text.find_last_of('{');
+            if (pos == std::string::npos)
+                return false;
+            auto it = text.cbegin() + pos;
+            if (matches.empty() || matches.back().mEnd < it)
+                text.erase(pos > 0 && text[pos - 1] == ' ' ? pos - 1 : pos);
+            else
+            {
+                it++;
+                size_t n = 0;
+                for (auto i = matches.begin(); i != matches.end();)
+                {
+                    auto& match = *i;
+                    match.mBeg -= n;
+                    match.mEnd -= n;
+                    if (it < match.mEnd)
+                    {
+                        if (match.mBeg < it || match.mEnd >= text.cend()
+                            || *(match.mBeg - 1) != ',' && *(match.mBeg - 1) != '{'
+                            || *match.mEnd != ',' && *match.mEnd != '}')
+                        {
+                            i = matches.erase(i);
+                            continue;
+                        }
+                        if (it < match.mBeg)
+                        {
+                            auto s = match.mBeg - it;
+                            n += s;
+                            text.erase(it, match.mBeg);
+                            match.mBeg -= s;
+                            match.mEnd -= s;
+                        }
+                        it = match.mEnd;
+                        if (it < text.cend() && *it == ',')
+                            it++;
+                    }
+                    i++;
+                }
+                if (it - 1 == text.cbegin() + pos)
+                    text.erase(pos > 0 && text[pos - 1] == ' ' ? pos - 1 : pos);
+                else if (it < text.cend() - 1)
+                    text.erase(*(it - 1) == ',' ? it - 1 : it, text.cend() - 1);
+            }
+            return true;
+        }
+
     private:
         struct Entry
         {

@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>形状</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGroupBox" name="generalGroup">
      <property name="title">
-      <string>Morrowind Content Language</string>
+      <string>晨风内容语言</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
@@ -49,7 +49,7 @@
    <item>
     <widget class="QGroupBox" name="wizardGroup">
      <property name="title">
-      <string>Morrowind Installation Wizard</string>
+      <string>晨风安装向导</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,1">
       <item row="1" column="1">
@@ -68,7 +68,7 @@
       <item row="1" column="0">
        <widget class="QPushButton" name="wizardButton">
         <property name="text">
-         <string>Run &amp;Installation Wizard</string>
+         <string>运行 &amp;安装向导</string>
         </property>
        </widget>
       </item>
@@ -78,7 +78,7 @@
    <item>
     <widget class="QGroupBox" name="importerGroup">
      <property name="title">
-      <string>Morrowind Settings Importer</string>
+      <string>晨风设置导入器</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -86,7 +86,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="importerLabel">
           <property name="text">
-           <string>File to import settings from:</string>
+           <string>要导入设置的文件：</string>
           </property>
          </widget>
         </item>
@@ -96,7 +96,7 @@
         <item row="1" column="1">
          <widget class="QPushButton" name="browseButton">
           <property name="text">
-           <string>Browse...</string>
+           <string>浏览...</string>
           </property>
          </widget>
         </item>
@@ -105,7 +105,7 @@
       <item>
        <widget class="QCheckBox" name="addonsCheckBox">
         <property name="text">
-         <string>Import add-on and plugin selection (creates a new Content List)</string>
+         <string>导入附加组件和插件选择（创建一个新的内容列表）。</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -115,7 +115,7 @@
       <item>
        <widget class="QCheckBox" name="fontsCheckBox">
         <property name="text">
-         <string>Import bitmap fonts setup</string>
+         <string>导入位图字体设置</string>
         </property>
         <property name="toolTip">
          <string>Fonts shipped with the original engine are blurry with UI scaling and support only a small amount of characters,
@@ -145,7 +145,7 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <item row="2" column="0">
          <widget class="QPushButton" name="importerButton">
           <property name="text">
-           <string>Run &amp;Settings Importer</string>
+           <string>运行 &amp;设置导入器</string>
           </property>
          </widget>
         </item>

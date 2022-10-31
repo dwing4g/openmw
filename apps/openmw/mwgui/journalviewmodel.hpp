@@ -8,6 +8,8 @@
 
 #include <components/misc/utf8stream.hpp>
 
+#include "bookpage.hpp"
+
 namespace MWGui
 {
     /// View-Model for the journal GUI
@@ -38,7 +40,8 @@ namespace MWGui
             /// Visits each subset of text in the body, delivering the beginning
             /// and end of the span relative to the body, and a valid topic ID if
             /// the span represents a keyword, or zero if not.
-            virtual void visitSpans(std::function<void(TopicId, size_t, size_t)> visitor) const = 0;
+            virtual void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter,
+                std::function<void(TopicId, size_t, size_t)> visitor) const = 0;
 
             virtual ~Entry() = default;
         };

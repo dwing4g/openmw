@@ -1,6 +1,7 @@
 ﻿■ OpenMW 中文支持版本 ■
 
 此OpenMW汉化版本的程序遵照GPL协议开源: https://github.com/dwing4g/openmw
+OpenMW原版官方网站: https://openmw.org/
 
 ■ 首次运行说明(必读)
 1. 首先确保操作系统是 Windows 7 以上, 必须是 x64 版本, 不支持32位的 Windows.
@@ -42,6 +43,16 @@
 4. 如果需要编译 MyGUI, 需要先下载编译FreeType, 然后使用命令: cmake -DMYGUI_RENDERSYSTEM=1 -DFREETYPE_INCLUDE_DIRS=... -DFREETYPE_LIBRARY=...
 
 ■ 汉化版的ChangeLog:
+
+● 2022-10-31 v6
+1. openmw: 运行时对可能遗漏的关键词进行无用消除,只保留有用的关键词
+2. scripts: 改进 check_topic.lua 排除任务的关键词补充
+3. files: 补充 openmw_reset.cfg
+4. launcher,wizard: 部分界面汉化
+5. openmw: 日志中的topic索引支持汉字拼音首字母,找不到对应字母的topic归类到"V"字母中
+6. openmw: 改进修正大字号时物品数量的显示
+7. openmw: 修正某些语言区域启动游戏弹出"unknown error"的bug
+8. openmw: 动态替换显示的CELL名,不再需要汉化CELL条目
 
 ● 2022-10-24 v5
 1. files: 快捷安装/重置配置的脚本 reset_cfg.bat 及默认配置文件 *_reset.cfg

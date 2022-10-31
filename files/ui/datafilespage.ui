@@ -21,7 +21,7 @@
      </property>
      <widget class="QWidget" name="dataTab">
       <attribute name="title">
-       <string>Content Files</string>
+       <string>主文件与插件</string>
       </attribute>
       <layout class="QGridLayout" name="dataTabLayout">
        <item row="0" column="0">
@@ -38,7 +38,7 @@
      </widget>
      <widget class="QWidget" name="dirTab">
       <attribute name="title">
-       <string>Data Directories</string>
+       <string>游戏目录</string>
       </attribute>
       <layout class="QGridLayout" name="dirTabLayout">
        <item row="0" column="0" rowspan="26">
@@ -54,7 +54,7 @@
           <string>Scan directories for likely data directories and append them at the end of the list.</string>
          </property>
          <property name="text">
-          <string>Append</string>
+          <string>添加</string>
          </property>
         </widget>
        </item>
@@ -64,7 +64,7 @@
           <string>Scan directories for likely data directories and insert them above the selected position</string>
          </property>
          <property name="text">
-          <string>Insert Above</string>
+          <string>插入</string>
          </property>
         </widget>
        </item>
@@ -74,7 +74,7 @@
           <string>Move selected directory one position up</string>
          </property>
          <property name="text">
-          <string>Move Up</string>
+          <string>上移</string>
          </property>
         </widget>
        </item>
@@ -84,7 +84,7 @@
           <string>Move selected directory one position down</string>
          </property>
          <property name="text">
-          <string>Move Down</string>
+          <string>下移</string>
          </property>
         </widget>
        </item>
@@ -94,7 +94,7 @@
           <string>Remove selected directory</string>
          </property>
          <property name="text">
-          <string>Remove</string>
+          <string>移除</string>
          </property>
         </widget>
        </item>
@@ -115,7 +115,7 @@
      </widget>
      <widget class="QWidget" name="archiveTab">
       <attribute name="title">
-       <string>Archive Files</string>
+       <string>资源文件</string>
       </attribute>
       <layout class="QGridLayout" name="archiveTabLayout">
        <item row="0" column="0" rowspan="26">
@@ -131,7 +131,7 @@
           <string>Move selected archive one position up</string>
          </property>
          <property name="text">
-          <string>Move Up</string>
+          <string>上移</string>
          </property>
         </widget>
        </item>
@@ -141,7 +141,7 @@
           <string>Move selected archive one position down</string>
          </property>
          <property name="text">
-          <string>Move Down</string>
+          <string>下移</string>
          </property>
         </widget>
        </item>
@@ -156,7 +156,7 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Navigation Mesh Cache</string>
+       <string>导航网格缓存</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -170,7 +170,7 @@
             <string>Generate navigation mesh cache for all content. Will be used by the engine to make cell loading faster.</string>
            </property>
            <property name="text">
-            <string>Update</string>
+            <string>更新</string>
            </property>
           </widget>
          </item>
@@ -193,7 +193,7 @@
             <string>Cancel navigation mesh generation. Already processed data will be saved.</string>
            </property>
            <property name="text">
-            <string>Cancel</string>
+            <string>取消</string>
            </property>
           </widget>
          </item>
@@ -202,7 +202,7 @@
        <item>
         <widget class="QCheckBox" name="navMeshRemoveUnusedTilesCheckBox">
          <property name="text">
-          <string>Remove unused tiles</string>
+          <string>移除未使用的瓦片地图</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -214,7 +214,7 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Max size</string>
+            <string>最大值</string>
            </property>
           </widget>
          </item>
@@ -256,7 +256,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="title">
-      <string>Content List</string>
+      <string>内容列表</string>
      </property>
      <property name="flat">
       <bool>false</bool>
@@ -289,14 +289,14 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>Select a content list</string>
+         <string>选择一个内容列表</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QToolButton" name="newProfileButton">
         <property name="toolTip">
-         <string>New Content List</string>
+         <string>新建内容列表</string>
         </property>
         <property name="text">
          <string>&amp;New Content List</string>
@@ -309,10 +309,10 @@
       <item>
        <widget class="QToolButton" name="cloneProfileButton">
         <property name="toolTip">
-         <string>Clone Content List</string>
+         <string>复制内容列表</string>
         </property>
         <property name="text">
-         <string>Clone Content List</string>
+         <string>复制内容列表</string>
         </property>
         <property name="autoRaise">
          <bool>true</bool>
@@ -322,10 +322,10 @@
       <item>
        <widget class="QToolButton" name="deleteProfileButton">
         <property name="toolTip">
-         <string>Delete Content List</string>
+         <string>删除内容列表</string>
         </property>
         <property name="text">
-         <string>Delete Content List</string>
+         <string>删除内容列表</string>
         </property>
         <property name="autoRaise">
          <bool>true</bool>
@@ -343,10 +343,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>New Content List</string>
+    <string>新建内容列表</string>
    </property>
    <property name="toolTip">
-    <string>New Content List</string>
+    <string>新建内容列表</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -359,10 +359,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Clone Content List</string>
+    <string>复制内容列表</string>
    </property>
    <property name="toolTip">
-    <string>Clone Content List</string>
+    <string>复制内容列表</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -378,10 +378,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Delete Content List</string>
+    <string>删除内容列表</string>
    </property>
    <property name="toolTip">
-    <string>Delete Content List</string>
+    <string>删除内容列表</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -392,12 +392,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Check Selection</string>
+    <string>检查选择</string>
    </property>
   </action>
   <action name="uncheckAction">
    <property name="text">
-    <string>Uncheck Selection</string>
+    <string>取消选择</string>
    </property>
   </action>
   <action name="refreshDataFilesAction">
@@ -407,10 +407,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Refresh Data Files</string>
+    <string>刷新Data文件夹</string>
    </property>
    <property name="toolTip">
-    <string>Refresh Data Files</string>
+    <string>刷新Data文件夹</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>

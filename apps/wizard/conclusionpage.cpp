@@ -1,4 +1,4 @@
-#include "conclusionpage.hpp"
+﻿#include "conclusionpage.hpp"
 
 #include <QDebug>
 
@@ -37,22 +37,22 @@ void Wizard::ConclusionPage::initializePage()
         if (field(QLatin1String("installation.retailDisc")).toBool() == true)
         {
             textLabel->setText(
-                tr("<html><head/><body><p>The OpenMW Wizard successfully installed Morrowind on your computer.</p> \
-                                  <p>Click Finish to close the Wizard.</p></body></html>"));
+                tr("<html><head/><body><p>OpenMW 向导成功在你的电脑安装了晨风。</p> \
+                                  <p>点击完成(Finish)关闭向导。</p></body></html>"));
         }
         else
         {
             textLabel->setText(tr(
-                "<html><head/><body><p>The OpenMW Wizard successfully modified your existing Morrowind installation.</p> \
-                                  <p>Click Finish to close the Wizard.</p></body></html>"));
+                "<html><head/><body><p>OpenMW 向导成功修改了已经安装的晨风。</p> \
+                                  <p>点击完成(Finish)关闭向导。</p></body></html>"));
         }
     }
     else
     {
         textLabel->setText(
-            tr("<html><head/><body><p>The OpenMW Wizard failed to install Morrowind on your computer.</p> \
-                              <p>Please report any bugs you might have encountered to our \
-                              <a href=\"https://gitlab.com/OpenMW/openmw/issues\">bug tracker</a>.<br/>Make sure to include the installation log.</p><br/></body></html>"));
+            tr("<html><head/><body><p>OpenMW 向导无法在你的电脑安装晨风。</p> \
+                              <p>请把你遇到的任何 bugs 报告给我们的 \
+                              <a href=\"https://gitlab.com/OpenMW/openmw/issues\">bug 跟踪器</a>.<br/>确保提供安装日志。</p><br/></body></html>"));
     }
 }
 

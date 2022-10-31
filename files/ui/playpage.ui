@@ -99,7 +99,7 @@
 </string>
         </property>
         <property name="text">
-         <string>Current Content List:</string>
+         <string>当前内容列表：</string>
         </property>
        </widget>
       </item>
@@ -162,7 +162,7 @@
 }</string>
         </property>
         <property name="text">
-         <string>Play</string>
+         <string>玩</string>
         </property>
        </widget>
       </item>

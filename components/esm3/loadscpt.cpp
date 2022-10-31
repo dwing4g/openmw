@@ -118,7 +118,7 @@ namespace ESM
                     {
                         std::stringstream ss;
                         ss << "Script data size defined in SCHD subrecord does not match size of SCDT subrecord";
-                        ss << "\n  File: " << esm.getName();
+                        ss << "\n  File: " << (const char*)esm.getName().u8string().c_str();
                         ss << "\n  Offset: 0x" << std::hex << esm.getFileOffset();
                         Log(Debug::Verbose) << ss.str();
                     }

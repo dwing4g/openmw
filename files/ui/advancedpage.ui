@@ -18,7 +18,7 @@
      </property>
      <widget class="QWidget" name="GameMechanics">
       <attribute name="title">
-       <string>Game Mechanics</string>
+       <string>游戏机制</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
@@ -26,130 +26,130 @@
          <item row="3" column="1">
           <widget class="QCheckBox" name="enchantedWeaponsMagicalCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make enchanted weaponry without Magical flag bypass normal weapons resistance, like in Morrowind.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;让没有施法标签的附魔武器同样能对免疫普通武器的敌人造成伤害，就像原版晨风中一样。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Enchanted weapons are magical</string>
+            <string>任何附魔都可击中物理免疫</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
           <widget class="QCheckBox" name="swimUpwardCorrectionCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes player swim a bit upward from the line of sight. Applies only in third person mode. Intended to make simpler swimming without diving.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使玩家的视线在游泳时往上一点，旨在使游泳更简单，不需要潜水。只适用于第三人称模式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Swim upward correction</string>
+            <string>水面游泳视角抬高</string>
            </property>
           </widget>
          </item>
          <item row="6" column="1">
           <widget class="QCheckBox" name="avoidCollisionsCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled NPCs apply evasion maneuver to avoid collisions with others.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如果启用，NPC会采用回避动作以避免与他人相撞。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>NPCs avoid collisions</string>
+            <string>NPC避开碰撞</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
           <widget class="QCheckBox" name="enableNavigatorCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable navigator. When enabled background threads are started to build nav mesh for world geometry. Pathfinding system uses nav mesh to build paths. When disabled only pathgrid is used to build paths. Single-core CPU systems may have big performance impact on exiting interior location and moving across exterior world. May slightly affect performance on multi-core CPU systems. Multi-core CPU systems may have different latency for nav mesh update depending on other settings and system performance. Moving across external world, entering/exiting location produce nav mesh update. NPC and creatures may not be able to find path before nav mesh is built around them. Try to disable this if you want to have old fashioned AI which doesn’t know where to go when you stand behind that stone and casting a firebolt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用导航网格。当启用时，后台线程开始为世界的几何建模建立导航网格。寻路系统使用导航网格来建立路径。当禁用时，只有瓦块地图被用来构建路径。单核CPU系统在离开内部位置和在外部世界移动时可能会有很大的性能影响。可能对多核CPU系统的性能略有影响。多核CPU系统可能对导航网格的更新有不同的延迟，这取决于其他设置和系统性能。在外部世界移动，进入/离开室内外会导致导航网格的更新。NPC和生物在导航网格建立之前可能无法找到路径。如果你想让老式的人工智能在你站在石头后面施放火焰的时候不知道该往哪里走原地罚站的话，你可以禁用这个功能。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Build nav mesh for world geometry</string>
+            <string>为世界的几何形状建立导航网格</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
           <widget class="QCheckBox" name="toggleSneakCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting causes the behavior of the sneak key (bound to Ctrl by default) to toggle sneaking on and off rather than requiring the key to be held down while sneaking. Players that spend significant time sneaking may find the character easier to control with this option enabled. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;这个设置使潜行键（默认与Ctrl绑定）改为切换潜行与非潜行，而不是要求在潜行时按住该键。花大量时间潜行的玩家可能会发现启用这个选项后角色更容易控制。 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Toggle sneak</string>
+            <string>按键切换潜行</string>
            </property>
           </widget>
          </item>
          <item row="5" column="0">
           <widget class="QCheckBox" name="permanentBarterDispositionChangeCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make disposition change of merchants caused by trading permanent.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使交易后商人永远不会刷新玩家卖掉的东西也永远不会进货。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Permanent barter disposition changes</string>
+            <string>商人物品保持不变</string>
            </property>
           </widget>
          </item>
          <item row="6" column="0">
           <widget class="QCheckBox" name="stealingFromKnockedOutCheckBox">
           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make stealing items from NPCs that were knocked down possible during combat.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使在战斗中从被击倒的NPC那里偷取物品成为可能。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-            <string>Always allow stealing from knocked out actors</string>
+            <string>始终能够从被击倒的生物或NPC身上偷窃物品</string>
           </property>
           </widget>
          </item>
          <item row="0" column="1">
           <widget class="QCheckBox" name="normaliseRaceSpeedCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't use race weight in NPC movement speed calculations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;在NPC的移动速度计算中不计种族重量。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Racial variation in speed fix</string>
+            <string>固定的种族速度差异</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="uncappedDamageFatigueCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make Damage Fatigue magic effect uncapped like Drain Fatigue effect.&lt;/p&gt;&lt;p&gt;This means that unlike Morrowind you will be able to knock down actors using this effect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使疲劳减损的法术效果像耗尽疲劳的效果一样不设上限。&lt;/p&gt;&lt;p&gt;这意味着不同于晨风，你可以用这种魔法效果击倒NPC。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Uncapped Damage Fatigue</string>
+            <string>无上限的疲劳减损</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QCheckBox" name="canLootDuringDeathAnimationCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, the player is allowed to loot actors (e.g. summoned creatures) during death animation, if they are not in combat. In this case we have to increment death counter and run disposed actor's script instantly.&lt;/p&gt;&lt;p&gt;If this setting is false, player has to wait until end of death animation in all cases. Makes using of summoned creatures exploit (looting summoned Dremoras and Golden Saints for expensive weapons) a lot harder. Conflicts with mannequin mods, which use SkipAnim to prevent end of death animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如果这个设置启用，玩家可以在敌人死亡动画中搜刮尸体（包括召唤的生物），前提是他们不在战斗中。在这种情况下，我们必须增加死亡计数器，并立即运行处置敌人的脚本。&lt;/p&gt;&lt;p&gt;如果这个设置禁用，玩家在任何情况下都必须等到死亡动画结束。使得利用召唤生物的BUG来搜刮额外的物品变得更加困难。与人体模型MOD冲突，这个mod使用跳过动画的方式来防止死亡动画的结束。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Can loot during death animation</string>
+            <string>可以在死亡动画中搜刮尸体</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QCheckBox" name="rebalanceSoulGemValuesCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make the value of filled soul gems dependent only on soul magnitude.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;让填充的灵魂石的价值只取决于其中灵魂的大小。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Soulgem values rebalance</string>
+            <string>灵魂石价值的重新平衡</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QCheckBox" name="followersAttackOnSightCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make player followers and escorters start combat with enemies who have started combat with them or the player. Otherwise they wait for the enemies or the player to do an attack first.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;让玩家的追随者和护卫者们立即与进入战斗状态的敌人进行战斗。否则他们会等待敌人或玩家先进行攻击。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Followers defend immediately</string>
+            <string>跟随者立即战斗</string>
            </property>
           </widget>
          </item>
          <item row="4" column="1">
           <widget class="QCheckBox" name="classicReflectedAbsorbSpellsCheckBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Effects of reflected Absorb spells are not mirrored -- like in Morrowind.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;反射的吸收法术的效果不会被再次反射出来--就像在原版晨风中一样。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Classic reflected Absorb spells behavior</string>
+            <string>经典的法术吸收</string>
            </property>
           </widget>
          </item>
@@ -168,30 +168,30 @@
        <item>
         <widget class="QCheckBox" name="allowNPCToFollowOverWaterSurfaceCheckBox">
          <property name="toolTip">
-          <string>Give NPC an ability to swim over the water surface when they follow other actor independently from their ability to swim. Has effect only when nav mesh building is enabled.</string>
+          <string>当NPC跟随时，给予他们在水面上游泳的能力，这与他们的游泳能力无关。只有在启用导航网格构建时才有效果。</string>
          </property>
          <property name="text">
-          <string>Always allow NPC to follow over water surface</string>
+          <string>始终允许NPC在水面上跟随</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="requireAppropriateAmmunitionCheckBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allow non-standard ammunition solely to bypass normal weapon resistance or weakness.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;只允许特殊的箭矢能够正常攻击物理免疫或者物理虚弱的目标。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Only appropriate ammunition bypasses normal weapon resistance</string>
+          <string>只允许特殊箭矢攻击物理免疫与虚弱</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="unarmedCreatureAttacksDamageArmorCheckBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes unarmed creature attacks able to reduce armor condition, just as attacks from NPCs and armed creatures.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使得徒手进攻能够损害盔甲耐久。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Unarmed creature attacks damage armor</string>
+          <string>徒手进攻对盔甲造成损害</string>
          </property>
         </widget>
        </item>
@@ -200,7 +200,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="unarmedFactorsStrengthLabel">
            <property name="text">
-            <string>Factor strength into hand-to-hand combat:</string>
+            <string>在徒手战斗中考虑力量因素：</string>
            </property>
           </widget>
          </item>
@@ -211,17 +211,17 @@
            </property>
            <item>
             <property name="text">
-             <string>Off</string>
+             <string>禁用</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Affect werewolves</string>
+             <string>包括狼人</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Do not affect werewolves</string>
+             <string>不影响狼人</string>
             </property>
            </item>
           </widget>
@@ -232,7 +232,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many threads will be spawned to compute physics update in the background. A value of 0 means that the update will be performed in the main thread.&lt;/p&gt;&lt;p&gt;A value greater than 1 requires the Bullet library be compiled with multithreading support.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Background physics threads:</string>
+            <string>背景物理线程：</string>
            </property>
           </widget>
          </item>
@@ -242,31 +242,31 @@
          <item row="2" column="0">
           <widget class="QLabel" name="labelActorCollisionShapeType">
            <property name="text">
-            <string>Actor collision shape type:</string>
+            <string>生物与NPC碰撞：</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QComboBox" name="actorCollisonShapeTypeComboBox">
            <property name="toolTip">
-            <string>Collision is used for both physics simulation and navigation mesh generation for pathfinding. Cylinder gives the best consistency bewtween available navigation paths and ability to move by them. Changing this value affects navigation mesh generation therefore navigation mesh disk cache generated for one value will not be useful with another.</string>
+            <string>碰撞被用于物理模拟和导航网格的生成，用于寻路。圆柱体在可用的导航路径和通过它们移动的能力之间提供了最好的一致性。改变这个值会影响到导航网格的生成，因此为一个值生成的导航网格磁盘缓存在另一个值上将没有用处。</string>
            </property>
            <property name="currentText">
-            <string>Axis-aligned bounding box</string>
+            <string>轴线对齐的碰撞箱</string>
            </property>
            <item>
             <property name="text">
-             <string>Axis-aligned bounding box</string>
+             <string>轴线对齐的碰撞箱</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Rotating box</string>
+             <string>旋转式碰撞箱</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Cylinder</string>
+             <string>圆柱体碰撞箱</string>
             </property>
            </item>
           </widget>
@@ -290,7 +290,7 @@
      </widget>
      <widget class="QWidget" name="Visuals">
       <attribute name="title">
-       <string>Visuals</string>
+       <string>视觉效果</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
@@ -311,46 +311,46 @@
            <item>
             <widget class="QGroupBox" name="animationsGroup">
              <property name="title">
-              <string>Animations</string>
+              <string>动画</string>
              </property>
              <layout class="QGridLayout" name="animationsLayout">
               <item row="0" column="0">
                <widget class="QCheckBox" name="magicItemAnimationsCheckBox">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use casting animations for magic items, just as for spells.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;魔法物品有前摇动画，就像一般的魔法一样。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Use magic item animation</string>
+                 <string>启用魔法道具前摇动画</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
                <widget class="QCheckBox" name="smoothMovementCheckBox">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes NPCs and player movement more smooth. Recommended to use with &quot;turn to movement direction&quot; enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使得NPC和玩家的移动更加丝滑。建议在启用&quot;移动时面向移动方向&quot;时启用。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Smooth movement</string>
+                 <string>平滑的运动</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
                <widget class="QCheckBox" name="animSourcesCheckBox">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Load per-group KF-files and skeleton files from Animations folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从动画文件夹中加载每一组KF文件和骨架文件。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Use additional animation sources</string>
+                 <string>使用额外的动画资源</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
                <widget class="QCheckBox" name="turnToMovementDirectionCheckBox">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Affects side and diagonal movement. Enabling this setting makes movement more realistic.&lt;/p&gt;&lt;p&gt;If disabled then the whole character's body is pointed to the direction of view. Diagonal movement has no special animation and causes sliding.&lt;/p&gt;&lt;p&gt;If enabled then the character turns lower body to the direction of movement. Upper body is turned partially. Head is always pointed to the direction of view. In combat mode it works only for diagonal movement. In non-combat mode it changes straight right and straight left movement as well. Also turns the whole body up or down when swimming according to the movement direction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;影响左右和斜向的移动。启用这个设置可以使运动更加真实。&lt;/p&gt;&lt;p&gt;如果禁用，那么整个角色的身体就会始终面向镜头的方向。斜向运动也没有特殊的动画，会导致在地上滑行。&lt;/p&gt;&lt;p&gt;如果启用，则角色将下半身转向运动方向。上半身部分转动。头部总是面向镜头的方向。在战斗模式下，它只适用于斜向运动。在非战斗模式下，它也能改变左右运动。在游泳时也会根据运动方向将整个身体向上或向下转动。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Turn to movement direction</string>
+                 <string>移动时面向移动方向</string>
                 </property>
                </widget>
               </item>
@@ -365,10 +365,10 @@
                    <bool>false</bool>
                   </property>
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render holstered weapons (with quivers and scabbards), requires modded assets.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;渲染带鞘的武器（带箭筒和刀鞘），需要额外的mod资源。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Weapon sheathing</string>
+                   <string>武器护套</string>
                   </property>
                  </widget>
                 </item>
@@ -378,10 +378,10 @@
                    <bool>false</bool>
                   </property>
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render holstered shield, requires modded assets.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;渲染带护套的盾牌，需要额外的mod资源。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Shield sheathing</string>
+                   <string>盾牌护套</string>
                   </property>
                  </widget>
                 </item>
@@ -393,7 +393,7 @@
            <item>
             <widget class="QGroupBox" name="shadersGroup">
              <property name="title">
-              <string>Shaders</string>
+              <string>着色器</string>
              </property>
              <layout class="QGridLayout" name="shaderLayout">
               <item row="0" column="0">
@@ -404,7 +404,7 @@
                   If this option is disabled, normal maps are only used if they are explicitly listed within the mesh file (.nif or .osg file). Affects objects.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Auto use object normal maps</string>
+                 <string>自动使用物体法线贴图</string>
                 </property>
                </widget>
               </item>
@@ -414,7 +414,7 @@
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;See 'auto use object normal maps'. Affects terrain.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Auto use terrain normal maps</string>
+                 <string>自动使用地形法线贴图</string>
                 </property>
                </widget>
               </item>
@@ -428,7 +428,7 @@
                   (.osg file, not supported in .nif files). Affects objects.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Auto use object specular maps</string>
+                 <string>自动使用物体镜面图</string>
                 </property>
                </widget>
               </item>
@@ -438,7 +438,7 @@
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a file with pattern 'terrain specular map pattern' exists, use that file as a 'diffuse specular' map. The texture must contain the layer colour in the RGB channel (as usual), and a specular multiplier in the alpha channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Auto use terrain specular maps</string>
+                 <string>自动使用地形镜面图</string>
                 </property>
                </widget>
               </item>
@@ -451,7 +451,7 @@
                   &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Bump/reflect map local lighting</string>
+                 <string>凹凸不平/反射贴图的局部照明</string>
                 </property>
                </widget>
               </item>
@@ -461,7 +461,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allows MSAA to work with alpha-tested meshes, producing better-looking edges without pixelation. Can negatively impact performance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>Use anti-alias alpha testing</string>
+                  <string>使用测试版抗锯齿阴影</string>
                  </property>
                 </widget>
                </item>
@@ -471,7 +471,7 @@
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables soft particles for particle effects. This technique softens the intersection between individual particles and other opaque geometry by blending between them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Soft Particles</string>
+                 <string>软粒子</string>
                 </property>
                </widget>
               </item>
@@ -491,7 +491,7 @@
            <item>
             <widget class="QGroupBox" name="fogGroup">
              <property name="title">
-              <string>Fog</string>
+              <string>雾气</string>
              </property>
              <layout class="QGridLayout" name="fogLayout">
                 <item row="0" column="0">
@@ -501,7 +501,7 @@
                     This setting makes the fog use the actual eye point distance (or so called Euclidean distance) to calculate the fog, which makes the fog look less artificial, especially if you have a wide FOV.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                    <string>Radial fog</string>
+                    <string>雾气半径</string>
                   </property>
                   </widget>
                 </item>
@@ -511,7 +511,7 @@
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use exponential fog formula. By default, linear fog is used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                    <string>Exponential fog</string>
+                    <string>指数式雾气</string>
                   </property>
                   </widget>
                 </item>
@@ -521,7 +521,7 @@
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reduce visibility of clipping plane by blending objects with the sky.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="text">
-                    <string>Sky blending</string>
+                    <string>天空雾气混合</string>
                     </property>
                   </widget>
                 </item>
@@ -531,7 +531,7 @@
                       <bool>false</bool>
                     </property>
                     <property name="text">
-                      <string>Sky blending start</string>
+                      <string>混合边界</string>
                     </property>
                     <property name="toolTip">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The fraction of the maximum distance at which blending with the sky starts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -563,7 +563,7 @@
            <item>
             <widget class="QGroupBox" name="terrainGroup">
              <property name="title">
-              <string>Terrain</string>
+              <string>地形</string>
              </property>
              <layout class="QGridLayout" name="terrainLayout">
               <item row="0" column="0">
@@ -571,14 +571,14 @@
                 <item>
                  <widget class="QLabel" name="viewingDistanceLabel">
                   <property name="text">
-                   <string>Viewing distance</string>
+                   <string>可视距离</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="viewingDistanceComboBox">
                   <property name="suffix">
-                   <string> Cells</string>
+                   <string>区块</string>
                   </property>
                   <property name="minimum">
                    <double>0.000000000000000</double>
@@ -598,7 +598,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controls how large an object must be to be visible in the scene. The object’s size is divided by its distance to the camera and the result of the division is compared with this value. The smaller this value is, the more objects you will see in the scene.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Object paging min size</string>
+                   <string>对象分页最小尺寸</string>
                   </property>
                  </widget>
                 </item>
@@ -626,7 +626,7 @@
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If true, use paging and LOD algorithms to display the entire terrain. If false, only display terrain of the loaded cells.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Distant land</string>
+                 <string>超远视野</string>
                 </property>
                </widget>
               </item>
@@ -641,7 +641,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use object paging for active cells grid.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Active grid object paging</string>
+                   <string>活动网格对象分页</string>
                   </property>
                  </widget>
                 </item>
@@ -653,7 +653,7 @@
            <item>
             <widget class="QGroupBox" name="miscGroup">
              <property name="title">
-              <string>Models</string>
+              <string>模型</string>
              </property>
              <layout class="QGridLayout" name="miscLayout">
               <item row="0" column="0">
@@ -662,7 +662,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, supporting models will make use of day night switch nodes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Day night switch nodes</string>
+                 <string>昼夜切换节点</string>
                 </property>
                </widget>
               </item>
@@ -672,7 +672,7 @@
            <item>
             <widget class="QGroupBox" name="postprocessGroup">
              <property name="title">
-              <string>Post Processing</string>
+              <string>后期处理</string>
              </property>
              <layout class="QGridLayout" name="postprocessLayout">
               <item row="0" column="0">
@@ -681,7 +681,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, post processing will be enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Enable post processing</string>
+                 <string>启用后期处理</string>
                 </property>
                </widget>
               </item>
@@ -699,7 +699,7 @@
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Re-render transparent objects with forced alpha clipping.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
-                        <string>Transparent postpass</string>
+                        <string>透明的后期通道</string>
                       </property>
                     </widget>
                   </item>
@@ -714,7 +714,7 @@
                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controls how much eye adaptation can change from frame to frame. Smaller values makes for slower transitions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
-                            <string>Auto exposure speed</string>
+                            <string>自动曝光速度</string>
                           </property>
                         </widget>
                       </item>
@@ -765,7 +765,7 @@
      </widget>
      <widget class="QWidget" name="Audio">
       <attribute name="title">
-       <string>Audio</string>
+       <string>音频</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
@@ -773,10 +773,10 @@
          <item>
           <widget class="QLabel" name="audioDeviceSelectorLabel">
            <property name="toolTip">
-            <string>Select your preferred audio device.</string>
+            <string>选择你喜欢的音频设备</string>
            </property>
            <property name="text">
-            <string>Audio Device</string>
+            <string>音频设备</string>
            </property>
           </widget>
          </item>
@@ -799,7 +799,7 @@
            </property>
            <item>
             <property name="text">
-             <string>Default</string>
+             <string>默认</string>
             </property>
            </item>
           </widget>
@@ -814,7 +814,7 @@
             <string>This setting controls HRTF, which simulates 3D sound on stereo systems.</string>
            </property>
            <property name="text">
-            <string>HRTF</string>
+            <string>HRTF功能</string>
            </property>
           </widget>
          </item>
@@ -837,17 +837,17 @@
            </property>
            <item>
             <property name="text">
-             <string>Automatic</string>
+             <string>自动</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Off</string>
+             <string>禁用</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>On</string>
+             <string>启用</string>
             </property>
            </item>
           </widget>
@@ -862,7 +862,7 @@
             <string>Select your preferred HRTF profile.</string>
            </property>
            <property name="text">
-            <string>HRTF Profile</string>
+            <string>HRTF预设</string>
            </property>
           </widget>
          </item>
@@ -885,7 +885,7 @@
            </property>
            <item>
             <property name="text">
-             <string>Default</string>
+             <string>默认</string>
             </property>
            </item>
           </widget>
@@ -909,7 +909,7 @@
      </widget>
      <widget class="QWidget" name="Interface">
       <attribute name="title">
-       <string>Interface</string>
+       <string>界面设置</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
@@ -921,22 +921,22 @@
            </property>
            <item>
             <property name="text">
-             <string>Off</string>
+             <string>禁用</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Tool Tip Only</string>
+             <string>仅限工具图标</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Crosshair Only</string>
+             <string>仅限十字准星</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>Tool Tip and Crosshair</string>
+             <string>工具图标与十字准星</string>
             </property>
            </item>
           </widget>
@@ -982,7 +982,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting scales GUI windows. A value of 1.0 results in the normal scale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>GUI scaling factor</string>
+            <string>UI大小设置</string>
            </property>
           </widget>
          </item>
@@ -992,7 +992,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the remaining duration of magic effects and lights if this setting is true. The remaining duration is displayed in the tooltip by hovering over the magical effect. &lt;/p&gt;&lt;p&gt;The default value is false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Show effect duration</string>
+            <string>显示buff持续时间</string>
            </property>
           </widget>
          </item>
@@ -1002,7 +1002,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, dialogue topics will have a different color if the topic is specific to the NPC you're talking to or the topic was previously seen. Color can be changed in settings.cfg.&lt;/p&gt;&lt;p&gt;The default value is false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Change dialogue topic color</string>
+            <string>改变对话关键词的颜色</string>
            </property>
           </widget>
          </item>
@@ -1012,7 +1012,7 @@
             <string>Size of characters in game texts.</string>
            </property>
            <property name="text">
-            <string>Font size</string>
+            <string>字体大小</string>
            </property>
           </widget>
          </item>
@@ -1022,7 +1022,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable zooming on local and global maps.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Can zoom on maps</string>
+            <string>启用背包地图缩放</string>
            </property>
           </widget>
          </item>
@@ -1032,7 +1032,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, containers supporting graphic herbalism will do so instead of opening the menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Enable graphic herbalism</string>
+            <string>启用图形化的炼金材料</string>
            </property>
           </widget>
          </item>
@@ -1042,7 +1042,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, damage bonus of arrows and bolts will be shown on item tooltip.&lt;/p&gt;&lt;p&gt;The default value is false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Show projectile damage</string>
+            <string>显示投射物伤害</string>
            </property>
           </widget>
          </item>
@@ -1052,7 +1052,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this setting is true, melee weapons reach and speed will be shown on item tooltip.&lt;/p&gt;&lt;p&gt;The default value is false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Show melee info</string>
+            <string>显示近战武器信息</string>
            </property>
           </widget>
          </item>
@@ -1062,14 +1062,14 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stretch menus, load screens, etc. to the window aspect ratio.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Stretch menu background</string>
+            <string>可拉伸的菜单背景</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="showOwnedLabel">
            <property name="text">
-            <string>Show owned objects</string>
+            <string>显示所有权对象</string>
            </property>
           </widget>
          </item>
@@ -1079,7 +1079,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether or not the chance of success will be displayed in the enchanting menu.&lt;/p&gt;&lt;p&gt;The default value is false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Show enchant chance</string>
+            <string>显示附魔成功率</string>
            </property>
           </widget>
          </item>
@@ -1102,7 +1102,7 @@
      </widget>
      <widget class="QWidget" name="BugFixes">
       <attribute name="title">
-       <string>Bug Fixes</string>
+       <string>BUG修复</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
@@ -1111,7 +1111,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prevents merchants from equipping items that are sold to them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Merchant equipping fix</string>
+          <string>商人不再装备玩家卖掉的物品</string>
          </property>
         </widget>
        </item>
@@ -1121,7 +1121,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Trainers now only choose which skills to train using their base skill points, allowing mercantile improving effects to be used without making mercantile an offered skill.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Trainers choose their training skills based on their base skill points</string>
+          <string>训练师根据他们自身的技能点来选择技能训练</string>
          </property>
         </widget>
        </item>
@@ -1142,13 +1142,13 @@
      </widget>
      <widget class="QWidget" name="Miscellaneous">
       <attribute name="title">
-       <string>Miscellaneous</string>
+       <string>杂项</string>
       </attribute>
       <layout class="QVBoxLayout" name="scrollAreaVerticalLayout">
        <item>
         <widget class="QGroupBox" name="savesGroup">
          <property name="title">
-          <string>Saves</string>
+          <string>存档</string>
          </property>
          <layout class="QVBoxLayout" name="savesGroupVerticalLayout">
           <item>
@@ -1157,7 +1157,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting determines whether the amount of the time the player has spent playing will be displayed for each saved game in the Load menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Add &quot;Time Played&quot; to saves</string>
+             <string>根据&quot;游玩时间&quot;自动存档</string>
             </property>
            </widget>
           </item>
@@ -1166,7 +1166,7 @@
             <item>
              <widget class="QLabel" name="maximumQuicksavesLabel">
               <property name="text">
-               <string>Maximum Quicksaves</string>
+               <string>最小快速存档时间</string>
               </property>
              </widget>
             </item>
@@ -1185,7 +1185,7 @@
        <item>
         <widget class="QGroupBox" name="otherGroup">
          <property name="title">
-          <string>Other</string>
+          <string>其他</string>
          </property>
          <layout class="QVBoxLayout" name="otherGroupVerticalLayout">
           <item>
@@ -1193,7 +1193,7 @@
             <item>
              <widget class="QLabel" name="screenshotFormatLabel">
               <property name="text">
-               <string>Screenshot Format</string>
+               <string>屏幕截图格式</string>
               </property>
              </widget>
             </item>
@@ -1221,7 +1221,7 @@
           <item>
            <widget class="QCheckBox" name="notifyOnSavedScreenshotCheckBox">
             <property name="text">
-             <string>Notify on saved screenshot</string>
+             <string>保存截图时进行通知</string>
             </property>
            </widget>
           </item>
@@ -1245,13 +1245,13 @@
      </widget>
      <widget class="QWidget" name="Testing">
       <attribute name="title">
-       <string>Testing</string>
+       <string>测试性</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
         <widget class="QLabel" name="testingLabel">
          <property name="text">
-          <string>These settings are intended for testing mods and will cause issues if used for normal gameplay.</string>
+          <string>这些设置是为了测试MOD，如果用于正常游戏，会导致问题。</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -1271,14 +1271,14 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenMW will capture control of the cursor if this setting is true.&lt;/p&gt;&lt;p&gt;In “look mode”, OpenMW will center the cursor regardless of the value of this setting (since the cursor/crosshair is always centered in the OpenMW window). However, in GUI mode, this setting determines the behavior when the cursor is moved outside the OpenMW window. If true, the cursor movement stops at the edge of the window preventing access to other applications. If false, the cursor is allowed to move freely on the desktop.&lt;/p&gt;&lt;p&gt;This setting does not apply to the screen where escape has been pressed, where the cursor is never captured. Regardless of this setting “Alt-Tab” or some other operating system dependent key sequence can be used to allow the operating system to regain control of the mouse cursor. This setting interacts with the minimize on focus loss setting by affecting what counts as a focus loss. Specifically on a two-screen configuration it may be more convenient to access the second screen with setting disabled.&lt;/p&gt;&lt;p&gt;Note for developers: it’s desirable to have this setting disabled when running the game in a debugger, to prevent the mouse cursor from becoming unusable when the game pauses on a breakpoint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Grab cursor</string>
+          <string>抓取光标</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="skipMenuCheckBox">
          <property name="text">
-          <string>Skip menu and generate default character</string>
+          <string>跳过新手教程并生成默认角色</string>
          </property>
         </widget>
        </item>
@@ -1303,14 +1303,14 @@
          <item>
           <widget class="QLabel" name="startDefaultCharacterAtLabel">
            <property name="text">
-            <string>Start default character at</string>
+            <string>默认角色出生点</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="startDefaultCharacterAtField">
            <property name="placeholderText">
-            <string>default cell</string>
+            <string>默认地区</string>
            </property>
           </widget>
          </item>
@@ -1319,7 +1319,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Run script after startup:</string>
+          <string>在启动后运行脚本：</string>
          </property>
         </widget>
        </item>
@@ -1331,7 +1331,7 @@
          <item>
           <widget class="QPushButton" name="runScriptAfterStartupBrowseButton">
            <property name="text">
-            <string>Browse…</string>
+            <string>浏览…</string>
            </property>
           </widget>
          </item>

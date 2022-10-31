@@ -310,7 +310,9 @@ int wrapApplication(int (*innerApplication)(int argc, char* argv[]), int argc, c
     rawStderrMutex = std::make_unique<std::mutex>();
 
     int ret = 0;
+#if defined(NDEBUG)
     try
+#endif
     {
         Files::ConfigurationManager cfgMgr;
 
@@ -341,6 +343,7 @@ int wrapApplication(int (*innerApplication)(int argc, char* argv[]), int argc, c
         else
             ret = innerApplication(argc, argv);
     }
+#if defined(NDEBUG)
     catch (const std::exception& e)
     {
 #if (defined(__APPLE__) || defined(__linux) || defined(__unix) || defined(__posix))
@@ -352,6 +355,7 @@ int wrapApplication(int (*innerApplication)(int argc, char* argv[]), int argc, c
 
         ret = 1;
     }
+#endif
 
     // Restore cout and cerr
     std::cout.rdbuf(rawStdout->rdbuf());

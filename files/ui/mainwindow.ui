@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>OpenMW Launcher</string>
+   <string>OpenMW 启动器</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../launcher/launcher.qrc">
@@ -66,7 +66,7 @@
       <item>
        <widget class="QLabel" name="versionLabel">
         <property name="text">
-         <string>OpenMW version</string>
+         <string>OpenMW 版本</string>
         </property>
        </widget>
       </item>

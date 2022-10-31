@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Select directories you wish to add</string>
+   <string>选择你想添加的目录</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">

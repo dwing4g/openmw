@@ -1,4 +1,4 @@
-#include "settingspage.hpp"
+﻿#include "settingspage.hpp"
 
 #include <QDebug>
 #include <QDir>
@@ -111,13 +111,13 @@ void Launcher::SettingsPage::on_importerButton_clicked()
         {
             // File cannot be created
             QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Error writing OpenMW configuration file"));
+            msgBox.setWindowTitle(tr("写入 OpenMW 配置文件出错"));
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setText(
-                tr("<html><head/><body><p><b>Could not open or create %1 for writing </b></p> \
-                              <p>Please make sure you have the right permissions \
-                              and try again.</p></body></html>")
+                tr("<html><head/><body><p><b>无法打开或创建 %1</b></p> \
+                              <p>请确认你有相关权限\
+                              并再次尝试。</p></body></html>")
                     .arg(file.fileName()));
             msgBox.exec();
             return;
@@ -155,8 +155,8 @@ void Launcher::SettingsPage::on_importerButton_clicked()
 
 void Launcher::SettingsPage::on_browseButton_clicked()
 {
-    QString iniFile = QFileDialog::getOpenFileName(this, QObject::tr("Select configuration file"), QDir::currentPath(),
-        QString(tr("Morrowind configuration file (*.ini)")));
+    QString iniFile = QFileDialog::getOpenFileName(this, QObject::tr("选择配置文件"), QDir::currentPath(),
+        QString(tr("晨风配置文件 (*.ini)")));
 
     if (iniFile.isEmpty())
         return;
@@ -206,10 +206,10 @@ void Launcher::SettingsPage::importerFinished(int exitCode, QProcess::ExitStatus
         resetProgressBar();
 
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Importer finished"));
+        msgBox.setWindowTitle(tr("导入完成"));
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText(tr("Failed to import settings from INI file."));
+        msgBox.setText(tr("从 INI 文件导入设置失败。"));
         msgBox.exec();
     }
     else

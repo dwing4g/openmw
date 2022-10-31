@@ -1,4 +1,4 @@
-#include "datafilespage.hpp"
+﻿#include "datafilespage.hpp"
 #include "maindialog.hpp"
 
 #include <QDebug>
@@ -112,8 +112,8 @@ Launcher::DataFilesPage::DataFilesPage(Files::ConfigurationManager& cfg, Config:
     const QString encoding = mGameSettings.value("encoding", "win1252");
     mSelector->setEncoding(encoding);
 
-    mNewProfileDialog = new TextInputDialog(tr("New Content List"), tr("Content List name:"), this);
-    mCloneProfileDialog = new TextInputDialog(tr("Clone Content List"), tr("Content List name:"), this);
+    mNewProfileDialog = new TextInputDialog(tr("新内容列表"), tr("内容列表名:"), this);
+    mCloneProfileDialog = new TextInputDialog(tr("克隆内容列表"), tr("内容列表名:"), this);
 
     connect(mNewProfileDialog->lineEdit(), &LineEdit::textChanged, this, &DataFilesPage::updateNewProfileOkButton);
     connect(mCloneProfileDialog->lineEdit(), &LineEdit::textChanged, this, &DataFilesPage::updateCloneProfileOkButton);
@@ -143,13 +143,13 @@ void Launcher::DataFilesPage::buildView()
     QToolButton* refreshButton = mSelector->refreshButton();
 
     // tool buttons
-    ui.newProfileButton->setToolTip("Create a new Content List");
-    ui.cloneProfileButton->setToolTip("Clone the current Content List");
-    ui.deleteProfileButton->setToolTip("Delete an existing Content List");
+    ui.newProfileButton->setToolTip("创建一个内容列表");
+    ui.cloneProfileButton->setToolTip("克隆当前的内容列表");
+    ui.deleteProfileButton->setToolTip("删除已存在的内容列表");
 
     // combo box
     ui.profilesComboBox->addItem(mDefaultContentListName);
-    ui.profilesComboBox->setPlaceholderText(QString("Select a Content List..."));
+    ui.profilesComboBox->setPlaceholderText(QString("选择一个内容列表..."));
     ui.profilesComboBox->setCurrentIndex(ui.profilesComboBox->findText(QLatin1String(mDefaultContentListName)));
 
     // Add the actions to the toolbuttons
@@ -241,7 +241,7 @@ void Launcher::DataFilesPage::populateFileViews(const QString& contentModelName)
         // Display new content with green background
         if (mNewDataDirs.contains(currentDir))
         {
-            tooltip += "Will be added to the current profile\n";
+            tooltip += "将会加入当前配置\n";
             item->setBackground(Qt::green);
             item->setForeground(Qt::black);
         }
@@ -259,7 +259,7 @@ void Launcher::DataFilesPage::populateFileViews(const QString& contentModelName)
         if (mSelector->containsDataFiles(currentDir))
         {
             item->setIcon(QIcon(":/images/openmw-plugin.png"));
-            tooltip += "Contains content file(s)";
+            tooltip += "包含内容文件";
         }
         else
         {
@@ -720,12 +720,12 @@ void Launcher::DataFilesPage::checkForDefaultProfile()
 bool Launcher::DataFilesPage::showDeleteMessageBox(const QString& text)
 {
     QMessageBox msgBox(this);
-    msgBox.setWindowTitle(tr("Delete Content List"));
+    msgBox.setWindowTitle(tr("删除内容列表"));
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setStandardButtons(QMessageBox::Cancel);
-    msgBox.setText(tr("Are you sure you want to delete <b>%1</b>?").arg(text));
+    msgBox.setText(tr("你确定要删除 <b>%1</b>?").arg(text));
 
-    QAbstractButton* deleteButton = msgBox.addButton(tr("Delete"), QMessageBox::ActionRole);
+    QAbstractButton* deleteButton = msgBox.addButton(tr("删除"), QMessageBox::ActionRole);
 
     msgBox.exec();
 

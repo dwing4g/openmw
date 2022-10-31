@@ -48,9 +48,9 @@ copy /y openmw_reset.cfg   "%CFGPATH%\openmw.cfg"
 copy /y settings_reset.cfg "%CFGPATH%\settings.cfg"
 echo %CFGLINE% >> "%CFGPATH%\openmw.cfg"
 
-if exist tes3cn_Morrowind.esp move /y tes3cn_Morrowind.esp "..\Data Files\"
-if exist tes3cn_Tribunal.esp  move /y tes3cn_Tribunal.esp  "..\Data Files\"
-if exist tes3cn_Bloodmoon.esp move /y tes3cn_Bloodmoon.esp "..\Data Files\"
+rem if exist tes3cn_Morrowind.esp move /y tes3cn_Morrowind.esp "..\Data Files\"
+rem if exist tes3cn_Tribunal.esp  move /y tes3cn_Tribunal.esp  "..\Data Files\"
+rem if exist tes3cn_Bloodmoon.esp move /y tes3cn_Bloodmoon.esp "..\Data Files\"
 
 echo.
 if %TIP%==1 (

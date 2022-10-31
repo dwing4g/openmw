@@ -1,4 +1,4 @@
-#include "existinginstallationpage.hpp"
+﻿#include "existinginstallationpage.hpp"
 
 #include <QFile>
 #include <QFileDialog>
@@ -15,7 +15,7 @@ Wizard::ExistingInstallationPage::ExistingInstallationPage(QWidget* parent)
     setupUi(this);
 
     // Add a placeholder item to the list of installations
-    QListWidgetItem* emptyItem = new QListWidgetItem(tr("No existing installations detected"));
+    QListWidgetItem* emptyItem = new QListWidgetItem(tr("没检测到已存在的安装"));
     emptyItem->setFlags(Qt::NoItemFlags);
 
     installationsList->insertItem(0, emptyItem);
@@ -55,23 +55,23 @@ bool Wizard::ExistingInstallationPage::validatePage()
     if (!file.exists())
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Error detecting Morrowind configuration"));
+        msgBox.setWindowTitle(tr("无法检测到晨风的配置"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.setText(
-            QObject::tr("<br><b>Could not find Morrowind.ini</b><br><br> \
-                                   The Wizard needs to update settings in this file.<br><br> \
-                                   Press \"Browse...\" to specify the location manually.<br>"));
+            QObject::tr("<br><b>无法找到 Morrowind.ini</b><br><br> \
+                                   向导需要用这个文件更新设置。<br><br> \
+                                   点 \"浏览...\" 手动指定文件位置。<br>"));
 
-        QAbstractButton* browseButton2 = msgBox.addButton(QObject::tr("B&rowse..."), QMessageBox::ActionRole);
+        QAbstractButton* browseButton2 = msgBox.addButton(QObject::tr("浏览(&r)..."), QMessageBox::ActionRole);
 
         msgBox.exec();
 
         QString iniFile;
         if (msgBox.clickedButton() == browseButton2)
         {
-            iniFile = QFileDialog::getOpenFileName(this, QObject::tr("Select configuration file"), QDir::currentPath(),
-                QString(tr("Morrowind configuration file (*.ini)")));
+            iniFile = QFileDialog::getOpenFileName(this, QObject::tr("选择配置文件"), QDir::currentPath(),
+                QString(tr("晨风配置文件 (*.ini)")));
         }
 
         if (iniFile.isEmpty())
@@ -90,8 +90,8 @@ bool Wizard::ExistingInstallationPage::validatePage()
 void Wizard::ExistingInstallationPage::on_browseButton_clicked()
 {
     QString selectedFile
-        = QFileDialog::getOpenFileName(this, tr("Select Morrowind.esm (located in Data Files)"), QDir::currentPath(),
-            QString(tr("Morrowind master file (Morrowind.esm)")), nullptr, QFileDialog::DontResolveSymlinks);
+        = QFileDialog::getOpenFileName(this, tr("选择 Morrowind.esm (在 Data Files 中)"), QDir::currentPath(),
+            QString(tr("晨风主文件 (Morrowind.esm)")), nullptr, QFileDialog::DontResolveSymlinks);
 
     if (selectedFile.isEmpty())
         return;
@@ -104,12 +104,12 @@ void Wizard::ExistingInstallationPage::on_browseButton_clicked()
     if (!mWizard->findFiles(QLatin1String("Morrowind"), info.absolutePath()))
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Error detecting Morrowind files"));
+        msgBox.setWindowTitle(tr("无法检测到晨风的文件"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setText(
-            QObject::tr("<b>Morrowind.bsa</b> is missing!<br>\
-            Make sure your Morrowind installation is complete."));
+            QObject::tr("<b>Morrowind.bsa</b> 丢失！<br>\
+            确保你安装的晨风是完整的。"));
         msgBox.exec();
         return;
     }
@@ -183,13 +183,13 @@ bool Wizard::ExistingInstallationPage::versionIsOK(QString directory_name)
         }
 
         QMessageBox msgBox;
-        msgBox.setWindowTitle(QObject::tr("Most recent Morrowind not detected"));
+        msgBox.setWindowTitle(QObject::tr("没检测到最新版的晨风"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
         msgBox.setText(
-            QObject::tr("<br><b>There may be a more recent version of Morrowind available.</b><br><br>\
-                              Do you wish to continue anyway?<br>"));
+            QObject::tr("<br><b>可能有更新版本的晨风可更新。</b><br><br>\
+                              你还是仍然要继续吗？<br>"));
         int ret = msgBox.exec();
         if (ret == QMessageBox::Yes)
         {

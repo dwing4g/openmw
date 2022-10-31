@@ -201,6 +201,18 @@ for line in io.lines(arg[1]) do
 	i = i + 1
 end
 io.stderr:write(i - 1, " topics\n")
+for topic in pairs(topicMap) do
+	if not check0[topic] then
+		io.stderr:write("ERROR: undefined topic [", topic, "]\n")
+		err = err + 1
+	end
+end
+for checkTopic, inam in pairs(checkTopicMap) do
+	if not check1[checkTopic] then
+		io.stderr:write("ERROR: undefined check topic [", checkTopic, "], ref [" .. (topicMapR[inam] or {})[1] .. "] => [" .. inam .. "]\n")
+		err = err + 1
+	end
+end
 if err ~= 0 then
 	error("ERROR: " .. err .. " errors")
 end
@@ -241,9 +253,9 @@ local function dumpTopicTree(topicMap, node, indent)
 end
 -- dumpTopicTree(topicMap, topicTree, "")
 
-local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" => text
+local function loadTexts(filename, texts, topicMap, ignoreKeys) -- "INFO.INAM @ DIAL.NAME" => text
 	io.stderr:write("loading ", filename, " ... ")
-	local i, n, ss, inam, dial = 1, 0
+	local i, n, dn, ss, inam, dial, key = 1, 0, 0
 	for line in io.lines(filename) do
 		local topic = line:match "[Aa]dd[Tt]opic%s*\"\"(.-)\"\""
 		if topic and not topicMap[topic:lower()] and not line:find ";%s*[Aa]dd[Tt]opic%s*\"\"" then
@@ -255,20 +267,28 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 			if isEnd then
 				s = concat(ss)
 				ss = nil
-				local key = inam .. " @ " .. dial
+				key = inam .. " @ " .. dial
 				if texts[key] and texts[key] ~= s then
 					io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key, "\n")
 				end
 				texts[key] = s
 				inam = nil
 				n = n + 1
+				dn = dn + 1
 			else
 				ss[#ss + 1] = "\r\n"
 			end
+		elseif line:find "^%x+:%s*INFO%.QSTN%s*%[01%]$" then
+			if ignoreKeys and key and dn == 1 then
+				ignoreKeys[key] = true
+			end
+			key = nil
 		else
+			key = nil
 			local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
 			if s then
 				dial = s:gsub("%$00$", "")
+				dn = 0
 			else
 				s = line:match "^%x+:%s*DIAL%.DATA %[(.-)%]"
 				if s then
@@ -286,13 +306,14 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 						if s then
 							local isEnd, s = readString(s, 1)
 							if isEnd == true then
-								local key = inam .. " @ " .. dial
+								key = inam .. " @ " .. dial
 								if texts[key] and texts[key] ~= s then
 									io.stderr:write("WARN: duplicated INFO.INAM @ DIAL.NAME: ", key, "\n")
 								end
 								texts[key] = s
 								inam = nil
 								n = n + 1
+								dn = dn + 1
 							elseif isEnd == false then
 								ss = { s, "\r\n" }
 							else
@@ -311,16 +332,16 @@ local function loadTexts(filename, texts, topicMap) -- "INFO.INAM @ DIAL.NAME" =
 	io.stderr:write(n, " texts\n")
 end
 
-local texts = {}
+local texts, ignoreKeys = {}, {}
 for _, filename in ipairs(src_filenames) do
-	loadTexts(filename, texts, topicMap)
+	loadTexts(filename, texts, topicMap, ignoreKeys)
 end
 local checkTexts = {}
 for _, filename in ipairs(dst_filenames) do
-	loadTexts(filename[1], checkTexts, checkTopicMap)
+	loadTexts(filename[1], checkTexts, checkTopicMap, ignoreKeys)
 end
 
-local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ DIAL.NAME" => { topics }
+local function findTopics(texts, matches, topicTree, topicMap, ignoreKeys) -- "INFO.INAM @ DIAL.NAME" => { topics }
 	for key, text in pairs(texts) do
 		local t, oldFixes = text:match "^(.-)%s*({[^{}]*})$"
 		if t then
@@ -335,7 +356,7 @@ local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ D
 			local nextNode = curNode[c]
 			if nextNode then
 				curNode = nextNode
-				if curNode[0] and (i >= n or not text:sub(i + 1, i + 1):find "%w") then bestTopic = curNode[0] end
+				if curNode[0] and (i >= n or text:sub(i + 1, i + 3):find "%W") then bestTopic = curNode[0] end
 				i = i + 1
 			else
 				local topic = not c:find "%w" and curNode[0] or bestTopic
@@ -357,6 +378,9 @@ local function findTopics(texts, matches, topicTree, topicMap) -- "INFO.INAM @ D
 		if bestTopic then
 			topics[#topics + 1] = bestTopic
 		end
+		if ignoreKeys[key] then
+			topics = {}
+		end
 		matches[key] = topics
 	end
 end
@@ -371,9 +395,9 @@ local function dumpMatchTexts(matches, texts)
 end
 
 local matches = {}
-findTopics(texts, matches, topicTree, topicMap)
+findTopics(texts, matches, topicTree, topicMap, ignoreKeys)
 local checkMatches = {}
-findTopics(checkTexts, checkMatches, checkTopicTree, checkTopicMap)
+findTopics(checkTexts, checkMatches, checkTopicTree, checkTopicMap, ignoreKeys)
 -- dumpMatchTexts(matches, texts)
 -- dumpMatchTexts(checkMatches, checkTexts)
 
@@ -392,7 +416,7 @@ for key, topics in pairs(matches) do
 		write(texts[key], "\n\n")
 		n1 = n1 + 1
 	else
-		local notFounds = {}, {}
+		local notFounds = {}
 		for _, topic in ipairs(topics) do
 			local found
 			local checkTopic = topicPairs[topic]
@@ -409,6 +433,7 @@ for key, topics in pairs(matches) do
 				notFounds[#notFounds + 1] = checkTopic
 			end
 		end
+		local checkText = checkTexts[checkKey]
 		if #notFounds > 0 then
 			write("========== TOPIC UNMATCHED '", checkKey, "':\n")
 			write(texts[key])
@@ -424,9 +449,8 @@ for key, topics in pairs(matches) do
 			for _, topic in ipairs(checkTopics) do
 				write(" [", topic, "]")
 			end
-			local checkText = checkTexts[checkKey]
 			write("\n", checkText, "\n\n")
-			local t, oldFixes = checkText:match "^(.-)%s*({[^{}]*})$"
+			local t = checkText:match "^(.-) *{[^{}]*}$"
 			if t then
 				checkText = t
 			end
@@ -438,6 +462,11 @@ for key, topics in pairs(matches) do
 			t[#t] = "}"
 			fixedTexts[checkKey] = concat(t)
 			n2 = n2 + 1
+		elseif ignoreKeys[checkKey] then
+			local t = checkText:match "^(.-) *{[^{}]*}$"
+			if t then
+				fixedTexts[checkKey] = t
+			end
 		end
 	end
 end
@@ -481,16 +510,32 @@ local function fixTexts(src_filename, dst_filename)
 	io.stderr:write("creating ", dst_filename, " ... ")
 	local f = io.open(dst_filename, "wb")
 	if not f then error "ERROR: can not create file" end
-	local i, n, ss, inam, dial, out = 1, 0
+	local i, n, ss, inam, dial, out, key, prefix, t, isEnd = 1, 0
+	local output = function()
+		local fixedText = fixedTexts[key]
+		if fixedText then
+			if fixedText ~= t then
+				n = n + 1
+			end
+			f:write(prefix, addEscape(fixedText), "\"\r\n")
+		else
+			f:write(prefix, addEscape(t), "\"\r\n")
+		end
+	end
 	for line in io.lines(src_filename) do
 		out = false
 		if ss then
-			out = ss == 1
-			local isEnd = readString(line, 1)
+			local isEnd, s = readString(line, 1)
+			if isEnd == nil then
+				error("ERROR: invalid string at line " .. i)
+			end
+			t = t .. "\r\n" .. s
 			if isEnd then
+				output()
 				ss = nil
 				inam = nil
 			end
+			out = true
 		else
 			local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
 			if s then
@@ -508,23 +553,19 @@ local function fixTexts(src_filename, dst_filename)
 					if s then
 						inam = s:gsub("%$00$", "")
 					elseif inam then
-						local prefix, s = line:match "^(%x+:%s*INFO%.NAME%s*\")(.*)$"
+						prefix, s = line:match "^(%x+:%s*INFO%.NAME%s*\")(.*)$"
 						if s then
-							local key = inam .. " @ " .. dial
-							local isEnd = readString(s, 1)
+							key = inam .. " @ " .. dial
+							isEnd, t = readString(s, 1)
 							if isEnd == true then
+								output()
 								inam = nil
 							elseif isEnd == false then
 								ss = true
 							else
 								error("ERROR: invalid string at line " .. i)
 							end
-							if fixedTexts[key] then
-								f:write(prefix, addEscape(fixedTexts[key]), "\"\r\n")
-								out = true
-								if ss then ss = 1 end
-								n = n + 1
-							end
+							out = true
 						end
 					end
 				end
@@ -534,6 +575,9 @@ local function fixTexts(src_filename, dst_filename)
 			f:write(line, "\r\n")
 		end
 		i = i + 1
+	end
+	if ss then
+		error("ERROR: invalid string at line " .. i)
 	end
 	f:close()
 	io.stderr:write("fixed ", n, " texts\n")

@@ -206,11 +206,11 @@ namespace MWGui
                 break;
         }
 
-        typesetter->addContent(to_utf8_span(text.c_str()));
-
         if (hyperLinks.size()
             && MWBase::Environment::get().getWindowManager()->getTranslationDataStorage().hasTranslation())
         {
+            typesetter->addContent(to_utf8_span(text.c_str()));
+
             const TextColours& textColours = MWBase::Environment::get().getWindowManager()->getTextColours();
 
             BookTypesetter::Style* style = typesetter->createStyle("", textColours.normal, false);
@@ -232,6 +232,9 @@ namespace MWGui
         {
             std::vector<KeywordSearchT::Match> matches;
             keywordSearch->highlightKeywords(text.begin(), text.end(), matches);
+
+            KeywordSearchT::removeUnusedPostfix(text, matches);
+            typesetter->addContent(to_utf8_span(text.c_str()));
 
             std::string::const_iterator i = text.begin();
             for (KeywordSearchT::Match& match : matches)

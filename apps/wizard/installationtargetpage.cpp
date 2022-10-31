@@ -1,4 +1,4 @@
-#include "installationtargetpage.hpp"
+﻿#include "installationtargetpage.hpp"
 
 #include <string>
 
@@ -44,13 +44,13 @@ bool Wizard::InstallationTargetPage::validatePage()
         if (!dir.mkpath(path))
         {
             QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Error creating destination"));
+            msgBox.setWindowTitle(tr("创建目标出错"));
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.setText(
-                tr("<html><head/><body><p><b>Could not create the destination directory</b></p> \
-                              <p>Please make sure you have the right permissions \
-                              and try again, or specify a different location.</p></body></html>"));
+                tr("<html><head/><body><p><b>无法创建目标目录</b></p> \
+                              <p>请确认你有相关权限\
+                              并再次尝试，或指定一个不同的位置。</p></body></html>"));
             msgBox.exec();
             return false;
         }
@@ -61,13 +61,13 @@ bool Wizard::InstallationTargetPage::validatePage()
     if (!info.isWritable())
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Insufficient permissions"));
+        msgBox.setWindowTitle(tr("权限不足"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setText(
-            tr("<html><head/><body><p><b>Could not write to the destination directory</b></p> \
-                          <p>Please make sure you have the right permissions \
-                          and try again, or specify a different location.</p></body></html>"));
+            tr("<html><head/><body><p><b>无法写入目标目录</b></p> \
+                          <p>请确认你有相关权限\
+                          并再次尝试，或指定一个不同的位置。</p></body></html>"));
         msgBox.exec();
         return false;
     }
@@ -75,13 +75,13 @@ bool Wizard::InstallationTargetPage::validatePage()
     if (mWizard->findFiles(QLatin1String("Morrowind"), path))
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Destination not empty"));
+        msgBox.setWindowTitle(tr("目标不为空"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setText(
-            tr("<html><head/><body><p><b>The destination directory is not empty</b></p> \
-                          <p>An existing Morrowind installation is present in the specified location.</p> \
-                          <p>Please specify a different location, or go back and select the location as an existing installation.</p></body></html>"));
+            tr("<html><head/><body><p><b>目标目录不是空的</b></p> \
+                          <p>在指定位置找到了已安装的晨风。</p> \
+                          <p>请指定一个不同的位置，或者回到上一步并按已安装的方式选择这个位置。</p></body></html>"));
         msgBox.exec();
         return false;
     }
@@ -91,7 +91,7 @@ bool Wizard::InstallationTargetPage::validatePage()
 
 void Wizard::InstallationTargetPage::on_browseButton_clicked()
 {
-    QString selectedPath = QFileDialog::getExistingDirectory(this, tr("Select where to install Morrowind"),
+    QString selectedPath = QFileDialog::getExistingDirectory(this, tr("选择把晨风安装到哪"),
         QDir::homePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     qDebug() << selectedPath;
