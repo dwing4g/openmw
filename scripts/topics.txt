@@ -1970,7 +1970,7 @@
 [urjorad] => [乌尔约拉德]
 [urshilaku burial caverns] => [乌尔希拉库墓穴]
 [urshilaku camp] => [乌尔希拉库营地]
-[urshilaku nerevarine] => [乌尔希拉库·内里瓦林]
+[urshilaku nerevarine] => [乌尔希拉库尼瑞瓦因]
 [urshilaku] => [乌尔希拉库]
 [uryn maren] => [乌林·马伦]
 [use to me] => [用在我身上]

@@ -1,7 +1,8 @@
 Abovewater: "水面"
+ActiveShaders: "启用的着色器"
 Author: "作者"
-Configuration: "配置"
 Description: "说明"
+InactiveShaders: "未启用的着色器"
 InExteriors: "室外"
 InInteriors: "室内"
 KeyboardControls: |

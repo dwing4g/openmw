@@ -44,6 +44,12 @@ OpenMW原版官方网站: https://openmw.org/
 
 ■ 汉化版的ChangeLog:
 
+● 2022-12-?? v7
+1. scripts: 改进 check_topic.lua 转换时自动去掉CELL,LAND,PGRD条目, 更多的补充topic
+2. files: Morrowind.cel 删除重复项
+3. openmw: 修正某些情况启动时弹出"目标多字节代码页中不存在Unicode字符的映射"的bug
+4. openmw: 支持Linux平台的编译(感谢: lost in utopia)
+
 ● 2022-10-31 v6
 1. openmw: 运行时对可能遗漏的关键词进行无用消除,只保留有用的关键词
 2. scripts: 改进 check_topic.lua 排除任务的关键词补充

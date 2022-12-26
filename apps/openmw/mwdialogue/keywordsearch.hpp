@@ -205,16 +205,20 @@ namespace MWDialogue
             {
                 it++;
                 size_t n = 0;
+                std::set<std::string> kws;
                 for (auto i = matches.begin(); i != matches.end();)
                 {
                     auto& match = *i;
                     match.mBeg -= n;
                     match.mEnd -= n;
-                    if (it < match.mEnd)
+                    if (match.mEnd <= it)
+                        kws.insert(std::string(match.mBeg, match.mEnd));
+                    else
                     {
                         if (match.mBeg < it || match.mEnd >= text.cend()
                             || *(match.mBeg - 1) != ',' && *(match.mBeg - 1) != '{'
-                            || *match.mEnd != ',' && *match.mEnd != '}')
+                            || *match.mEnd != ',' && *match.mEnd != '}'
+                            || kws.contains(std::string(match.mBeg, match.mEnd)))
                         {
                             i = matches.erase(i);
                             continue;

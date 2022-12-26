@@ -1,3 +1,4 @@
 DebugWindow: "开发者模式"
 LogViewer: "日志浏览器"
+LuaProfiler: "Lua分析器"
 PhysicsProfiler: "物理分析器"

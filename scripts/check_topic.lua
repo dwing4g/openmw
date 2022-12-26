@@ -13,7 +13,6 @@ local tonumber = tonumber
 local ipairs = ipairs
 local pairs = pairs
 local error = error
-local arg = arg
 
 local src_filenames = {
 	"Morrowind.txt",
@@ -26,6 +25,18 @@ local dst_filenames = {
 	{ "tes3cn_Tribunal.txt",  "tes3cn_Tribunal_fix.txt" },
 	{ "tes3cn_Bloodmoon.txt", "tes3cn_Bloodmoon_fix.txt" },
 }
+
+local topics_filename = arg[1] or "topics.txt"
+
+local delete_tags = {
+	CELL = true,
+	LAND = true,
+	PGRD = true,
+}
+
+local function canDeleteTag(tag)
+	return delete_tags[tag:sub(1, 4)]
+end
 
 -- 044CAAC2: DIAL.NAME "...$00"
 -- 044CAAEF: DIAL.DATA [00]
@@ -133,10 +144,10 @@ for dial in pairs(checkDials) do
 	end
 end
 
-local f = io.open(arg[1], "rb")
+local f = io.open(topics_filename, "rb")
 if not f then
-	io.stderr:write("creating ", arg[1], " ... ")
-	f = io.open(arg[1], "wb")
+	io.stderr:write("creating ", topics_filename, " ... ")
+	f = io.open(topics_filename, "wb")
 	local n = 0
 	for topic, inam in pairs(topicMap) do
 		f:write("[", topic, "] =>")
@@ -160,10 +171,10 @@ end
 f:close()
 local topicPairs = {}
 local i = 1
-io.stderr:write("loading ", arg[1], " ... ")
+io.stderr:write("loading ", topics_filename, " ... ")
 local err = 0
 local check0, check1 = {}, {}
-for line in io.lines(arg[1]) do
+for line in io.lines(topics_filename) do
 	local topic, checkTopic, more = line:match "^%s*%[(.-)%]%s*=>%s*%[(.-)%](.*)$"
 	if not topic or more:find "%S" then
 		io.stderr:write("ERROR: invalid topic file at line ", i, "\n")
@@ -177,8 +188,8 @@ for line in io.lines(arg[1]) do
 		io.stderr:write("ERROR: duplicated checkTopic [", checkTopic, "] at line ", i, "\n")
 		err = err + 1
 	end
-	check0[topic] = true
-	check1[checkTopic] = true
+	check0[topic] = checkTopic
+	check1[checkTopic] = topic
 	if not topicMap[topic] then
 		io.stderr:write("ERROR: invalid topic [", topic, "] at line ", i, "\n")
 		err = err + 1
@@ -213,6 +224,18 @@ for checkTopic, inam in pairs(checkTopicMap) do
 		err = err + 1
 	end
 end
+--[[
+for t0, t1 in pairs(check0) do
+	for s0, s1 in pairs(check0) do
+		if t0 ~= s0 then
+			local tp = t0:find(s0, 1, true)
+			if tp and (tp == 1 or t0:sub(tp - 1, tp - 1):find "%W") and not t1:find(s1, 1, true) then
+				io.stderr:write("WARN: topic contain unmatched: [" .. t0 .. "] => [" .. t1 .. "], [" .. s0 .. "] => [" .. s1 .. "]\n")
+			end
+		end
+	end
+end
+--]]
 if err ~= 0 then
 	error("ERROR: " .. err .. " errors")
 end
@@ -356,13 +379,14 @@ local function findTopics(texts, matches, topicTree, topicMap, ignoreKeys) -- "I
 			local nextNode = curNode[c]
 			if nextNode then
 				curNode = nextNode
-				if curNode[0] and (i >= n or text:sub(i + 1, i + 3):find "%W") then bestTopic = curNode[0] end
+				if curNode[0] and (i >= n or text:sub(i + 1, i + 4):find "%W") then bestTopic = curNode[0] end
 				i = i + 1
 			else
 				local topic = not c:find "%w" and curNode[0] or bestTopic
 				if topic then
 					topics[#topics + 1] = topic
-					j = i
+					j = j + 1 -- j = i
+					i = j
 				else
 					j = j + 1
 					i = j
@@ -537,36 +561,41 @@ local function fixTexts(src_filename, dst_filename)
 			end
 			out = true
 		else
-			local s = line:match "^%x+:%s*DIAL%.NAME%s*\"(.-)\""
-			if s then
-				dial = s:gsub("%$00$", "")
-			else
-				s = line:match "^%x+:%s*DIAL%.DATA %[(.-)%]"
+			local tag, s = line:match "^%x+:[%s%-]*([%w_.]+)%s*(.*)$"
+			if tag and canDeleteTag(tag) then
+				out = true
+			elseif tag == "DIAL.NAME" then
+				s = s:match "^\"(.*)\"%s*$"
 				if s then
-					if s == "01" then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
-						dial = nil
-					elseif s == "00" then
-						dial = dial:lower()
-					end
-				elseif dial then
-					local s = line:match "^%x+:%s*INFO%.INAM%s*\"(.*)\"$"
+					dial = s:gsub("%$00$", "")
+				end
+			elseif tag == "DIAL.DATA" then
+				s = s:match "^%[(.*)%]%s*$"
+				if s == "01" then -- 00:Topic 01:Voice 02:Greeting 03:Persuasion 04:Journal
+					dial = nil
+				elseif s == "00" then
+					dial = dial:lower()
+				end
+			elseif dial then
+				if tag == "INFO.INAM" then
+					s = s:match "^\"(.*)\"%s*$"
 					if s then
 						inam = s:gsub("%$00$", "")
-					elseif inam then
-						prefix, s = line:match "^(%x+:%s*INFO%.NAME%s*\")(.*)$"
-						if s then
-							key = inam .. " @ " .. dial
-							isEnd, t = readString(s, 1)
-							if isEnd == true then
-								output()
-								inam = nil
-							elseif isEnd == false then
-								ss = true
-							else
-								error("ERROR: invalid string at line " .. i)
-							end
-							out = true
+					end
+				elseif inam and tag == "INFO.NAME" then
+					prefix, s = line:match "^(%x+:%s*INFO%.NAME%s*\")(.*)$"
+					if s then
+						key = inam .. " @ " .. dial
+						isEnd, t = readString(s, 1)
+						if isEnd == true then
+							output()
+							inam = nil
+						elseif isEnd == false then
+							ss = true
+						else
+							error("ERROR: invalid string at line " .. i)
 						end
+						out = true
 					end
 				end
 			end

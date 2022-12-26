@@ -8,7 +8,9 @@
 
 #include <components/debug/debuglog.hpp>
 
-#include <windows.h> //TODO: only support Windows now
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 /* This file contains the code to translate from WINDOWS-1252 (native
    charset used in English version of Morrowind) to UTF-8. The library
@@ -122,10 +124,27 @@ std::string_view StatelessUtf8Encoder::getUtf8(
             return input;
         if (mTranslationArray[0] == ToUTF8::GBK)
         {
+#ifdef WIN32
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
             int n = MultiByteToWideChar(936, 0, input.data(), input.size(), wchars, input.size());
             resize(n * 3, bufferAllocationPolicy, buffer);
             n = WideCharToMultiByte(CP_UTF8, 0, wchars, n, buffer.data(), n * 3, 0, 0);
+#else
+            std::setlocale(LC_ALL, "zh_CN.gbk");
+            size_t n = input.size();
+            resize(n + 1, bufferAllocationPolicy, buffer);
+            memcpy(buffer.data(), input.data(), n);
+            buffer.data()[n] = 0;
+            wchar_t* wchars = (wchar_t*)alloca((n + 1) * sizeof(wchar_t));
+            memset(wchars, 0, (n + 1) * sizeof(wchar_t));
+            size_t r = std::mbstowcs(wchars, buffer.data(), n);
+            n = r == (size_t)-1 ? wcslen(wchars) : r;
+            std::setlocale(LC_ALL, "en_US.utf8");
+            resize(n * 3, bufferAllocationPolicy, buffer);
+            memset(buffer.data(), 0, n * 3);
+            r = std::wcstombs(buffer.data(), wchars, n * 3);
+            n = r == (size_t)-1 ? strnlen(buffer.data(), n) : r;
+#endif
             return std::string_view(buffer.data(), n);
         }
     }
@@ -174,10 +193,27 @@ std::string_view StatelessUtf8Encoder::getLegacyEnc(
             return input;
         if (mTranslationArray[0] == ToUTF8::GBK)
         {
+#ifdef WIN32
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
             int n = MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(), wchars, input.size());
             resize(n * 2, bufferAllocationPolicy, buffer);
             n = WideCharToMultiByte(936, 0, wchars, n, buffer.data(), n * 2, 0, 0);
+#else
+            std::setlocale(LC_ALL, "en_US.utf8");
+            size_t n = input.size();
+            resize(n + 1, bufferAllocationPolicy, buffer);
+            memcpy(buffer.data(), input.data(), n);
+            buffer.data()[n] = 0;
+            wchar_t* wchars = (wchar_t*)alloca((n + 1) * sizeof(wchar_t));
+            memset(wchars, 0, (n + 1) * sizeof(wchar_t));
+            size_t r = std::mbstowcs(wchars, buffer.data(), n);
+            n = r == (size_t)-1 ? wcslen(wchars) : r;
+            std::setlocale(LC_ALL, "zh_CN.gbk");
+            resize(n * 2, bufferAllocationPolicy, buffer);
+            memset(buffer.data(), 0, n * 2);
+            r = std::wcstombs(buffer.data(), wchars, n * 2);
+            n = r == (size_t)-1 ? strnlen(buffer.data(), n) : r;
+#endif
             return std::string_view(buffer.data(), n);
         }
     }
