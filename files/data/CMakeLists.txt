@@ -19,6 +19,8 @@ set(BUILTIN_DATA_FILES
     fonts/MysticCards.ttf
     fonts/MysticCards.omwfont
     fonts/MysticCardsFontLicense.txt
+    fonts/zh_CN.omwfont
+    fonts/LXGWWenKaiGB-Regular.ttf
 
     l10n/BuiltInShaders/de.yaml
     l10n/BuiltInShaders/en.yaml
