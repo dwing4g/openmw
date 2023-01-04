@@ -27,46 +27,55 @@ set(BUILTIN_DATA_FILES
     l10n/BuiltInShaders/ru.yaml
     l10n/BuiltInShaders/sv.yaml
     l10n/BuiltInShaders/fr.yaml
+    l10n/BuiltInShaders/zh_CN.yaml
     l10n/Calendar/de.yaml
     l10n/Calendar/en.yaml
     l10n/Calendar/ru.yaml
     l10n/Calendar/sv.yaml
     l10n/Calendar/fr.yaml
+    l10n/Calendar/zh_CN.yaml
     l10n/DebugMenu/de.yaml
     l10n/DebugMenu/en.yaml
     l10n/DebugMenu/ru.yaml
     l10n/DebugMenu/sv.yaml
     l10n/DebugMenu/fr.yaml
+    l10n/DebugMenu/zh_CN.yaml
     l10n/Interface/de.yaml
     l10n/Interface/en.yaml
     l10n/Interface/ru.yaml
     l10n/Interface/sv.yaml
     l10n/Interface/fr.yaml
+    l10n/Interface/zh_CN.yaml
     l10n/Navigation/de.yaml
     l10n/Navigation/en.yaml
     l10n/Navigation/ru.yaml
     l10n/Navigation/sv.yaml
     l10n/Navigation/fr.yaml
+    l10n/Navigation/zh_CN.yaml
     l10n/OMWCamera/de.yaml
     l10n/OMWCamera/en.yaml
     l10n/OMWCamera/ru.yaml
     l10n/OMWCamera/sv.yaml
     l10n/OMWCamera/fr.yaml
+    l10n/OMWCamera/zh_CN.yaml
     l10n/PostProcessing/de.yaml
     l10n/PostProcessing/en.yaml
     l10n/PostProcessing/ru.yaml
     l10n/PostProcessing/sv.yaml
     l10n/PostProcessing/fr.yaml
+    l10n/PostProcessing/zh_CN.yaml
     l10n/SavegameMenu/de.yaml
     l10n/SavegameMenu/en.yaml
     l10n/SavegameMenu/ru.yaml
     l10n/SavegameMenu/sv.yaml
     l10n/SavegameMenu/fr.yaml
+    l10n/SavegameMenu/zh_CN.yaml
     l10n/SettingsMenu/de.yaml
     l10n/SettingsMenu/en.yaml
     l10n/SettingsMenu/ru.yaml
     l10n/SettingsMenu/sv.yaml
     l10n/SettingsMenu/fr.yaml
+    l10n/SettingsMenu/zh_CN.yaml
 
     openmw_aux/util.lua
     openmw_aux/time.lua
@@ -101,6 +110,8 @@ set(BUILTIN_DATA_FILES
     shaders/adjustments.omwfx
     shaders/bloomlinear.omwfx
     shaders/debug.omwfx
+
+    Morrowind.cel
 
     mygui/core.skin
     mygui/core.xml
