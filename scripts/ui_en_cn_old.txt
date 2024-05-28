@@ -1,0 +1,618 @@
+Game Mechanics
+游戏机制
+
+<html><head/><body><p>Make enchanted weaponry without Magical flag bypass normal weapons resistance, like in Morrowind.</p></body></html>
+<html><head/><body><p>让没有施法标签的附魔武器同样能对免疫普通武器的敌人造成伤害，就像原版晨风中一样。</p></body></html>
+
+Enchanted weapons are magical
+任何附魔都可击中物理免疫
+
+<html><head/><body><p>Makes player swim a bit upward from the line of sight. Applies only in third person mode. Intended to make simpler swimming without diving.</p></body></html>
+<html><head/><body><p>使玩家的视线在游泳时往上一点，旨在使游泳更简单，不需要潜水。只适用于第三人称模式。</p></body></html>
+
+Swim upward correction
+水面游泳视角抬高
+
+<html><head/><body><p>If enabled NPCs apply evasion maneuver to avoid collisions with others.</p></body></html>
+<html><head/><body><p>如果启用，NPC会采用回避动作以避免与他人相撞。</p></body></html>
+
+NPCs avoid collisions
+NPC避开碰撞
+
+<html><head/><body><p>Enable navigator. When enabled background threads are started to build nav mesh for world geometry. Pathfinding system uses nav mesh to build paths. When disabled only pathgrid is used to build paths. Single-core CPU systems may have big performance impact on exiting interior location and moving across exterior world. May slightly affect performance on multi-core CPU systems. Multi-core CPU systems may have different latency for nav mesh update depending on other settings and system performance. Moving across external world, entering/exiting location produce nav mesh update. NPC and creatures may not be able to find path before nav mesh is built around them. Try to disable this if you want to have old fashioned AI which doesn’t know where to go when you stand behind that stone and casting a firebolt.</p></body></html>
+<html><head/><body><p>启用导航网格。当启用时，后台线程开始为世界的几何建模建立导航网格。寻路系统使用导航网格来建立路径。当禁用时，只有瓦块地图被用来构建路径。单核CPU系统在离开内部位置和在外部世界移动时可能会有很大的性能影响。可能对多核CPU系统的性能略有影响。多核CPU系统可能对导航网格的更新有不同的延迟，这取决于其他设置和系统性能。在外部世界移动，进入/离开室内外会导致导航网格的更新。NPC和生物在导航网格建立之前可能无法找到路径。如果你想让老式的人工智能在你站在石头后面施放火焰的时候不知道该往哪里走原地罚站的话，你可以禁用这个功能。</p></body></html>
+
+Build nav mesh for world geometry
+为世界的几何形状建立导航网格
+
+<html><head/><body><p>This setting causes the behavior of the sneak key (bound to Ctrl by default) to toggle sneaking on and off rather than requiring the key to be held down while sneaking. Players that spend significant time sneaking may find the character easier to control with this option enabled. </p></body></html>
+<html><head/><body><p>这个设置使潜行键（默认与Ctrl绑定）改为切换潜行与非潜行，而不是要求在潜行时按住该键。花大量时间潜行的玩家可能会发现启用这个选项后角色更容易控制。 </p></body></html>
+
+<s>Toggle sneak</s> (moved to the in-game menu)
+<s>切换潜行</s> (moved to the in-game menu)
+
+<html><head/><body><p>Make disposition change of merchants caused by trading permanent.</p></body></html>
+<html><head/><body><p>使交易后商人永远不会刷新玩家卖掉的东西也永远不会进货。</p></body></html>
+
+Permanent barter disposition changes
+商人物品保持不变
+
+<html><head/><body><p>Make stealing items from NPCs that were knocked down possible during combat.</p></body></html>
+<html><head/><body><p>使在战斗中从被击倒的NPC那里偷取物品成为可能。</p></body></html>
+
+Always allow stealing from knocked out actors
+始终能够从被击倒的生物或NPC身上偷窃物品
+
+<html><head/><body><p>Don't use race weight in NPC movement speed calculations.</p></body></html>
+<html><head/><body><p>在NPC的移动速度计算中不计种族重量。</p></body></html>
+
+Racial variation in speed fix
+固定的种族速度差异
+
+<html><head/><body><p>Make Damage Fatigue magic effect uncapped like Drain Fatigue effect.</p><p>This means that unlike Morrowind you will be able to knock down actors using this effect.</p></body></html>
+<html><head/><body><p>使疲劳减损的法术效果像耗尽疲劳的效果一样不设上限。</p><p>这意味着不同于晨风，你可以用这种魔法效果击倒NPC。</p></body></html>
+
+Uncapped Damage Fatigue
+无上限的疲劳减损
+
+<html><head/><body><p>If this setting is true, the player is allowed to loot actors (e.g. summoned creatures) during death animation, if they are not in combat. In this case we have to increment death counter and run disposed actor's script instantly.</p><p>If this setting is false, player has to wait until end of death animation in all cases. Makes using of summoned creatures exploit (looting summoned Dremoras and Golden Saints for expensive weapons) a lot harder. Conflicts with mannequin mods, which use SkipAnim to prevent end of death animation.</p></body></html>
+<html><head/><body><p>如果这个设置启用，玩家可以在敌人死亡动画中搜刮尸体（包括召唤的生物），前提是他们不在战斗中。在这种情况下，我们必须增加死亡计数器，并立即运行处置敌人的脚本。</p><p>如果这个设置禁用，玩家在任何情况下都必须等到死亡动画结束。使得利用召唤生物的BUG来搜刮额外的物品变得更加困难。与人体模型MOD冲突，这个mod使用跳过动画的方式来防止死亡动画的结束。</p></body></html>
+
+Can loot during death animation
+可以在死亡动画中搜刮尸体
+
+<html><head/><body><p>Make the value of filled soul gems dependent only on soul magnitude.</p></body></html>
+<html><head/><body><p>让填充的灵魂石的价值只取决于其中灵魂的大小。</p></body></html>
+
+Soulgem values rebalance
+灵魂石价值的重新平衡
+
+<html><head/><body><p>Make player followers and escorters start combat with enemies who have started combat with them or the player. Otherwise they wait for the enemies or the player to do an attack first.</p></body></html>
+<html><head/><body><p>让玩家的追随者和护卫者们立即与进入战斗状态的敌人进行战斗。否则他们会等待敌人或玩家先进行攻击。</p></body></html>
+
+Followers defend immediately
+跟随者立即战斗
+
+<html><head/><body><p>Effects of reflected Absorb spells are not mirrored -- like in Morrowind.</p></body></html>
+<html><head/><body><p>反射的吸收法术的效果不会被再次反射出来--就像在原版晨风中一样。</p></body></html>
+
+Classic reflected Absorb spells behavior
+经典的法术吸收
+
+Give NPC an ability to swim over the water surface when they follow other actor independently from their ability to swim. Has effect only when nav mesh building is enabled.
+当NPC跟随时，给予他们在水面上游泳的能力，这与他们的游泳能力无关。只有在启用导航网格构建时才有效果。
+
+Always allow NPC to follow over water surface
+始终允许NPC在水面上跟随
+
+<html><head/><body><p>Allow non-standard ammunition solely to bypass normal weapon resistance or weakness.</p></body></html>
+<html><head/><body><p>只允许特殊的箭矢能够正常攻击物理免疫或者物理虚弱的目标。</p></body></html>
+
+Only appropriate ammunition bypasses normal weapon resistance
+只允许特殊箭矢攻击物理免疫与虚弱
+
+<html><head/><body><p>Makes unarmed creature attacks able to reduce armor condition, just as attacks from NPCs and armed creatures.</p></body></html>
+<html><head/><body><p>使得徒手进攻能够损害盔甲耐久。</p></body></html>
+
+Unarmed creature attacks damage armor
+徒手进攻对盔甲造成损害
+
+Factor strength into hand-to-hand combat:
+在徒手战斗中考虑力量因素：
+
+Off
+禁用
+
+Affect werewolves
+包括狼人
+
+Do not affect werewolves
+不影响狼人
+
+Background physics threads:
+背景物理线程：
+
+Actor collision shape type:
+生物与NPC碰撞：
+
+Collision is used for both physics simulation and navigation mesh generation for pathfinding. Cylinder gives the best consistency bewtween available navigation paths and ability to move by them. Changing this value affects navigation mesh generation therefore navigation mesh disk cache generated for one value will not be useful with another.
+碰撞被用于物理模拟和导航网格的生成，用于寻路。圆柱体在可用的导航路径和通过它们移动的能力之间提供了最好的一致性。改变这个值会影响到导航网格的生成，因此为一个值生成的导航网格磁盘缓存在另一个值上将没有用处。
+
+Axis-aligned bounding box
+轴线对齐的碰撞箱
+
+Axis-aligned bounding box
+轴线对齐的碰撞箱
+
+Rotating box
+旋转式碰撞箱
+
+Cylinder
+圆柱体碰撞箱
+
+Visuals
+视觉效果
+
+Animations
+动画
+
+<html><head/><body><p>Use casting animations for magic items, just as for spells.</p></body></html>
+<html><head/><body><p>魔法物品有前摇动画，就像一般的魔法一样。</p></body></html>
+
+Use magic item animation
+启用魔法道具前摇动画
+
+<html><head/><body><p>Makes NPCs and player movement more smooth. Recommended to use with "turn to movement direction" enabled.</p></body></html>
+<html><head/><body><p>使得NPC和玩家的移动更加丝滑。建议在启用"移动时面向移动方向"时启用。</p></body></html>
+
+Smooth movement
+平滑的运动
+
+<html><head/><body><p>Load per-group KF-files and skeleton files from Animations folder</p></body></html>
+<html><head/><body><p>从动画文件夹中加载每一组KF文件和骨架文件。</p></body></html>
+
+Use additional animation sources
+使用额外的动画资源
+
+<html><head/><body><p>Affects side and diagonal movement. Enabling this setting makes movement more realistic.</p><p>If disabled then the whole character's body is pointed to the direction of view. Diagonal movement has no special animation and causes sliding.</p><p>If enabled then the character turns lower body to the direction of movement. Upper body is turned partially. Head is always pointed to the direction of view. In combat mode it works only for diagonal movement. In non-combat mode it changes straight right and straight left movement as well. Also turns the whole body up or down when swimming according to the movement direction.</p></body></html>
+<html><head/><body><p>影响左右和斜向的移动。启用这个设置可以使运动更加真实。</p><p>如果禁用，那么整个角色的身体就会始终面向镜头的方向。斜向运动也没有特殊的动画，会导致在地上滑行。</p><p>如果启用，则角色将下半身转向运动方向。上半身部分转动。头部总是面向镜头的方向。在战斗模式下，它只适用于斜向运动。在非战斗模式下，它也能改变左右运动。在游泳时也会根据运动方向将整个身体向上或向下转动。</p></body></html>
+
+Turn to movement direction
+移动时面向移动方向
+
+<html><head/><body><p>Render holstered weapons (with quivers and scabbards), requires modded assets.</p></body></html>
+<html><head/><body><p>渲染带鞘的武器（带箭筒和刀鞘），需要额外的mod资源。</p></body></html>
+
+Weapon sheathing
+武器护套
+
+<html><head/><body><p>Render holstered shield, requires modded assets.</p></body></html>
+<html><head/><body><p>渲染带护套的盾牌，需要额外的mod资源。</p></body></html>
+
+Shield sheathing
+盾牌护套
+
+Shaders
+着色器
+
+Auto use object normal maps
+自动使用物体法线贴图
+
+Auto use terrain normal maps
+自动使用地形法线贴图
+
+Auto use object specular maps
+自动使用物体镜面图
+
+Auto use terrain specular maps
+自动使用地形镜面图
+
+Bump/reflect map local lighting
+凹凸不平/反射贴图的局部照明
+
+Use anti-alias alpha testing
+使用测试版抗锯齿阴影
+
+Soft Particles
+软粒子
+
+Fog
+雾气
+
+Radial fog
+雾气半径
+
+Exponential fog
+指数式雾气
+
+Sky blending
+天空雾气混合
+
+Sky blending start
+混合边界
+
+Terrain
+地形
+
+Viewing distance
+可视距离
+
+Cells
+区块
+
+Object paging min size
+对象分页最小尺寸
+
+Distant land
+超远视野
+
+Active grid object paging
+活动网格对象分页
+
+Models
+模型
+
+Day night switch nodes
+昼夜切换节点
+
+Post Processing
+后期处理
+
+Enable post processing
+启用后期处理
+
+Transparent postpass
+透明的后期通道
+
+Auto exposure speed
+自动曝光速度
+
+Audio
+音频
+
+Select your preferred audio device.
+选择你喜欢的音频设备
+
+Audio Device
+音频设备
+
+Default
+默认
+
+HRTF
+HRTF功能
+
+Automatic
+自动
+
+Off
+禁用
+
+On
+启用
+
+HRTF Profile
+HRTF预设
+
+Default
+默认
+
+Interface
+界面设置
+
+Off
+禁用
+
+Tool Tip Only
+仅限工具图标
+
+Crosshair Only
+仅限十字准星
+
+Tool Tip and Crosshair
+工具图标与十字准星
+
+GUI scaling factor
+UI大小设置
+
+Show effect duration
+显示buff持续时间
+
+Change dialogue topic color
+改变对话关键词的颜色
+
+Font size
+字体大小
+
+Can zoom on maps
+启用背包地图缩放
+
+Enable graphic herbalism
+启用图形化的炼金材料
+
+Show projectile damage
+显示投射物伤害
+
+Show melee info
+显示近战武器信息
+
+Stretch menu background
+可拉伸的菜单背景
+
+Show owned objects
+显示所有权对象
+
+Show enchant chance
+显示附魔成功率
+
+Bug Fixes
+BUG修复
+
+Merchant equipping fix
+商人不再装备玩家卖掉的物品
+
+Trainers choose their training skills based on their base skill points
+训练师根据他们自身的技能点来选择技能训练
+
+Miscellaneous
+杂项
+
+Saves
+存档
+
+Add "Time Played" to saves
+根据"游玩时间"自动存档
+
+Maximum Quicksaves
+最小快速存档时间
+
+Other
+其他
+
+Screenshot Format
+屏幕截图格式
+
+Notify on saved screenshot
+保存截图时进行通知
+
+Testing
+测试性
+
+These settings are intended for testing mods and will cause issues if used for normal gameplay.
+这些设置是为了测试MOD，如果用于正常游戏，会导致问题。
+
+Grab cursor
+抓取光标
+
+Skip menu and generate default character
+跳过新手教程并生成默认角色
+
+Start default character at
+默认角色出生点
+
+default cell
+默认地区
+
+Run script after startup:
+在启动后运行脚本：
+
+Browse…
+浏览…
+
+Content Files
+主文件与插件
+
+Data Directories
+游戏目录
+
+Append
+添加
+
+Insert Above
+插入
+
+Move Up
+上移
+
+Move Down
+下移
+
+Remove
+移除
+
+Archive Files
+资源文件
+
+Move Up
+上移
+
+Move Down
+下移
+
+Navigation Mesh Cache
+导航网格缓存
+
+Update
+更新
+
+Cancel
+取消
+
+Remove unused tiles
+移除未使用的瓦片地图
+
+Max size
+最大值
+
+Content List
+内容列表
+
+Select a content list
+选择一个内容列表
+
+New Content List
+新建内容列表
+
+Clone Content List
+复制内容列表
+
+Clone Content List
+复制内容列表
+
+Delete Content List
+删除内容列表
+
+Delete Content List
+删除内容列表
+
+New Content List
+新建内容列表
+
+New Content List
+新建内容列表
+
+Clone Content List
+复制内容列表
+
+Clone Content List
+复制内容列表
+
+Delete Content List
+删除内容列表
+
+Delete Content List
+删除内容列表
+
+Check Selection
+检查选择
+
+Uncheck Selection
+取消选择
+
+Refresh Data Files
+刷新Data文件夹
+
+Refresh Data Files
+刷新Data文件夹
+
+Select directories you wish to add
+选择你想添加的目录
+
+Display
+显示
+
+Anti-aliasing:
+抗锯齿：
+
+Framerate Limit:
+帧率限制：
+
+Custom:
+自定义：
+
+Standard:
+标准：
+
+Window Border
+带边框窗口化
+
+Fullscreen
+全屏
+
+Windowed Fullscreen
+无边框窗口化
+
+Windowed
+窗口化
+
+Window Mode:
+窗口模式
+
+Resolution:
+方案：
+
+Screen:
+显示屏：
+
+Vertical Sync
+垂直同步
+
+Lighting
+光照
+
+Lighting Method:
+照明方案：
+
+legacy
+原版
+
+shaders compatibility
+兼容性着色器
+
+shaders
+着色器
+
+Shadows
+阴影
+
+Enable Player Shadows
+玩家阴影
+
+Enable Actor Shadows
+生物阴影
+
+Enable Object Shadows
+物体阴影
+
+Enable Terrain Shadows
+地形阴影
+
+Enable Indoor Shadows
+室内阴影
+
+Shadow Near Far Computation Method:
+阴影距离计算方式：
+
+bounds
+形状边缘
+
+primitives
+原始
+
+none
+无
+
+Shadow Map Resolution:
+阴影清晰度：
+
+Shadow Distance Limit:
+阴影距离限制：
+
+unit(s)
+距离单位
+
+Fade Start Multiplier:
+淡入淡出倍数：
+
+OpenMW Launcher
+OpenMW 启动器
+
+OpenMW version
+OpenMW 版本
+
+Current Content List:
+当前内容列表：
+
+Play
+玩
+
+Form
+形状
+
+Morrowind Content Language
+晨风内容语言
+
+Morrowind Installation Wizard
+晨风安装向导
+
+Run &Installation Wizard
+运行 &安装向导
+
+Morrowind Settings Importer
+晨风设置导入器
+
+File to import settings from:
+要导入设置的文件：
+
+Browse...
+浏览...
+
+Import add-on and plugin selection (creates a new Content List)
+导入附加组件和插件选择（创建一个新的内容列表）。
+
+Import bitmap fonts setup
+导入位图字体设置
+
+Run &Settings Importer
+运行 &设置导入器
+

@@ -1,0 +1,188 @@
+# Console
+
+ConsoleWindow: "控制台"
+
+# Debug window
+
+DebugWindow: "开发者模式"
+LogViewer: "日志浏览器"
+LuaProfiler: "Lua分析器"
+PhysicsProfiler: "物理分析器"
+
+
+# Messages
+
+AskLoadLastSave: "最近的存档是 '%s'。你要载入它吗？"
+BuildingNavigationMesh: "构筑地图导航网格"
+InitializingData: "初始化数据..."
+LoadingExterior: "外部区域载入中"
+LoadingFailed: "载入游戏存档失败"
+LoadingInterior: "内部区域载入中"
+LoadingInProgress: "游戏存档载入中"
+LoadingRequiresNewVersionError: |-
+    这个存档文件是用新版本OpenMW创建的，所以无法支持。
+    请升级到最新版本的OpenMW再载入这个存档文件。
+LoadingRequiresOldVersionError: |-
+    这个存档文件是用旧版本OpenMW创建的，这种格式不再支持了。
+    使用 {version} 读取并保存这个文件来升级存档文件。
+NewGameConfirmation: "你想放弃当前游戏并开始新的游戏吗？"
+QuitGameConfirmation: "退出游戏吗？"
+SaveGameDenied: "现在无法保存游戏。"
+SavingInProgress: "保存中..."
+ScreenshotFailed: "保存截图失败"
+ScreenshotMade: "已保存 %s"
+
+
+# Save game menu
+
+DeleteGame: "删除存档"
+DeleteGameConfirmation: "你确认要删除这个游戏存档吗？"
+EmptySaveNameError: "存档需要起名才能保存！"
+Health: "生命"
+Level: "等级"
+LoadGameConfirmation: "你想放弃当前游戏并加载这个游戏存档吗？"
+MissingContentFilesConfirmation: |-
+    这个游戏存档跟当前选择的游戏资源文件不匹配。
+    加载存档或游玩中可能会出错。
+    你还想要继续加载吗？
+MissingContentFilesList: |-
+  {files, plural,
+    one{\n\n发现丢失的文件: }
+    few{\n\n发现 {files} 个丢失的文件:\n}
+    other{\n\n发现 {files} 个丢失的文件:\n}
+  }
+MissingContentFilesListCopy: |-
+  {files, plural,
+    one{\n\n点击复制把这个名字放入剪贴板。}
+    few{\n\n点击复制把这些名字放入剪贴板。}
+    other{\n\n点击复制把这些名字放入剪贴板。}
+  }
+OverwriteGameConfirmation: "你确认要覆盖这个游戏存档吗？"
+SelectCharacter: "选择角色..."
+TimePlayed: "游戏时间"
+
+
+# Settings menu
+
+ActorsProcessingRange: "目标处理范围"
+Anisotropy: "异向性"
+Audio: "音频"
+AudioEffects: "音效"
+AudioFootsteps: "脚步声"
+AudioMaster: "主音量"
+AudioMusic: "音乐"
+AudioVoice: "语音"
+AutoSaveOnResting: "休息时自动保存"
+BestAttack: "总是使用最佳攻击方式"
+CameraSensitivity: "镜头灵敏度"
+CameraZoomIn: "镜头放大"
+CameraZoomOut: "镜头缩小"
+ChangeRequiresRestart: "这项更改需要重新启动才可生效。"
+ConfirmResetBindings: "重置所有控制按键成默认状态？"
+ConfirmResolution: "新分辨率将立即生效。是否继续？"
+Controller: "手柄按键"
+Controls: "控制"
+Crosshair: "准星"
+DelayLow: "快"
+DelayHigh: "慢"
+DetailLevel: "细节等级"
+Difficulty: "难度"
+DifficultyEasy: "容易"
+DifficultyHard: "困难"
+DistanceHigh: "远"
+DistanceLow: "近"
+EnableController: "启动控制器"
+FieldOfView: "视野"
+FieldOfViewHigh: "宽"
+FieldOfViewLow: "窄"
+FrameRateHint: "提示：按下F3显示当前帧率"
+GammaCorrection: "伽马校正"
+GammaDark: "暗"
+GammaLight: "亮"
+GmstOverridesL10n: "优先选用来自 ESM 文件的字符串"
+InvertXAxis: "X轴反转"
+InvertYAxis: "Y轴反转"
+Language: "语言"
+LanguageNote: "注意：这些设置不会影响ESM主文件中的内容。"
+LightingMethod: "光照方式"
+LightingMethodLegacy: "传统"
+LightingMethodShaders: "着色器"
+LightingMethodShadersCompatibility: "着色器 (兼容)"
+LightingResetToDefaults: "将重置所有选项，是否继续？更改光照方式必须重启游戏。"
+Lights: "光照"
+LightsBoundingSphereMultiplier: "边界球倍数"
+LightsBoundingSphereMultiplierTooltip: "默认: 1.65\n光源边界球体的倍数。\n更高的值可以平滑衰减，但需要增加最大光源数。\n\n不影响光源的照度或强度。"
+LightsFadeStartMultiplier: "衰减开始倍数"
+LightsFadeStartMultiplierTooltip: "默认: 0.85\n光源开始衰减的最大距离系数。\n\n设置为较低值会让衰减更慢，而较高值会让衰减更快。"
+LightsLightingMethodTooltip: "设置光源的内部处理。\n\n
+    \"传统\" 每个物体总是使用8个灯光，并提供最接近原版游戏的光照。\n\n
+    \"着色器 (兼容)\" 移除8个灯光限制。此模式还支持地面覆盖物的光照和可配置的光照衰减。建议在较旧的硬件和接近8个灯光限制下使用此模式。\n\n
+    \"着色器\" 具有“着色器 (兼容)”的所有优点，还使用了一种现代方法，允许更高的最大灯光数量，在现代硬件上几乎没有性能损失。"
+LightsMaximumDistance: "光照最大距离"
+LightsMaximumDistanceTooltip: "默认: 8192\n光源出现的最大距离 (单位: units)。\n\n设置为0表示无限距离。"
+LightsMinimumInteriorBrightness: "最低室内亮度"
+LightsMinimumInteriorBrightnessTooltip: "默认: 0.08\n最低室内环境亮度。\n\n如果你感觉室内太暗就调高。"
+MaxLights: "最大光源数"
+MaxLightsTooltip: "默认: 8\n每个物体接受的最大光源数。\n\n比默认值小的值会导致光源闪现, 就像传统光照效果那样。"
+MenuHelpDelay: "帮助菜单延迟"
+MenuTransparency: "菜单透明度"
+MouseAndKeyboard: "鼠标/键盘"
+PostProcessing: "后期处理"
+PostProcessingIsNotEnabled: "后处理器没开启"
+PostProcessingTooltip: "通过HUD后期处理器调整，请参考输入绑定。"
+Preferences: "个性化"
+PrimaryLanguage: "主要语言"
+PrimaryLanguageTooltip: "此语言的本地化文件具有最高优先级。"
+QualityHigh: "高质量"
+QualityLow: "低质量"
+QualityMedium: "中质量"
+RainRippleDetail: "雨水波纹细节"
+RainRippleDetailDense: "稠密"
+RainRippleDetailSimple: "简单"
+RainRippleDetailSparse: "稀疏"
+RebindAction: "按一下键盘按键或鼠标按钮绑定这个动作。"
+ReflectionShaderDetail: "反射着色器细节"
+ReflectionShaderDetailActors: "人物"
+ReflectionShaderDetailGroundcover: "地表植被"
+ReflectionShaderDetailObjects: "实体"
+ReflectionShaderDetailSky: "天空"
+ReflectionShaderDetailTerrain: "地形"
+ReflectionShaderDetailWorld: "世界"
+Refraction: "折射"
+ResetControls: "重置控制"
+Screenshot: "截图"
+Scripts: "脚本"
+ScriptsDisabled: "加载游戏以访问脚本设置。"
+SecondaryLanguage: "次要语言"
+SecondaryLanguageTooltip: "如果主语言文件缺少必要的行，则可以使用此语言的本地化文件。"
+SensitivityHigh: "高敏感度"
+SensitivityLow: "低敏感度"
+SettingsWindow: "选项"
+Subtitles: "字幕"
+SunlightScattering: "阳光散射"
+TestingExteriorCells: "正在测试室外地块"
+TestingInteriorCells: "正在测试室内地块"
+TextureFiltering: "纹理过滤"
+TextureFilteringBilinear: "双线性"
+TextureFilteringNearest: "最邻近"
+TextureFilteringDisabled: "无"
+TextureFilteringOther: "其他"
+TextureFilteringTrilinear: "三线性"
+ToggleHUD: "切换HUD"
+TogglePostProcessorHUD: "切换HUD后期处理器"
+TransparencyFull: "全透明"
+TransparencyNone: "不透明"
+Video: "视频"
+ViewDistance: "视距"
+VSync: "垂直同步"
+VSyncAdaptive: "自适应"
+Water: "水面"
+WaterShader: "水面着色器"
+WaterShaderTextureQuality: "纹理质量"
+WindowBorder: "窗口边框"
+WindowMode: "窗口模式"
+WindowModeFullscreen: "全屏"
+WindowModeHint: "提示：无边框窗口化模式\n总是使用原始显示分辨率。"
+WindowModeWindowed: "窗口化"
+WindowModeWindowedFullscreen: "无边框窗口化"
+WobblyShores: "摇晃海岸"
