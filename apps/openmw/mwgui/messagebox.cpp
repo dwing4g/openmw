@@ -98,7 +98,10 @@ namespace MWGui
         auto box = std::make_unique<MessageBox>(*this, message);
         box->mCurrentTime = 0;
         auto realMessage = MyGUI::LanguageManager::getInstance().replaceTags({ message.data(), message.size() });
-        box->mMaxTime = realMessage.length() * mMessageBoxSpeed;
+        size_t n = 5;
+        for (size_t i = 0, s = realMessage.length(); i < s; i++)
+            n += realMessage[i] < 0x2000 ? 1 : 3; // wide chars need more time to read
+        box->mMaxTime = n * mMessageBoxSpeed;
 
         if (stat)
             mStaticMessageBox = box.get();

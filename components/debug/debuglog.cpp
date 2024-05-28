@@ -35,6 +35,30 @@ Log::~Log()
     sLock.unlock();
 }
 
+Log& Log::operator<<(std::filesystem::path&& rhs)
+{
+    if (mShouldLog)
+        std::cout << Files::pathToUnicodeString(std::move(rhs));
+
+    return *this;
+}
+
+Log& Log::operator<<(const std::filesystem::path&& rhs)
+{
+    if (mShouldLog)
+        std::cout << Files::pathToUnicodeString(std::move(rhs));
+
+    return *this;
+}
+
+Log& Log::operator<<(std::filesystem::path& rhs)
+{
+    if (mShouldLog)
+        std::cout << Files::pathToUnicodeString(rhs);
+
+    return *this;
+}
+
 Log& Log::operator<<(const std::filesystem::path& rhs)
 {
     if (mShouldLog)

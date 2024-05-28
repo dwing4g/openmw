@@ -147,7 +147,8 @@ namespace MWGui
                 return toUtf8Span(utf8text);
             }
 
-            void visitSpans(std::function<void(TopicId, size_t, size_t)> visitor) const override
+            void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter,
+                std::function<void(TopicId, size_t, size_t)> visitor) const override
             {
                 ensureLoaded();
                 mModel->ensureKeyWordSearchLoaded();
@@ -155,6 +156,8 @@ namespace MWGui
                 if (mHyperLinks.size()
                     && MWBase::Environment::get().getWindowManager()->getTranslationDataStorage().hasTranslation())
                 {
+                    mTypesetter->addContent(body());
+
                     size_t formatted = 0; // points to the first character that is not laid out yet
                     for (std::map<Range, intptr_t>::const_iterator it = mHyperLinks.begin(); it != mHyperLinks.end();
                          ++it)
@@ -172,6 +175,9 @@ namespace MWGui
                 {
                     std::vector<KeywordSearchT::Match> matches;
                     mModel->mKeywordSearch.highlightKeywords(utf8text.begin(), utf8text.end(), matches);
+
+                    KeywordSearchT::removeUnusedPostfix(utf8text, matches);
+                    mTypesetter->addContent(body());
 
                     std::string::const_iterator i = utf8text.begin();
                     for (std::vector<KeywordSearchT::Match>::const_iterator it = matches.begin(); it != matches.end();
@@ -312,15 +318,14 @@ namespace MWGui
         {
             MWBase::Journal* journal = MWBase::Environment::get().getJournal();
 
+            character = Utf8Stream::toLowerUtf8(character);
             for (MWBase::Journal::TTopicIter i = journal->topicBegin(); i != journal->topicEnd(); ++i)
             {
                 Utf8Stream stream(i->second.getName());
                 Utf8Stream::UnicodeChar first = Utf8Stream::toLowerUtf8(stream.peek());
 
-                if (first != Utf8Stream::toLowerUtf8(character))
-                    continue;
-
-                visitor(i->second.getName());
+                if (Translation::isFirstChar(first, (char)character))
+                    visitor(i->second.getName());
             }
         }
 

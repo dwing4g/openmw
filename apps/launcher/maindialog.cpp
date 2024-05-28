@@ -1,4 +1,4 @@
-#include "maindialog.hpp"
+﻿#include "maindialog.hpp"
 
 #include <QCloseEvent>
 #include <QDir>
@@ -525,7 +525,7 @@ bool Launcher::MainDialog::writeSettings()
     }
     catch (std::exception& e)
     {
-        std::string msg = "<br><b>Error writing settings.cfg</b><br><br>" + Files::pathToUnicodeString(settingsPath)
+        std::string msg = "<br><b>写入 settings.cfg 出错</b><br><br>" + Files::pathToUnicodeString(settingsPath)
             + "<br><br>" + e.what();
         cfgError(tr("Error writing user settings file"), tr(msg.c_str()));
         return false;
