@@ -1,0 +1,48 @@
+ MyGUIEngine/src/MyGUI_TextView.cpp | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/MyGUIEngine/src/MyGUI_TextView.cpp b/MyGUIEngine/src/MyGUI_TextView.cpp
+index 71253543d..4caeb8f68 100644
+--- a/MyGUIEngine/src/MyGUI_TextView.cpp
++++ b/MyGUIEngine/src/MyGUI_TextView.cpp
+@@ -128,7 +128,7 @@ namespace MyGUI
+ 			return;*/
+ 
+ 		result.height += _height;
+-
++		Char lastChar = 0;
+ 		for (; index != end; ++index)
+ 		{
+ 			Char character = *index;
+@@ -208,10 +208,11 @@ namespace MyGUI
+ 			if (info == nullptr)
+ 				continue;
+ 
+-			if (FontCodeType::Space == character || FontCodeType::Tab == character)
++			if (FontCodeType::Space == character || FontCodeType::Tab == character || character >= 0x2000 || lastChar >= 0x2000)
+ 			{
+ 				roll_back.set(line_info.symbols.size(), index, count, width);
+ 			}
++			lastChar = character;
+ 
+ 			float char_width = info->width;
+ 			float char_height = info->height;
+@@ -234,6 +235,7 @@ namespace MyGUI
+ 
+ 			// перенос слов
+ 			if (_maxWidth != -1
++				&& width > 0
+ 				&& (width + char_fullAdvance) > _maxWidth
+ 				&& !roll_back.empty())
+ 			{
+@@ -259,6 +261,10 @@ namespace MyGUI
+ 				// отменяем откат
+ 				roll_back.clear();
+ 
++				lastChar = 0;
++				character = *index;
++				if (FontCodeType::Space != character && FontCodeType::Tab != character)
++					index--;
+ 				continue;
+ 			}
+ 

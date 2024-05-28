@@ -1,0 +1,84 @@
+ControlsPage: "OpenMW按键控制"
+ControlsPageDescription: "玩家控制相关的附加设置。"
+
+MovementSettings: "移动"
+
+alwaysRun: "总是奔跑"
+alwaysRunDescription: |
+    如果开启, 角色默认就会奔跑, 否则角色默认就会行走。
+    shift键可以临时切换状态, 而大小写锁定键会以锁定方式切换状态。
+
+toggleSneak: "切换潜行"
+toggleSneakDescription: |
+    此设置让潜行键(默认绑定到Ctrl键)切换潜行而不是必须按住才能潜行。
+    开启这个选项, 玩家将更容易控制长时间的潜行。
+
+smoothControllerMovement: "平滑手柄移动"
+smoothControllerMovementDescription: |
+   开启平滑手柄摇杆移动，这会让从行走到跑步的过渡不那么突然。
+
+TogglePOV_name: "切换视角"
+TogglePOV_description: "在第一和第三人称视角之间切换。按住可以进入预览模式。"
+
+Zoom3rdPerson_name: "缩放"
+Zoom3rdPerson_description: "第三人称视角时，移动摄像机更近/更远。"
+
+MoveForward_name: "前移"
+MoveForward_description: "可用后移来取消。"
+
+MoveBackward_name: "后移"
+MoveBackward_description: "可用前移来取消。"
+
+MoveLeft_name: "左移"
+MoveLeft_description: "可用右移来取消。"
+
+MoveRight_name: "右移"
+MoveRight_description: "可用左移来取消。"
+
+Use_name: "使用"
+Use_description: "使用武器攻击或施法，取决于当前场合。"
+
+Run_name: "奔跑"
+Run_description: "按下时奔跑/行走，取决于总是奔跑的设置。"
+
+AlwaysRun_name: "总是奔跑"
+AlwaysRun_description: "切换总是奔跑设置。"
+
+Jump_name: "跳跃"
+Jump_description: "你在地面上时可以跳跃。"
+
+AutoMove_name: "自动移动"
+AutoMove_description: "切换持续前移。"
+
+Sneak_name: "潜行"
+Sneak_description: "按住时潜行，如果关闭切换潜行设置时。"
+
+ToggleSneak_name: "切换潜行"
+ToggleSneak_description: "切换潜行，如果开启了切换潜行设置时。"
+
+ToggleWeapon_name: "准备武器"
+ToggleWeapon_description: "准备或放下持有武器状态。"
+
+ToggleSpell_name: "准备魔法"
+ToggleSpell_description: "准备或放下施法状态。"
+
+Inventory_name: "物品"
+Inventory_description: "打开物品栏。"
+
+Journal_name: "日志"
+Journal_description: "打开日志。"
+
+QuickKeysMenu_name: "快捷菜单"
+QuickKeysMenu_description: "打开快捷键菜单。"
+
+SmoothMoveForward_name: "平滑前移"
+SmoothMoveForward_description: "调整了平滑走跑过渡的前移。"
+
+SmoothMoveBackward_name: "平滑后移"
+SmoothMoveBackward_description: "调整了平滑走跑过渡的后移。"
+
+SmoothMoveLeft_name: "平滑左移"
+SmoothMoveLeft_description: "调整了平滑走跑过渡的左移。"
+
+SmoothMoveRight_name: "平滑右移"
+SmoothMoveRight_description: "调整了平滑走跑过渡的右移。"
