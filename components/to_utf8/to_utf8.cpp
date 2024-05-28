@@ -8,6 +8,12 @@
 
 #include <components/debug/debuglog.hpp>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <clocale>
+#endif
+
 /* This file contains the code to translate from WINDOWS-1252 (native
    charset used in English version of Morrowind) to UTF-8. The library
    is designed to be extened to support more source encodings later,
@@ -47,6 +53,8 @@ using namespace ToUTF8;
 
 namespace
 {
+    static const signed char s_utf8[1] = { ToUTF8::UTF_8 }, s_gbk[1] = { ToUTF8::GBK };
+
     std::string_view::iterator skipAscii(std::string_view input)
     {
         return std::find_if(input.begin(), input.end(), [](unsigned char v) { return v == 0 || v >= 128; });
@@ -56,6 +64,10 @@ namespace
     {
         switch (sourceEncoding)
         {
+            case ToUTF8::UTF_8:
+                return { s_utf8, 1 };
+            case ToUTF8::GBK:
+                return { s_gbk, 1 };
             case ToUTF8::WINDOWS_1252:
                 return { ToUTF8::windows_1252, std::size(ToUTF8::windows_1252) };
             case ToUTF8::WINDOWS_1250:
@@ -108,6 +120,37 @@ std::string_view StatelessUtf8Encoder::getUtf8(
     if (input.empty())
         return input;
 
+    if (mTranslationArray.size() == 1)
+    {
+        if (mTranslationArray[0] == ToUTF8::UTF_8)
+            return input;
+        if (mTranslationArray[0] == ToUTF8::GBK)
+        {
+#ifdef WIN32
+            WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
+            int n = MultiByteToWideChar(936, 0, input.data(), input.size(), wchars, input.size());
+            resize(n * 3, bufferAllocationPolicy, buffer);
+            n = WideCharToMultiByte(CP_UTF8, 0, wchars, n, buffer.data(), n * 3, 0, 0);
+#else
+            std::setlocale(LC_ALL, "zh_CN.gbk");
+            size_t n = input.size();
+            resize(n + 1, bufferAllocationPolicy, buffer);
+            memcpy(buffer.data(), input.data(), n);
+            buffer.data()[n] = 0;
+            wchar_t* wchars = (wchar_t*)alloca((n + 1) * sizeof(wchar_t));
+            memset(wchars, 0, (n + 1) * sizeof(wchar_t));
+            size_t r = std::mbstowcs(wchars, buffer.data(), n);
+            n = r == (size_t)-1 ? wcslen(wchars) : r;
+            std::setlocale(LC_ALL, "en_US.utf8");
+            resize(n * 3, bufferAllocationPolicy, buffer);
+            memset(buffer.data(), 0, n * 3);
+            r = std::wcstombs(buffer.data(), wchars, n * 3);
+            n = r == (size_t)-1 ? strnlen(buffer.data(), n) : r;
+#endif
+            return std::string_view(buffer.data(), n);
+        }
+    }
+
     // Note: The rest of this function is designed for single-character
     // input encodings only. It also assumes that the input encoding
     // shares its first 128 values (0-127) with ASCII. There are no plans
@@ -145,6 +188,37 @@ std::string_view StatelessUtf8Encoder::getLegacyEnc(
 {
     if (input.empty())
         return input;
+
+    if (mTranslationArray.size() == 1)
+    {
+        if (mTranslationArray[0] == ToUTF8::UTF_8)
+            return input;
+        if (mTranslationArray[0] == ToUTF8::GBK)
+        {
+#ifdef WIN32
+            WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
+            int n = MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(), wchars, input.size());
+            resize(n * 2, bufferAllocationPolicy, buffer);
+            n = WideCharToMultiByte(936, 0, wchars, n, buffer.data(), n * 2, 0, 0);
+#else
+            std::setlocale(LC_ALL, "en_US.utf8");
+            size_t n = input.size();
+            resize(n + 1, bufferAllocationPolicy, buffer);
+            memcpy(buffer.data(), input.data(), n);
+            buffer.data()[n] = 0;
+            wchar_t* wchars = (wchar_t*)alloca((n + 1) * sizeof(wchar_t));
+            memset(wchars, 0, (n + 1) * sizeof(wchar_t));
+            size_t r = std::mbstowcs(wchars, buffer.data(), n);
+            n = r == (size_t)-1 ? wcslen(wchars) : r;
+            std::setlocale(LC_ALL, "zh_CN.gbk");
+            resize(n * 2, bufferAllocationPolicy, buffer);
+            memset(buffer.data(), 0, n * 2);
+            r = std::wcstombs(buffer.data(), wchars, n * 2);
+            n = r == (size_t)-1 ? strnlen(buffer.data(), n) : r;
+#endif
+            return std::string_view(buffer.data(), n);
+        }
+    }
 
     // TODO: The rest of this function is designed for single-character
     // input encodings only. It also assumes that the input the input
@@ -366,6 +440,10 @@ ToUTF8::FromType ToUTF8::calculateEncoding(std::string_view encodingName)
         return ToUTF8::WINDOWS_1251;
     else if (encodingName == "win1252")
         return ToUTF8::WINDOWS_1252;
+    else if (encodingName == "gbk")
+        return ToUTF8::GBK;
+    else if (encodingName == "utf8")
+        return ToUTF8::UTF_8;
     else
         throw std::runtime_error(
             "Unknown encoding '" + std::string(encodingName) + "', see openmw --help for available options.");
@@ -379,6 +457,10 @@ std::string ToUTF8::encodingUsingMessage(std::string_view encodingName)
         return "Using Cyrillic font encoding.";
     else if (encodingName == "win1252")
         return "Using default (English) font encoding.";
+    else if (encodingName == "gbk")
+        return "Using Chinese(GBK) font encoding.";
+    else if (encodingName == "utf8")
+        return "Using Unicode font encoding.";
     else
         throw std::runtime_error(
             "Unknown encoding '" + std::string(encodingName) + "', see openmw --help for available options.");

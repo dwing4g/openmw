@@ -1,4 +1,4 @@
-#include "datafilespage.hpp"
+﻿#include "datafilespage.hpp"
 #include "maindialog.hpp"
 
 #include <QClipboard>
@@ -167,7 +167,7 @@ Launcher::DataFilesPage::DataFilesPage(const Files::ConfigurationManager& cfg, C
 
     QVector<std::pair<QString, QString>> languages = { { "English", tr("English") }, { "French", tr("French") },
         { "German", tr("German") }, { "Italian", tr("Italian") }, { "Polish", tr("Polish") },
-        { "Russian", tr("Russian") }, { "Spanish", tr("Spanish") } };
+        { "Russian", tr("Russian") }, { "Spanish", tr("Spanish") }, { "Chinese(GBK)", tr("简体中文(GBK)") }, { "UTF-8", tr("UTF-8") } };
 
     for (auto lang : languages)
     {
@@ -209,13 +209,13 @@ void Launcher::DataFilesPage::buildView()
     QToolButton* refreshButton = mSelector->refreshButton();
 
     // tool buttons
-    ui.newProfileButton->setToolTip("Create a new Content List");
-    ui.cloneProfileButton->setToolTip("Clone the current Content List");
-    ui.deleteProfileButton->setToolTip("Delete an existing Content List");
+    ui.newProfileButton->setToolTip("创建一个内容列表");
+    ui.cloneProfileButton->setToolTip("克隆当前的内容列表");
+    ui.deleteProfileButton->setToolTip("删除已存在的内容列表");
 
     // combo box
     ui.profilesComboBox->addItem(mDefaultContentListName);
-    ui.profilesComboBox->setPlaceholderText(QString("Select a Content List..."));
+    ui.profilesComboBox->setPlaceholderText(QString("选择一个内容列表..."));
     ui.profilesComboBox->setCurrentIndex(ui.profilesComboBox->findText(QLatin1String(mDefaultContentListName)));
 
     // Add the actions to the toolbuttons
@@ -516,6 +516,14 @@ void Launcher::DataFilesPage::saveSettings(const QString& profile)
     else if (language == QLatin1String("Russian"))
     {
         mGameSettings.setValue(QLatin1String("encoding"), { "win1251" });
+    }
+    else if (language == QLatin1String("Chinese(GBK)"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), { "gbk" });
+    }
+    else if (language == QLatin1String("UTF-8"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), { "utf8" });
     }
     else
     {
