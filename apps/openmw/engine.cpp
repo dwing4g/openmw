@@ -511,6 +511,8 @@ void OMW::Engine::createWindow()
 
     SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, Settings::video().mMinimizeOnFocusLoss ? "1" : "0");
 
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+
     checkSDLError(SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8));
     checkSDLError(SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8));
     checkSDLError(SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8));

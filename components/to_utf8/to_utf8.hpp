@@ -11,6 +11,8 @@ namespace ToUTF8
     // These are all the currently supported code pages
     enum FromType
     {
+        UTF_8,
+        GBK,
         WINDOWS_1250, // Central ane Eastern European languages
         WINDOWS_1251, // Cyrillic languages
         WINDOWS_1252, // Used by English version of Morrowind (and
