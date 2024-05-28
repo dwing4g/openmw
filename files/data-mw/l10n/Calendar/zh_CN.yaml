@@ -1,0 +1,43 @@
+# source: https://en.uesp.net/wiki/Lore:Calendar
+
+month1: "晨星月"
+month2: "朝阳月"
+month3: "初芽月"
+month4: "雨掌月"
+month5: "次芽月"
+month6: "年中月"
+month7: "高阳月"
+month8: "末芽月"
+month9: "炉火月"
+month10: "霜降月"
+month11: "日暮月"
+month12: "夜星月"
+
+# The variant of month names in the context "day X of month Y".
+# In English it is the same, but some languages require a different form.
+monthInGenitive1: "晨星月"
+monthInGenitive2: "朝阳月"
+monthInGenitive3: "初芽月"
+monthInGenitive4: "雨掌月"
+monthInGenitive5: "次芽月"
+monthInGenitive6: "年中月"
+monthInGenitive7: "高阳月"
+monthInGenitive8: "末芽月"
+monthInGenitive9: "炉火月"
+monthInGenitive10: "霜降月"
+monthInGenitive11: "日暮月"
+monthInGenitive12: "夜星月"
+
+dateFormat: "{year, number, :: group-off}年 {monthInGenitive} {day}日"
+
+weekday1: "周日"
+weekday2: "周一"
+weekday3: "周二"
+weekday4: "周三"
+weekday5: "周四"
+weekday6: "周五"
+weekday7: "周六"
+
+am: "上午"
+pm: "下午"
+day: "日"

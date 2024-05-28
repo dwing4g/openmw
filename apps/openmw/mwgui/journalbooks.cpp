@@ -55,9 +55,7 @@ namespace
 
         void operator()(MWGui::JournalViewModel::Entry const& entry)
         {
-            mTypesetter->addContent(entry.body());
-
-            entry.visitSpans(AddSpan(mTypesetter, mBodyStyle));
+            entry.visitSpans(mTypesetter, AddSpan(mTypesetter, mBodyStyle));
         }
     };
 
