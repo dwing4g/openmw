@@ -95,6 +95,15 @@ EnableController: "启动控制器"
 FieldOfView: "视野"
 FieldOfViewHigh: "宽"
 FieldOfViewLow: "窄"
+ForcePerPixelLighting: "强制逐像素光照"
+ForcePerPixelLightingTooltip: |-
+    强制使用逐像素光照。默认只对凹凸和法线贴图的对象使用逐像素光照。
+
+    只影响使用着色器绘制的对象。
+
+    启用逐像素光照会导致与原版晨风引擎的视觉效果不同，因为晨风中的某些光照需要依赖顶点光照才能达到预期效果。
+
+    注意地面覆盖物着色器和粒子效果会忽略此设置。
 FrameRateHint: "提示：按下F3显示当前帧率"
 GammaCorrection: "伽马校正"
 GammaDark: "暗"
@@ -115,7 +124,7 @@ LightsBoundingSphereMultiplierTooltip: "默认: 1.65\n光源边界球体的倍�
 LightsFadeStartMultiplier: "衰减开始倍数"
 LightsFadeStartMultiplierTooltip: "默认: 0.85\n光源开始衰减的最大距离系数。\n\n设置为较低值会让衰减更慢，而较高值会让衰减更快。"
 LightsLightingMethodTooltip: "设置光源的内部处理。\n\n
-    \"传统\" 每个物体总是使用8个灯光，并提供最接近原版游戏的光照。\n\n
+    \"传统\" 每个物体总是使用8个灯光，提供最像原版游戏的光照。\n\n
     \"着色器 (兼容)\" 移除8个灯光限制。此模式还支持地面覆盖物的光照和可配置的光照衰减。建议在较旧的硬件和接近8个灯光限制下使用此模式。\n\n
     \"着色器\" 具有“着色器 (兼容)”的所有优点，还使用了一种现代方法，允许更高的最大灯光数量，在现代硬件上几乎没有性能损失。"
 LightsMaximumDistance: "光照最大距离"

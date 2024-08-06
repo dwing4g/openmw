@@ -1,9 +1,9 @@
 Abaelun Mine	阿伯伦矿场
 Abaesen-Pulu Egg Mine	阿贝森-普鲁卵矿场
 Abanabi	阿巴纳比
-Abandoned Shipwreck, Cabin	废弃的沉船，船舱
-Abandoned Shipwreck, Lower Level	废弃的沉船，下层
-Abandoned Shipwreck, Upper Level	废弃的沉船，上层
+Abandoned Shipwreck, Cabin	废弃沉船，船舱
+Abandoned Shipwreck, Lower Level	废弃沉船，下层
+Abandoned Shipwreck, Upper Level	废弃沉船，上层
 Abebaal Egg Mine	阿贝巴尔卵矿场
 Abernanit	阿伯纳尼特
 Abinabi	阿比纳比
@@ -49,7 +49,7 @@ Ald Sotha, Upper Level	奥德-索萨，上层
 Ald Velothi	奥德-维洛西
 Ald Velothi, Fevila Bethrano's Shack	奥德-维洛西，费维拉·贝特拉诺的小屋
 Ald Velothi, Ganus Lloryn's Shack	奥德-维洛西，加努斯·洛林的小屋
-Ald Velothi, Ienas Arvel's Shack	奥德-维洛西，伊娜丝·阿维尔的小屋
+Ald Velothi, Ienas Arvel's Shack	奥德-维洛西，伊纳丝·阿维尔的小屋
 Ald Velothi, Lledsea Relas's Shack	奥德-维洛西，莱德西·瑞拉斯的小屋
 Ald Velothi, Llerar Vinden's Shack	奥德-维洛西，勒拉尔·文登的小屋
 Ald Velothi, Outpost	奥德-维洛西，前哨
@@ -62,8 +62,8 @@ Ald-ruhn, Arobar Manor Bedrooms	奥德汝因，阿罗巴庄园
 Ald-ruhn, Arobar Manor Entrance	奥德-汝因，阿罗巴庄园入口
 Ald-ruhn, Arobar Private Quarters	奥德-汝因，阿罗巴私人住所
 Ald-ruhn, Aryni Orethi's House	奥德-汝因，阿瑞妮·奥瑞缇的房子
-Ald-ruhn, Bevene Releth: Clothier	奥德-汝因，贝薇妮·瑞莱斯：裁缝
-Ald-ruhn, Bivale Teneran: Clothier	奥德-汝因，比薇尔·特纳兰：裁缝
+Ald-ruhn, Bevene Releth: Clothier	奥德-汝因，贝薇妮·瑞莱斯：服饰商
+Ald-ruhn, Bivale Teneran: Clothier	奥德-汝因，比薇尔·特纳兰：服饰商
 Ald-ruhn, Boldrisa Andrano's House	奥德-汝因，博德里莎·安德拉诺的房子
 Ald-ruhn, Braynas Hlervu's House	奥德-汝因，布雷纳斯·赫勒武的房子
 Ald-ruhn, Cienne Sintieve: Alchemist	奥德-汝因，西恩·辛提夫：炼金术士
@@ -72,18 +72,18 @@ Ald-ruhn, Council Club	奥德-汝因，议会所
 Ald-ruhn, Council Hostel	奥德-汝因，议会招待所
 Ald-ruhn, Dandera Selaro: Smith	奥德-汝因，丹德拉·塞拉罗：铁匠
 Ald-ruhn, Daynes Redothril: Pawnbroker	奥德-汝因，戴涅斯·瑞多瑟尔：典当商
-Ald-ruhn, Dravasa Andrethi's House	奥德-汝因，德拉瓦萨·安德雷斯的房子
+Ald-ruhn, Dravasa Andrethi's House	奥德-汝因，德拉瓦萨·安德雷西的房子
 Ald-ruhn, Drinar Varyon's House	奥德-汝因，德里纳尔·瓦里昂的房子
 Ald-ruhn, Galsa Gindu's House	奥德-汝因，加尔萨·金杜的房子
 Ald-ruhn, Galthragoth's House	奥德-汝因，加斯拉格斯的房子
 Ald-ruhn, Gildan's House	奥德-汝因，吉尔丹的房子
-Ald-ruhn, Gindrala Hleran's House	奥德-汝因，金德拉·赫勒兰的房子
+Ald-ruhn, Gindrala Hleran's House	奥德-汝因，金德拉·勒兰的房子
 Ald-ruhn, Goras Andrelo's House	奥德-汝因，格拉斯·安德雷罗的房子
 Ald-ruhn, Guard Tower 1	奥德-汝因，一号卫兵塔
 Ald-ruhn, Guard Tower 2	奥德-汝因，二号卫兵塔
 Ald-ruhn, Guild of Fighters	奥德-汝因，战士公会
 Ald-ruhn, Guild of Mages	奥德-汝因，法师公会
-Ald-ruhn, Guls Llervu's House	奥德-汝因，加尔斯·列乌的房子
+Ald-ruhn, Guls Llervu's House	奥德-汝因，古尔斯·列乌的房子
 Ald-ruhn, Hanarai Assutlanipal's House	奥德-汝因，哈娜来·阿苏兰尼帕的房子
 Ald-ruhn, Ienas Sarandas's House	奥德-汝因，伊纳斯·萨兰达斯的房子
 Ald-ruhn, Ilmiril's House	奥德-汝因，伊尔米尔的房子
@@ -139,17 +139,17 @@ Aran Ancestral Tomb	阿冉先祖墓穴
 Arano Ancestral Tomb	阿拉诺先祖墓穴
 Arano Plantation	阿拉诺种植园
 Arenim Ancestral Tomb	阿雷尼姆先祖墓穴
-Arethan Ancestral Tomb	阿雷森先祖墓穴
+Arethan Ancestral Tomb	阿雷桑先祖墓穴
 Arkngthand, Cells of Hollow Hand	阿肯赞德，虚空之手之室
 Arkngthand, Deep Ore Passage	阿肯赞德，深矿通道
 Arkngthand, Hall of Centrifuge	阿肯赞德，离心机大厅
 Arkngthand, Heaven's Gallery	阿肯赞德，天堂之廊
 Arkngthand, Land's Blood Gallery	阿肯赞德，地血之廊
-Arkngthand, Weepingbell Hall	阿肯赞德，虚空之手之室
+Arkngthand, Weepingbell Hall	阿肯赞德，哭泣之铃之室
 Arkngthunch-Sturdumz	阿肯图奇-斯特达姆兹
 Arrow, Cabin	利箭号，船舱
 Arrow, Lower Level	利箭号，下层
-Arrow, Upper Level	利箭号，下层
+Arrow, Upper Level	利箭号，上层
 Arvel Manor	阿维尔庄园
 Arvel Manor, Slave Shack	阿维尔庄园，奴隶的小屋
 Arvel Manor, Slavemaster's Shack	阿维尔庄园，奴隶主的小屋
@@ -165,7 +165,7 @@ Ashalmimilkala, Shrine	阿沙米米卡拉，圣祠
 Ashamanu Camp, Kausha's Yurt	阿沙马努营地，考沙的帐篷
 Ashanammu	阿沙纳姆
 Ashimanu Egg Mine	阿希马努卵矿场
-Ashimanu Egg Mine, Queen's Lair	阿希马努卵矿场，女皇的巢穴
+Ashimanu Egg Mine, Queen's Lair	阿希马努卵矿场，女王巢穴
 Ashinabi	阿什那比
 Ashinabi, Smuggler Den	阿什那比，走私窝点
 Ashirbadon	阿希尔巴顿
@@ -203,7 +203,7 @@ Balmora, Caius Cosades' House	巴尔莫拉，凯乌斯·科萨德斯的房子
 Balmora, Clagius Clanler: Outfitter	巴尔莫拉，克拉吉乌斯·克兰勒：物品商人
 Balmora, Council Club	巴尔莫拉，议会所
 Balmora, Dorisa Darvel: Bookseller	巴尔莫拉，多丽莎·达维尔：书商
-Balmora, Dralasa Nithryon: Pawnbroker	巴尔莫拉，德拉萨·尼特隆：典当商
+Balmora, Dralasa Nithryon: Pawnbroker	巴尔莫拉，德拉萨·尼瑟隆：典当商
 Balmora, Dralcea Arethi's House	巴尔莫拉，德拉西娅·艾瑞西的房子
 Balmora, Dralosa Athren's House	巴尔莫拉，德拉洛萨·阿瑟伦的房子
 Balmora, Drarayne Thelas' House	巴尔莫拉，德拉蕾妮·西拉斯的房子
@@ -226,7 +226,7 @@ Balmora, Morag Tong Guild	巴尔莫拉，莫拉格堂公会
 Balmora, Nalcarya of White Haven: Fine Alchemist	巴尔莫拉，白港的娜尔卡娅：优质炼金术士
 Balmora, Nerano Manor	巴尔莫拉，内拉诺府邸
 Balmora, Nine Toes' House	巴尔莫拉，九-趾的房子
-Balmora, Rarayn Radarys' House	巴尔莫拉，拉瑞因·拉达瑞斯的房子
+Balmora, Rarayn Radarys' House	巴尔莫拉，拉拉林·拉达利斯的房子
 Balmora, Ra'Virr: Trader	巴尔莫拉，拉'维尔：贸易商
 Balmora, Rithleen's House	巴尔莫拉，丽思琳的房子
 Balmora, South Wall Cornerclub	巴尔莫拉，南墙街角俱乐部
@@ -247,7 +247,6 @@ Bamz-Amschend, King's Walk	巴姆兹-阿姆申德，国王大道
 Bamz-Amschend, Passage of the Walker	巴姆兹-阿姆申德，行者通道
 Bamz-Amschend, Passage of Whispers	巴姆兹-阿姆申德，耳语通道
 Bamz-Amschend, Radac's Forge	巴姆兹-阿姆申德，拉达克的熔炉
-Bamz-Amschend, Radac's Forge	姆兹-阿姆申德，拉达克的熔炉
 Bamz-Amschend, Skybreak Gallery	巴姆兹-阿姆申德，天碎之廊
 Band Egg Mine	班德卵矿场
 Baram Ancestral Tomb	巴拉姆先祖墓穴
@@ -276,7 +275,7 @@ Caldera, Dro'Shavir's House	卡尔德拉，多'沙维尔的房子
 Caldera, Elmussa Damori's House	卡尔德拉，埃尔穆萨·达莫里的房子
 Caldera, Falanaamo: Clothier	卡尔德拉，法拉那摩：服饰商
 Caldera, Ghorak Manor	卡尔德拉，戈拉克府邸
-Caldera, Governor's Hall	卡尔德拉，总督大厅
+Caldera, Governor's Hall	卡尔德拉，总督府
 Caldera, Guild of Mages	卡尔德拉，法师公会
 Caldera, Hodlismod: Armorer	卡尔德拉，霍利斯莫德：护甲商
 Caldera, Irgola: Pawnbroker	卡尔德拉，伊尔戈拉：典当商
@@ -288,8 +287,8 @@ Caldera, Nedhelas' House	卡尔德拉，内德拉斯的房子
 Caldera, North Guard Towers	卡尔德拉，北卫兵塔
 Caldera, Odairan Ashummi-Ammus' House	卡尔德拉，奥黛兰·阿修米-阿姆斯的房子
 Caldera, Shenk's Shovel	卡尔德拉，申克的铁锹
-Caldera, Slave Shack One	卡尔德拉，奴隶小屋   一
-Caldera, Slave Shack Two	卡尔德拉，奴隶小屋    二
+Caldera, Slave Shack One	卡尔德拉，奴隶小屋之一
+Caldera, Slave Shack Two	卡尔德拉，奴隶小屋之二
 Caldera, South Guard Towers	卡尔德拉，南卫兵塔
 Caldera, Surane Leoriane's House	卡尔德拉，苏拉妮·利奥里亚娜的房子
 Caldera, Valvius Mevureius' House	卡尔德拉，瓦尔维斯·梅夫赖乌斯的房子
@@ -306,7 +305,7 @@ Dagon Fel	大衮-费尔
 Dagon Fel, Andre Maul's Tower	大衮-费尔，安德列·玛乌尔之塔
 Dagon Fel, Anja Swift-Sailer's House	大衮-费尔，安佳·迅捷水手的房子
 Dagon Fel, End of the World Renter Rooms	大衮-费尔，天涯海角出租房
-Dagon Fel, Fanar Fork-Beard's House	大衮-费尔，法纳尔·叉胡子的房子
+Dagon Fel, Fanar Fork-Beard's House	大衮-费尔，法纳尔·八字胡的房子
 Dagon Fel, Fjorrod's House	大衮-费尔，弗约罗德的房子
 Dagon Fel, Greidil Half-Troll's House	大衮-费尔，格瑞迪尔·半巨魔的房子
 Dagon Fel, Heifnir: Trader	大衮-费尔，赫夫尼尔：贸易商
@@ -321,7 +320,7 @@ Dagon Fel, Watch Tower	大衮-费尔，瞭望塔
 Dagoth Ur	达格斯·乌尔堡
 Dagoth Ur, Facility Cavern	达格斯·乌尔堡，设施巢穴
 Dagoth Ur, Inner Facility	达格斯·乌尔堡，内部设施
-Dagoth Ur, Inner Tower	达格斯乌尔堡，内层塔楼
+Dagoth Ur, Inner Tower	达格斯·乌尔堡，内层塔楼
 Dagoth Ur, Lower Facility	达格斯·乌尔堡，下层设施
 Dagoth Ur, Outer Facility	达格斯·乌尔堡，外部设施
 Dareleth Ancestral Tomb	达雷莱斯先祖墓穴
@@ -342,7 +341,7 @@ Draugr Test	尸鬼测试间
 Dreloth Ancestral Tomb	德罗斯先祖墓穴
 Dren Plantation	德伦种植园
 Dren Plantation, Doves' Shack	德伦种植园，多夫斯的小屋
-Dren Plantation, Dren's Villa	德伦种植园，德伦的别墅
+Dren Plantation, Dren's Villa	德伦种植园，德伦别墅
 Dren Plantation, Guardhouse	德伦种植园，守卫房屋
 Dren Plantation, Helvi's Shack	德伦种植园，赫尔维的小屋
 Dren Plantation, Hlevala's Shack	德伦种植园，赫勒瓦拉的小屋
@@ -370,7 +369,6 @@ Ebonheart, East Empire Company Hall	黑檀心，东帝国公司大厅
 Ebonheart, East Empire North Warehouse	黑檀心，东帝国公司北部仓库
 Ebonheart, East Empire South Warehouse	黑檀心，东帝国公司南部仓库
 Ebonheart, Grand Council Chambers Tower	黑檀心，总议会厅塔楼
-Ebonheart, Grand Council Chambers	黑檀心，恢宏理事议会
 Ebonheart, Grand Council Chambers	黑檀心，总议会厅
 Ebonheart, Hawkmoth Legion Garrison	黑檀心，鹰蛾军团驻军地
 Ebonheart, Hawkmoth Towers	黑檀心，鹰蛾卫塔
@@ -400,7 +398,7 @@ Erabenimsun Camp, Ranabi's Yurt	埃勒比尼姆孙营地，拉纳比的帐篷
 Erabenimsun Camp, Salattanat's Yurt	埃勒比尼姆孙营地，萨拉塔纳特的帐篷
 Erabenimsun Camp, Wise Woman's Yurt	埃勒比尼姆孙营地，女智者的帐篷
 Eretammus-Sennammu Egg Mine	埃雷塔莫斯-森纳姆卵矿场
-Esutanamus, Shrine	伊苏塔纳姆斯，圣祠
+Esutanamus, Shrine	埃苏塔纳姆斯，圣祠
 Fadathram Ancestral Tomb	法达斯拉姆先祖墓穴
 Fair Helas, Cabin	公正赫拉斯，船舱
 Fair Helas, Lower Level	公正赫拉斯，下层
@@ -428,7 +426,7 @@ Fort Frostmoth, Armory	霜蛾要塞，军械库
 Fort Frostmoth, Carius' Chambers	霜蛾要塞，卡利尤斯的房间
 Fort Frostmoth, Curtain Wall	霜蛾要塞，幕墙
 Fort Frostmoth, General Quarters	霜蛾要塞，指挥官住所
-Fort Frostmoth, General Quarters, Upper Level	霜蛾要塞，指挥官住所 ，上层
+Fort Frostmoth, General Quarters, Upper Level	霜蛾要塞，指挥官住所，上层
 Fort Frostmoth, Imperial Cult Shrine	霜蛾要塞，帝国教团圣祠
 Fort Frostmoth, Prison	霜蛾要塞，监狱
 Fort Frostmoth, Supply Room	霜蛾要塞，库房
@@ -452,33 +450,33 @@ Gnaar Mok, Mush-Mere's Shack	纳尔-莫克，穆希-梅尔的小屋
 Gnaar Mok, Nadene Rotheran's Shack	纳尔-莫克，娜德妮·罗瑟兰的小屋
 Gnaar Mok, Rostlogi's Shack	纳尔-莫克，罗斯特洛吉的小屋
 Gnisis	尼希斯
-Gnisis, Abelmawia Hut	尼希斯，阿贝尔马维亚的小屋
+Gnisis, Abelmawia Hut	尼希斯，阿贝尔马维亚小屋
 Gnisis, Almu Cave Dwelling	尼希斯，阿尔穆的穴屋
 Gnisis, Arvs-Drelen	尼希斯，阿维斯-德雷伦
 Gnisis, Barracks	尼希斯，兵营
 Gnisis, Bethamez	尼希斯，贝撒姆兹
-Gnisis, Dinadad Hut	尼希斯，迪纳达的小屋
+Gnisis, Dinadad Hut	尼希斯，迪纳达小屋
 Gnisis, Eggmine	尼希斯，卵矿场
 Gnisis, Fort Darius	尼希斯，达瑞斯要塞
 Gnisis, Lasamsi Cave Dwelling	尼希斯，拉萨姆西的穴屋
 Gnisis, Lower Eggmine	尼希斯，卵矿场下层
 Gnisis, Madach Tradehouse	尼希斯，马达奇贸易行
-Gnisis, Man-llu Hut	尼希斯，曼-鲁的小屋
+Gnisis, Man-llu Hut	尼希斯，曼-鲁小屋
 Gnisis, Mantiti Cave Dwelling	尼希斯，曼提缇的穴屋
-Gnisis, Shand Hut	尼希斯，尚德的小屋
-Gnisis, Shishara Hut	尼希斯，辛夏拉的小屋
+Gnisis, Shand Hut	尼希斯，尚德小屋
+Gnisis, Shishara Hut	尼希斯，辛夏拉小屋
 Gnisis, Tansumiran Cave Dwelling	尼希斯，坦苏米兰的穴屋
 Gnisis, Temple	尼希斯，神殿
 Gnisis, Underground Stream	尼希斯，地下河
-Gnisis, Vabdas Hut	尼希斯，瓦布达斯的小屋
-Gnisis, Yahaz Hut	尼希斯，亚哈兹的小屋
+Gnisis, Vabdas Hut	尼希斯，瓦布达斯小屋
+Gnisis, Yahaz Hut	尼希斯，亚哈兹小屋
 Gro-Bagrat Plantation	格罗-巴格拉特种植园
 Grytewake, Cabin	格里特威克号，船舱
 Grytewake, Lower Level	格里特威克号，下层
 Grytewake, Upper Level	格里特威克号，上层
 Habinbaes	哈宾拜斯
 Hairat-Vassamsi Egg Mine	海拉特-瓦萨姆西卵矿场
-Hairat-Vassamsi Egg Mine, Queen's Lair	海拉特-瓦萨姆西卵矿场，夸蚂女皇巢穴
+Hairat-Vassamsi Egg Mine, Queen's Lair	海拉特-瓦萨姆西卵矿场，女王巢穴
 Halit Mine	哈利特矿场
 Hanud	哈努德
 Hanud, Tower	哈努德，塔楼
@@ -498,13 +496,13 @@ Hla Oad, Okur's House	哈拉-奥德，奥库尔的房子
 Hla Oad, Relien Rirne's House	哈拉-奥德，瑞利恩·里尔尼的房子
 Hla Oad, Shurkul gro-Sharga's House	哈拉-奥德，舒尔库·格罗-沙尔噶的房子
 Hlaalu Ancestral Tomb	哈拉鲁先祖墓穴
-Hleran Ancestral Tomb	赫勒兰先祖墓穴
+Hleran Ancestral Tomb	勒兰先祖墓穴
 Hlervi Ancestral Tomb	赫勒维先祖墓穴
 Hlervu Ancestral Tomb	赫勒武先祖墓穴
 Hlormaren	赫洛马伦
 Hlormaren, Dome	赫洛马伦，穹顶
-Hlormaren, Keep, Bottom Level	赫洛马伦，主楼，下层区域
-Hlormaren, Keep, Top Level	赫洛马伦，主楼，上层区域
+Hlormaren, Keep, Bottom Level	赫洛马伦，要塞，下层区域
+Hlormaren, Keep, Top Level	赫洛马伦，要塞，上层区域
 Hlormaren, Propylon Chamber	赫洛马伦，引路室
 Hlormaren, Sewers	赫洛马伦，下水道
 Hlormaren, Underground	赫洛马伦，地下
@@ -517,13 +515,13 @@ Ihinipalit, Shrine	伊希尼帕里特，圣祠
 Ilanipu Grotto	伊兰尼普石窟
 Ilunibi, Blackened Heart	伊鲁尼比，涅污之心
 Ilunibi, Carcass of the Saint	伊鲁尼比，圣徒之骸
-Ilunibi, Marowak's Spine	伊鲁尼比，玛洛瓦科之脊
+Ilunibi, Marowak's Spine	伊鲁尼比，嘎啦之脊
 Ilunibi, Soul's Rattle	伊鲁尼比，颤栗之魂
 Ilunibi, Tainted Marrow	伊鲁尼比，腐败之髓
 Imperial Prison Ship	帝国囚犯运输船
 Inanius Egg Mine	伊纳纽斯卵矿场
-Indalen Ancestral Tomb	英达伦先祖墓穴
-Indaren Ancestral Tomb	英达任先祖墓穴
+Indalen Ancestral Tomb	英达林先祖墓穴
+Indaren Ancestral Tomb	英达伦先祖墓穴
 Indarys Manor	因达瑞斯府邸
 Indarys Manor, Berendas' House	因达瑞斯府邸，贝伦达斯的房子
 Indarys Manor, Manor Services	因达瑞斯府邸，府邸服务区
@@ -535,7 +533,7 @@ Kaushtarari, Shrine	考什塔拉里，圣祠
 ken's test hole	肯的测试洞
 Khartag Point	哈塔格角
 Khuul	库尔
-Khuul, Aldi's Shack	库尔，艾尔迪的小屋
+Khuul, Aldi's Shack	库尔，阿尔迪的小屋
 Khuul, Brurid's Shack	库尔，布鲁立德的小屋
 Khuul, Endris Dilmyn's Shack	库尔，恩德里斯·迪尔明的小屋
 Khuul, Helga's Shack	库尔，海尔加的小屋
@@ -549,9 +547,9 @@ Koal Cave	考尔洞穴
 Kogoruhn	科戈鲁恩
 Kogoruhn, Bleeding Heart	科戈鲁恩，失血之心
 Kogoruhn, Charma's Breath	科戈鲁恩，火龙之息
-Kogoruhn, Dome of Pollock's Eve	科戈鲁恩，波洛克前夕的穹顶
+Kogoruhn, Dome of Pollock's Eve	科戈鲁恩，波洛克前夕之穹顶
 Kogoruhn, Dome of Urso	科戈鲁恩，乌索穹顶
-Kogoruhn, Hall of Maki	科戈鲁恩，马基大厅
+Kogoruhn, Hall of Maki	科戈鲁恩，梅基大厅
 Kogoruhn, Hall of Phisto	科戈鲁恩，菲斯托大厅
 Kogoruhn, Hall of the Watchful Touch	科戈鲁恩，戒慎之触大厅
 Kogoruhn, Nabith Waterway	科戈鲁恩，内比斯水路
@@ -560,7 +558,7 @@ Kogoruhn, Vault of Aerode	科戈鲁恩，埃罗德密室
 Kora-Dur	科拉-杜尔
 Kudanat	库达纳特
 Kumarahaz	库马拉哈兹
-Kunirai	库倪瑞
+Kunirai	库尼莱
 Kushtashpi, Shrine	库什塔什皮，圣祠
 Llando Ancestral Tomb	兰多先祖墓穴
 Lleran Ancestral Tomb	勒然先祖墓穴
@@ -570,9 +568,9 @@ Llovyn's Farmhouse	洛夫林的农舍
 Lonely Shipwreck, Cabin	孤独沉船，船舱
 Lonely Shipwreck, Lower Level	孤独沉船，下层甲板
 Lonely Shipwreck, Upper Level	孤独沉船，上层甲板
-Lonesome Shipwreck, Cabin	独孤沉船，船舱
-Lonesome Shipwreck, Lower Level	独孤沉船，下层甲板
-Lonesome Shipwreck, Upper Level	独孤沉船，上层甲板
+Lonesome Shipwreck, Cabin	孤寂沉船，船舱
+Lonesome Shipwreck, Lower Level	孤寂沉船，下层甲板
+Lonesome Shipwreck, Upper Level	孤寂沉船，上层甲板
 Lost Shipwreck, Cabin	失落沉船，船舱
 Lost Shipwreck, Lower Level	失落沉船，下层甲板
 Lost Shipwreck, Upper Level	失落沉船，上层甲板
@@ -580,7 +578,7 @@ Maar Gan	玛尔-甘
 Maar Gan, Andus Tradehouse	玛尔-甘，安杜斯贸易行
 Maar Gan, Assi Serimilk's Hut	玛尔-甘，阿西·瑟利弥克的小屋
 Maar Gan, Assirari Zama-Rasour's Hut	玛尔-甘，阿西拉丽·扎玛-拉苏尔的小屋
-Maar Gan, Garry's Hut	玛尔-甘，盖瑞的小屋
+Maar Gan, Garry's Hut	玛尔-甘，加里的小屋
 Maar Gan, Guard Tower 1	玛尔-甘，卫兵塔1
 Maar Gan, Guard Tower 2	玛尔-甘，卫兵塔2
 Maar Gan, Guard Tower 3	玛尔-甘，卫兵塔3
@@ -591,23 +589,23 @@ Maar Gan, Outpost	玛尔-甘，前哨
 Maar Gan, Shilipuran Zama-Rasour's Hut	玛尔-甘，希利普兰·扎马-拉苏尔的小屋
 Maar Gan, Shrine	玛尔甘，圣祠
 Maar Gan, Tashpi Ashibael's Hut	玛尔-甘，塔什皮·阿什贝尔的小屋
-Maar Gan, Ulisamsi Shaddarnuran's Hut	玛尔-甘，乌利萨姆西·萨达努兰的棚屋
+Maar Gan, Ulisamsi Shaddarnuran's Hut	玛尔-甘，乌利萨姆西·萨达努兰的小屋
 Maar Gan, Yeherradad's Hut	玛尔-甘，耶赫拉达的小屋
 Mababi	玛巴比
 Maba-Ilu	玛巴-伊鲁
 Madas Grotto	玛达斯石窟
-Madas-Zebba Egg Mine	马达斯-泽巴卵矿场
+Madas-Zebba Egg Mine	玛达斯-泽巴卵矿场
 Maelkashishi, Shrine	梅尔卡诗诗，圣祠
-Maelkashishi, Shrine, Forgotten Galleries	梅尔卡诗诗，圣祠，遗落楼座
+Maelkashishi, Shrine, Forgotten Galleries	梅尔卡诗诗，圣祠，遗忘楼座
 Maelu Egg Mine	马鲁卵矿场
 Maesa-Shammus Egg Mine	马萨-沙默斯卵矿场
-Magas Volar	马格斯·沃拉尔
+Magas Volar	马格斯-沃拉尔
 Mallapi	玛拉皮
 Malmus Grotto	马尔姆斯石窟
 Mamaea, Sanctum of Awakening	玛梅亚，觉醒圣地
 Mamaea, Sanctum of Black Hope	玛梅亚，黑望圣地
 Mamaea, Shrine of Pitted Dreams	玛梅亚，瑕梦圣祠
-Mamshar-Disamus Camp, Maesat's Yurt	漫莎-蒂萨穆丝营地，马萨特的毡房
+Mamshar-Disamus Camp, Maesat's Yurt	曼莎-蒂萨穆丝营地，马萨特的帐篷
 Manat's Farmhouse	马纳特的农舍
 Mannammu	曼纳姆
 Maran-Adon	玛冉-亚顿
@@ -620,18 +618,18 @@ Maren Ancestral Tomb	马伦先祖墓穴
 Mark's Script Testing Cell	马克的剧本测试间
 Mark's Vampire Test Cell	马克的吸血鬼测试间
 Marvani Ancestral Tomb	马尔瓦尼先祖墓穴
-Massahanud Camp, Sargon's Yurt	马沙努德营地，萨尔贡的毡房
+Massahanud Camp, Sargon's Yurt	马沙努德营地，萨尔贡的帐篷
 Massama Cave	马萨马洞穴
 Masseranit	马塞拉尼特
 Mat	玛特
 Matus-Akin Egg Mine	马图斯-阿金卵矿场
-Matus-Akin Egg Mine, Queen's Lair	马图斯-阿金卵矿场，夸蚂女皇巢穴
-Mausur Caverns	毛瑟洞穴
+Matus-Akin Egg Mine, Queen's Lair	马图斯-阿金卵矿场，女王巢穴
+Mausur Caverns	毛苏尔洞穴
 Mawia	玛维亚
-Mila-Nipal, Manat's Yurt	米拉-尼帕尔营地，马纳特的毡房
+Mila-Nipal, Manat's Yurt	米拉-尼帕尔，马纳特的帐篷
 Milk	米克
 Minabi	米纳比
-Minabi, Bandit Lair	米纳比，匪巢
+Minabi, Bandit Lair	米纳比，强盗巢穴
 Ministry of Truth, Hall of Processing	真理之岩，受理大厅
 Ministry of Truth, Holding Cells	真理之岩，临时牢房
 Ministry of Truth, Prison Keep	真理之岩，囚犯主楼
@@ -647,7 +645,7 @@ Molag Mar, Temple	莫拉格-玛尔，神殿
 Molag Mar, The Pilgrim's Rest	莫拉格-玛尔，朝圣者之息旅店
 Molag Mar, Underworks	莫拉格-玛尔，下水道
 Molag Mar, Vasesius Viciulus: Trader	莫拉格-玛尔，瓦西修斯·维西鲁斯：贸易商
-Molag Mar, Waistworks	莫拉格-玛尔，半腰工作区
+Molag Mar, Waistworks	莫拉格-玛尔，中层工作区
 Moonmoth Legion Fort	月蛾军团要塞
 Moonmoth Legion Fort, Interior	月蛾军团要塞，室内
 Moonmoth Legion Fort, Prison Towers	月蛾军团要塞，囚塔
@@ -666,7 +664,7 @@ Mournhold	哀伤之城
 Mournhold, Andoren Manor	哀伤之城，安多伦府邸
 Mournhold, Armory	哀伤之城，装备商
 Mournhold, Bookseller	哀伤之城，书商
-Mournhold, Clothier	哀伤之城，裁缝铺
+Mournhold, Clothier	哀伤之城，服饰商
 Mournhold, Craftsmen's Hall	哀伤之城，工匠之间
 Mournhold, Geon Auline's House	哀伤之城，吉恩·奥林的房子
 Mournhold, Godsreach	哀伤之城，离宫区
@@ -697,7 +695,7 @@ Mournhold, Trader	哀伤之城，贸易商
 Mournhold, Vacant Manor	哀伤之城，空置的庄园
 Mournhold, Velas Manor	哀伤之城，维拉斯府邸
 Mudan Grotto	姆丹石窟
-Mudan, Central Vault	姆丹，正室
+Mudan, Central Vault	姆丹，中央金库
 Mudan, Lost Dwemer Checkpoint	姆丹，失落锻莫检查哨
 Mudan, Right Tower	姆丹，右塔
 Mudan-Mul Egg Mine	姆丹-穆尔卵矿场
@@ -725,7 +723,7 @@ Neglected Shipwreck, Cabin	落寞沉船，船舱
 Neglected Shipwreck, Lower Level	落寞沉船，下层甲板
 Neglected Shipwreck, Upper Level	落寞沉船，上层甲板
 Nelas Ancestral Tomb	内拉斯先祖墓穴
-Nerano Ancestral Tomb	尼拉诺先祖坟墓
+Nerano Ancestral Tomb	内拉诺先祖坟墓
 Nilera's Farmhouse	尼莱拉的农舍
 Nimawia Grotto	尼马维亚石窟
 Nissintu	尼辛图
@@ -777,7 +775,7 @@ Old Mournhold: Teran Hall, East Bldg	哀伤之城旧址：特然廊道，东舍
 Old Mournhold: West Sewers	哀伤之城旧址：西侧下水道
 Omalen Ancestral Tomb	奥马伦先祖墓穴
 Omani Manor	奥曼尼庄园
-Omaren Ancestral Tomb	奥马伦先祖坟墓
+Omaren Ancestral Tomb	奥马任先祖坟墓
 Onnissiralis, Shrine	奥尼希瑞里斯，圣祠
 Orethi Ancestral Tomb	奥瑞缇先祖墓穴
 Othrelas Ancestral Tomb	奥瑟拉斯先祖墓穴
@@ -805,11 +803,11 @@ Pelagiad, Uulernil : Armorer	佩拉吉亚德，乌拉尼尔：护甲商
 Piernette's Farmhouse	皮尔内特的农舍
 Pinsun	彬森
 Piran	皮冉
-Prelude Shipwreck, Cabin	前奏曲沉船，船舱
-Prelude Shipwreck, Lower Level	前奏曲沉船，下层甲板
-Prelude Shipwreck, Upper Level	前奏曲沉船，上层甲板
+Prelude Shipwreck, Cabin	沉船“前奏曲”，船舱
+Prelude Shipwreck, Lower Level	沉船“前奏曲”，下层甲板
+Prelude Shipwreck, Upper Level	沉船“前奏曲”，上层甲板
 Pudai Egg Mine	普代卵矿场
-Pudai Egg Mine, Queen's Lair	普代卵矿场，夸蚂女皇巢穴
+Pudai Egg Mine, Queen's Lair	普代卵矿场，女王巢穴
 Pulk	普尔克
 Punabi	普纳比
 Punammu	普纳姆
@@ -822,7 +820,6 @@ Raven Rock, Abandoned Mine Shaft	鸦石镇，废弃的矿井
 Raven Rock, Afer Flaccus' House	鸦石镇，阿弗尔·弗拉库斯的房子
 Raven Rock, Bar	鸦石镇，酒吧
 Raven Rock, Factor's Estate	鸦石镇，代理商府邸
-Raven Rock, Factor's Estate	鸦石镇，东帝国公司董事府邸
 Raven Rock, Garnas Uvalen's House	鸦石镇，加纳斯·尤瓦伦的房子
 Raven Rock, Gidar Verothan's House	鸦石镇，吉达尔·维罗坦的房子
 Raven Rock, Gratian Caerellius' House	鸦石镇，格拉蒂安·卡雷利乌斯的房子
@@ -830,8 +827,7 @@ Raven Rock, Mine Entrance	鸦石镇，矿场入口
 Raven Rock, Mine	鸦石镇，矿场
 Raven Rock, North Storehouse	鸦石镇，北仓库
 Raven Rock, Sabinus Oranius' House	鸦石镇，萨比努斯·奥拉纽斯的房子
-Raven Rock, Sados Relothan's House	鸦石镇，塞多斯·雷多斯的房子
-Raven Rock, Sados Relothan's House	鸦石镇，塞多斯·雷洛斯的房子
+Raven Rock, Sados Relothan's House	鸦石镇，塞多斯·雷洛冉的房子
 Raven Rock, Seler Favelnim's House	鸦石镇，塞勒·法维尼姆的房子
 Raven Rock, Smith	鸦石镇，铁匠铺
 Raven Rock, South Storehouse	鸦石镇，南仓库
@@ -843,8 +839,8 @@ Raven Rock, Vacant House	鸦石镇，空置房屋
 Raviro Ancestral Tomb	拉维罗先祖墓穴
 Rayna Drolan's Shack	蕾娜·卓兰的小屋
 Redas Ancestral Tomb	瑞达斯先祖坟墓
-Redoran interior	瑞多然  内部
-Redoran interior2	瑞多然  内部2
+Redoran interior	瑞多然内部
+Redoran interior2	瑞多然内部2
 Releth Ancestral Tomb	瑞莱斯先祖墓穴
 Reloth Ancestral Tomb	雷洛斯先祖墓穴
 Remote Shipwreck, Cabin	偏僻沉船，船舱
@@ -864,7 +860,7 @@ Rotheran, Communal Hut	罗瑟兰，公用小屋
 Rotheran, Propylon Chamber	罗瑟兰，引路室
 Sadrith Mora	萨德瑞斯-莫拉
 Sadrith Mora, Anis Seloth: Alchemist	萨德瑞斯-莫拉，阿妮丝·瑟罗斯：炼金术士
-Sadrith Mora, Balen Vendu: Monk	萨德瑞斯-莫拉，巴伦·文杜：僧侣
+Sadrith Mora, Balen Vendu: Monk	萨德瑞斯-莫拉，巴伦·文杜：武僧
 Sadrith Mora, Dirty Muriel's Cornerclub	萨德瑞斯-莫拉，肮脏穆里尔的街角俱乐部
 Sadrith Mora, Fara's Hole in the Wall	萨德瑞斯-莫拉，法拉的墙洞
 Sadrith Mora, Gateway Inn	萨德里斯·莫拉，闸门旅馆
@@ -875,9 +871,9 @@ Sadrith Mora, Hleras Gidren's House	萨德瑞斯-莫拉，赫莱拉斯·吉德兰的房子
 Sadrith Mora, Llaalam Madalas: Mage	萨德瑞斯-莫拉，拉拉姆·马达拉斯：法师
 Sadrith Mora, Madran Ulvel's House	萨德瑞斯-莫拉，马德兰·乌维尔的房子
 Sadrith Mora, Meluria Seleth's House	萨德瑞斯-莫拉，梅鲁里娅·塞莱斯的房子
-Sadrith Mora, Milara Vedran's House	萨德瑞斯-莫拉，米拉拉·维德兰的房子
+Sadrith Mora, Milara Vedran's House	萨德瑞斯-莫拉，米拉拉·韦德兰的房子
 Sadrith Mora, Morag Tong Guild	萨德瑞斯-莫拉，莫拉格堂公会
-Sadrith Mora, Nevrila Areloth's House	萨德瑞斯-莫拉，内维莉拉·阿蕾洛斯的房子
+Sadrith Mora, Nevrila Areloth's House	萨德瑞斯-莫拉，奈芙莉拉·阿雷洛斯的房子
 Sadrith Mora, Nirasa Aren's House	萨德瑞斯-莫拉，尼拉莎·阿伦的房子
 Sadrith Mora, Pierlette Rostorard: Apothecary	萨德瑞斯-莫拉，皮耶莱特·罗斯托拉德：药剂师
 Sadrith Mora, Rolis Garvon's House	萨德瑞斯-莫拉，罗利斯·加文的房子
@@ -889,19 +885,19 @@ Sadrith Mora, Telvanni Council House	萨德瑞斯-莫拉，泰瓦尼议会所
 Sadrith Mora, Telvanni Council House, Chambers	萨德瑞斯-莫拉，泰瓦尼议会所，会议厅
 Sadrith Mora, Telvanni Council House, Entry	萨德瑞斯-莫拉，泰瓦尼议会所，入口
 Sadrith Mora, Telvanni Council House, Hermitage	萨德瑞斯-莫拉，泰瓦尼议会所，隐居处
-Sadrith Mora, Thervul Serethi: Healer	萨德瑞斯-莫拉，瑟雷沃·塞雷西：治疗师
+Sadrith Mora, Thervul Serethi: Healer	萨德瑞斯-莫拉，崔弗·塞雷西：治疗师
 Sadrith Mora, Trendrus Dral's House	萨德瑞斯-莫拉，特伦德乌斯·达尔斯的房子
 Sadrith Mora, Urtisa Romayn's House	萨德瑞斯-莫拉，乌蒂莎·罗曼的房子
-Sadrith Mora, Urtiso Faryon: Sorcerer	萨德瑞斯-莫拉，乌尔提索·法利昂：巫师
+Sadrith Mora, Urtiso Faryon: Sorcerer	萨德瑞斯-莫拉，乌尔缇索·法利昂：术士
 Sadrith Mora, Vaden Belas' House	萨德瑞斯-莫拉，瓦登·贝拉斯的房子
-Sadrith Mora, Volmyni Dral's House	萨德瑞斯-莫拉，沃米尼·德拉尔的房子
+Sadrith Mora, Volmyni Dral's House	萨德瑞斯-莫拉，沃尔米妮·德拉尔的房子
 Sadrith Mora, Wolverine Hall	萨德瑞斯-莫拉，狼獾大厅
 Sadrith Mora, Wolverine Hall: Fighter's Guild	萨德瑞斯-莫拉，狼獾大厅：战士公会
 Sadrith Mora, Wolverine Hall: Imperial Shrine	萨德瑞斯-莫拉，狼獾大厅：帝国圣祠
 Sadrith Mora, Wolverine Hall: Mage's Guild	萨德瑞斯-莫拉，狼獾大厅：法师公会
 Sadryon Ancestral Tomb	萨德里昂先祖墓穴
-Salit Camp, Zalit's Yurt	萨利特营地，扎利特的圆顶帐篷
-Salit Camp, Zelay's Yurt	萨利特营地，泽莱的圆顶帐篷
+Salit Camp, Zalit's Yurt	萨利特营地，扎利特的帐篷
+Salit Camp, Zelay's Yurt	萨利特营地，泽莱的帐篷
 Salmantu	萨尔曼图
 Salmantu, Shrine	萨尔曼图，圣祠
 Salothan Ancestral Tomb	萨洛赞先祖墓穴
@@ -936,32 +932,32 @@ Seyda Neen, Census and Excise Office	赛达尼恩，普查及税务办事处
 Seyda Neen, Census and Excise Warehouse	赛达尼恩，普查及税务局仓库
 Seyda Neen, Draren Thiralas' House	赛达尼恩，德拉伦·蒂拉拉斯的房子
 Seyda Neen, Eldafire's House	赛达尼恩，艾尔达之火的房子
-Seyda Neen, Erene Llenim's Shack	赛达尼恩，埃琳·列尼姆的棚屋
+Seyda Neen, Erene Llenim's Shack	赛达尼恩，埃琳·列尼姆的小屋
 Seyda Neen, Fargoth's House	赛达尼恩，法格斯的房子
-Seyda Neen, Fine-Mouth's Shack	赛达尼恩，精致-小嘴的棚屋
-Seyda Neen, Foryn Gilnith's Shack	赛达尼恩，福林·吉尔尼思的棚屋
-Seyda Neen, Indrele Rathryon's Shack	赛达尼恩，因卓尔·拉特里恩的棚屋
+Seyda Neen, Fine-Mouth's Shack	赛达尼恩，精致-小嘴的小屋
+Seyda Neen, Foryn Gilnith's Shack	赛达尼恩，福林·吉尔尼思的小屋
+Seyda Neen, Indrele Rathryon's Shack	赛达尼恩，因卓尔·拉特里恩的小屋
 Seyda Neen, Lighthouse	赛达尼恩，灯塔
-Seyda Neen, Terurise Girvayne's House	赛达尼恩，特卢莱丝·格尔维因的房子
+Seyda Neen, Terurise Girvayne's House	赛达尼恩，特鲁伊瑟·格尔维因的房子
 Seyda Neen, Vodunius Nuccius' House	赛达尼恩，沃杜尼乌斯·努奇乌斯的房子
-Sha-Adnius	沙·阿德纽斯
+Sha-Adnius	沙-阿德纽斯
 Shal	沙尔
 Shallit	沙利特
 Shara	沙拉
 Sharapli	沙拉普利
-Shashmanu Camp, Anit's Yurt	沙什马努营地，安尼特的圆顶帐篷
+Shashmanu Camp, Anit's Yurt	沙什马努营地，安尼特的帐篷
 Shashpilamat	沙希皮拉马特
 Shashpilamat, Shrine	沙希皮拉马特，圣祠
-Shashurari Camp, Zennammu's Yurt	沙舒拉里营地，泽纳姆的圆顶帐篷
+Shashurari Camp, Zennammu's Yurt	沙舒拉里营地，泽娜姆的帐篷
 Shishara	诗沙拉
 Shishi	诗诗
 Shrine of Azura	阿祖拉圣祠
 Shulk Egg Mine	舒尔克卵矿场
 Shulk Egg Mine, Mining Camp	舒尔克卵矿场，采矿营地
 Shulk Egg Mine, Queen's Lair	舒尔克卵矿场，女王巢穴
-Shunned Shipwreck, Cabin	回避沉船，船舱
-Shunned Shipwreck, Lower Level	回避沉船，下层
-Shunned Shipwreck, Upper Level	回避沉船，上层
+Shunned Shipwreck, Cabin	避世沉船，船舱
+Shunned Shipwreck, Lower Level	避世沉船，下层
+Shunned Shipwreck, Upper Level	避世沉船，上层
 Shurdan-Raplay Egg Mine	舒尔丹·拉普莱卵矿场
 Shurinbaal	舒林巴尔
 Shushan	苏珊
@@ -982,7 +978,7 @@ Skaal village, Snedbrir the Smith	斯卡尔村，铁匠斯奈德布里尔
 Skaal Village, The Blodskaal's House	斯卡尔村，斯卡尔血亲的房子
 Skaal Village, The Greathall	斯卡尔村，大厅
 Small Farmhouse	小型农舍
-Sobitbael Camp, Mal's Yurt	索比特贝尔营地，马尔的圆顶帐篷
+Sobitbael Camp, Mal's Yurt	索比特贝尔营地，马尔的帐篷
 Solstheim	索瑟海姆
 Solstheim, Aesliip's Lair	索瑟海姆，埃斯利普的巢穴
 Solstheim, Aesliip's Lair, Caverns	索瑟海姆，埃斯利普的巢穴，洞穴
@@ -1013,8 +1009,7 @@ Solstheim, Glenschul's Tomb	索瑟海姆，格伦舒尔之墓
 Solstheim, Gloomy Cave	索瑟海姆，阴森洞穴
 Solstheim, Graring's House	索瑟海姆，加拉林的房子
 Solstheim, Gronn	索瑟海姆，格隆
-Solstheim, Gyldenhul Barrow Entrance	索瑟海姆，吉尔登胡尔古坟入口
-Solstheim, Gyldenhul Barrow	索瑟海姆，吉尔登胡尔古坟
+Solstheim, Gyldenhul Barrow Entrance	索瑟海姆，吉尔登胡尔古冢入口
 Solstheim, Gyldenhul Barrow	索瑟海姆，吉尔登胡尔古冢
 Solstheim, Halls of Penumbra	索瑟海姆，半影大厅
 Solstheim, Himmelhost Barrow	索瑟海姆，天堂之主古冢
@@ -1050,7 +1045,7 @@ Solstheim, Uncle Sweetshare's Workshop	索瑟海姆，甜糖叔叔的作坊
 Solstheim, Valbrandr Barrow	索瑟海姆，瓦尔布兰德古冢
 Solstheim, Varstaad Caves	索瑟海姆，瓦尔斯塔德洞穴
 Sotha Sil, Central Gearworks	索萨·希尔，中央齿轮工作区
-Sotha Sil, Chamber of Sohleh	索萨·希尔，索勒的房间
+Sotha Sil, Chamber of Sohleh	索萨·希尔，索勒之屋
 Sotha Sil, Dome of Kasia	索萨·希尔，卡西亚穹顶
 Sotha Sil, Dome of Serlyn	索萨·希尔，瑟尔琳穹顶
 Sotha Sil, Dome of Sotha Sil	索萨·希尔，索萨·希尔穹顶
@@ -1098,27 +1093,27 @@ Tel Aruhn, Tower Living Quarters	泰尔-阿汝因，塔楼住宅区
 Tel Aruhn, Underground	泰尔-阿汝因，地下室
 Tel Aruhn, Upper Tower	泰尔-阿汝因，塔楼上层
 Tel Branora	泰尔-布勒诺拉
-Tel Branora, Ervyna Hlervu's Shack	泰尔-布勒诺拉，埃尔维娜·赫勒乌的窝棚
+Tel Branora, Ervyna Hlervu's Shack	泰尔-布勒诺拉，埃尔维娜·赫勒乌的小屋
 Tel Branora, Evos Goran's House	泰尔-布勒诺拉，埃沃斯·戈兰的房子
 Tel Branora, Fadase Selvayn: Trader	泰尔-布勒诺拉，法达斯·塞尔文：贸易商
 Tel Branora, Fedar Davus's House	泰尔-布勒诺拉，费达·达乌斯的房子
 Tel Branora, Galen Berer: Armorer	泰尔-布勒诺拉，加伦·贝勒：护甲商
-Tel Branora, Giron Manas's Shack	泰尔-布勒诺拉，吉隆·马纳斯的窝棚
+Tel Branora, Giron Manas's Shack	泰尔-布勒诺拉，吉隆·马纳斯的小屋
 Tel Branora, Lower Tower	泰尔-布勒诺拉，塔楼下层
 Tel Branora, Manos Vavyn's House	泰尔-布勒诺拉，马诺斯·瓦文的房子
-Tel Branora, Seryne Relas's House	泰尔-布勒诺拉，瑟莱·蕾拉斯的房子
+Tel Branora, Seryne Relas's House	泰尔-布勒诺拉，塞琳·瑞拉斯的房子
 Tel Branora, Sethan's Tradehouse	泰尔-布勒诺拉，费杜拉·瑟珊的商行
 Tel Branora, Tower Dungeon	泰尔-布勒诺拉，塔楼地牢
 Tel Branora, Tower Guardpost	泰尔-布勒诺拉，塔楼守卫哨所
 Tel Branora, Upper Tower	泰尔-布勒诺拉，塔楼上层
-Tel Branora, Upper Tower: Therana's Chamber	泰尔-布勒诺拉，塔楼上层：塞拉娜的房间
+Tel Branora, Upper Tower: Therana's Chamber	泰尔-布勒诺拉，塔楼上层：西拉那的房间
 Tel Fyr	泰尔-菲尔
 Tel Mora	泰尔-莫拉
 Tel Mora, Berwen: Trader	泰尔-莫拉，伯雯：贸易商
 Tel Mora, Elegnan: Clothier	泰尔-莫拉，埃莱格南：服饰商
 Tel Mora, Jolda: Apothecary	泰尔-莫拉，乔尔达：药剂师
 Tel Mora, Kirsty's House	泰尔-莫拉，科斯蒂的房子
-Tel Mora, Liette's House	泰尔-莫拉，丽塞特的房子
+Tel Mora, Liette's House	泰尔-莫拉，莉艾特的房子
 Tel Mora, Lower Tower	泰尔-莫拉，塔楼下层
 Tel Mora, Nona's House	泰尔-莫拉，诺娜的房子
 Tel Mora, Radras: Smith	泰尔-莫拉，拉德拉斯：铁匠
@@ -1152,7 +1147,7 @@ Thelas Ancestral Tomb	西拉斯先祖墓穴
 Thiralas Ancestral Tomb	蒂拉拉斯先祖墓穴
 Thirsk	瑟斯克
 Tin-Ahhe	辛-艾赫
-ToddTest	陶德测试
+ToddTest	陶德测试屋
 Tower of Tel Fyr, Hall of Fyr	泰尔-菲尔之塔，菲尔大厅
 Tower of Tel Fyr, Onyx Hall	泰尔-菲尔之塔，缟玛瑙大厅
 Tukushapal	图库沙帕尔
@@ -1166,7 +1161,7 @@ Tusenend, Shrine	图森恩德，圣祠
 Ularradallaku, Shrine	乌拉拉达拉库，圣祠
 Ules Manor	乌莱斯庄园
 Ules Manor, Slave Shack	乌莱斯庄园，奴隶的窝棚
-Ules Manor, Slavemaster's Shack	乌莱斯庄园，奴隶主的窝棚
+Ules Manor, Slavemaster's Shack	乌莱斯庄园，奴隶主的棚屋
 Ulummusa	乌鲁姆穆萨
 Uncharted Shipwreck, Lower Level	未知沉船，下层
 Unchartered Shipwreck, Cabin	未知沉船，船舱
@@ -1177,42 +1172,42 @@ Unexplored Shipwreck, Upper Level	未勘沉船，上层
 Unknown Shipwreck, Cabin	不明沉船，船舱
 Unknown Shipwreck, Lower Level	不明沉船，下层
 Unknown Shipwreck, Upper Level	不明沉船，上层
-Unmarked Shipwreck, Lower Level	无名沉船，下层
-Unmarked Shipwreck, Upper Level	无名沉船，上层
+Unmarked Shipwreck, Lower Level	无标沉船，下层
+Unmarked Shipwreck, Upper Level	无标沉船，上层
 Urshilaku Camp	乌尔希拉库营地
-Urshilaku Camp, Ahasour's Yurt	乌尔希拉库营地，阿哈苏尔的圆顶帐篷
-Urshilaku Camp, Ashkhan's Yurt	乌尔希拉库营地，灰烬可汗的圆顶帐篷
-Urshilaku Camp, Kurapli's Yurt	乌尔希拉库营地，库拉普利的圆顶帐篷
-Urshilaku Camp, Maeli's Yurt	乌尔希拉库营地，玛艾丽的圆顶帐篷
-Urshilaku Camp, Sakiran's Yurt	乌尔希拉库营地，萨基兰的圆顶帐篷
-Urshilaku Camp, Shara's Yurt	乌尔希拉库营地，莎拉的圆顶帐篷
-Urshilaku Camp, Shimsun's Yurt	乌尔希拉库营地，辛姆逊的圆顶帐篷
-Urshilaku Camp, Wise Woman's Yurt	乌尔希拉库营地，女智者的圆顶帐篷
-Urshilaku Camp, Zabamund's Yurt	乌尔希拉库营地，扎巴蒙德的圆顶帐篷
-Urshilaku Camp, Zanummu's Yurt	乌尔希拉库营地，扎努姆的圆顶帐篷
-Urshilaku, Astral Burial	乌尔希拉库墓穴，星芒埋葬区
-Urshilaku, Fragile Burial	乌尔希拉库墓穴，脆弱埋葬区
-Urshilaku, Juno Burial	乌尔希拉库墓穴，朱诺埋葬区
-Urshilaku, Kakuna Burial	乌尔希拉库墓穴，坚韧埋葬区
-Urshilaku, Karma Burial	乌尔希拉库墓穴，报应埋葬区
-Urshilaku, Kefka Burial	乌尔希拉库墓穴，脆弱埋葬区
-Urshilaku, Laterus Burial	乌尔希拉库墓穴，更使埋葬区
+Urshilaku Camp, Ahasour's Yurt	乌尔希拉库营地，亚哈苏尔的帐篷
+Urshilaku Camp, Ashkhan's Yurt	乌尔希拉库营地，灰烬可汗的帐篷
+Urshilaku Camp, Kurapli's Yurt	乌尔希拉库营地，库拉普利的帐篷
+Urshilaku Camp, Maeli's Yurt	乌尔希拉库营地，玛艾丽的帐篷
+Urshilaku Camp, Sakiran's Yurt	乌尔希拉库营地，萨奇冉的帐篷
+Urshilaku Camp, Shara's Yurt	乌尔希拉库营地，莎拉的帐篷
+Urshilaku Camp, Shimsun's Yurt	乌尔希拉库营地，辛姆孙的帐篷
+Urshilaku Camp, Wise Woman's Yurt	乌尔希拉库营地，女智者的帐篷
+Urshilaku Camp, Zabamund's Yurt	乌尔希拉库营地，扎巴蒙德的帐篷
+Urshilaku Camp, Zanummu's Yurt	乌尔希拉库营地，扎努姆的帐篷
+Urshilaku, Astral Burial	乌尔希拉库营地，星芒埋葬区
+Urshilaku, Fragile Burial	乌尔希拉库营地，脆弱埋葬区
+Urshilaku, Juno Burial	乌尔希拉库营地，朱诺埋葬区
+Urshilaku, Kakuna Burial	乌尔希拉库营地，坚韧埋葬区
+Urshilaku, Karma Burial	乌尔希拉库营地，业障埋葬区
+Urshilaku, Kefka Burial	乌尔希拉库营地，破碎埋葬区
+Urshilaku, Laterus Burial	乌尔希拉库营地，更使埋葬区
 Uveran Ancestral Tomb	乌维兰先祖墓穴
 Uvirith's Grave	乌维瑞斯之墓
 Valenvaryon	瓦伦瓦里昂
-Valenvaryon, Durz's Hut	瓦伦瓦里昂，杜尔兹的棚屋
-Valenvaryon, Gashna's Hut	瓦伦瓦里昂，加什那的棚屋
-Valenvaryon, Lambug's Hut	瓦伦瓦里昂，兰姆巴格的棚屋
-Valenvaryon, Lurog's Hut	瓦伦瓦里昂，鲁罗格的棚屋
+Valenvaryon, Durz's Hut	瓦伦瓦里昂，杜尔兹的小屋
+Valenvaryon, Gashna's Hut	瓦伦瓦里昂，加什那的小屋
+Valenvaryon, Lambug's Hut	瓦伦瓦里昂，兰巴格的小屋
+Valenvaryon, Lurog's Hut	瓦伦瓦里昂，鲁罗格的小屋
 Valenvaryon, Propylon Chamber	瓦伦瓦里昂，引路室
-Valenvaryon, Umug's Hut	瓦伦瓦里昂，乌姆格的棚屋
+Valenvaryon, Umug's Hut	瓦伦瓦里昂，乌姆格的小屋
 Vandus Ancestral Tomb	万杜斯先祖墓穴
 Vansunalit Egg Mine	万苏纳利特卵矿场
 Vas	瓦斯
 Vas, Entry Level	瓦斯，入口楼层
 Vas, Tower	瓦斯，塔楼
 Vassamsi Grotto	瓦萨姆西石窟
-Vassir-Didanat Cave	瓦西尔-迪达纳特洞穴
+Vassir-Didanat Cave	瓦西尔·迪达纳特洞穴
 Velas Ancestral Tomb	维拉斯先祖墓穴
 Veloth Ancestral Tomb	维洛斯先祖墓穴
 Vemynal	维密纳尔
@@ -1258,9 +1253,9 @@ Vivec, High Fane	维威克城，至高神殿
 Vivec, Hlaalu Alchemist	维威克城，哈拉鲁炼金术士
 Vivec, Hlaalu Ancestral Vaults	维威克城，哈拉鲁先祖墓穴
 Vivec, Hlaalu Canalworks	维威克城，哈拉鲁河道工作区
-Vivec, Hlaalu Edryno Arethi's House	维威克城，哈拉鲁埃德里诺·阿雷西的房子
+Vivec, Hlaalu Edryno Arethi's House	维威克城，哈拉鲁区埃德里诺·阿雷西的房子
 Vivec, Hlaalu General Goods	维威克城，哈拉鲁杂货铺
-Vivec, Hlaalu Pawnbroker	维威克城，哈拉鲁典当商
+Vivec, Hlaalu Pawnbroker	维威克城，哈拉鲁典当行
 Vivec, Hlaalu Plaza	维威克城，哈拉鲁广场
 Vivec, Hlaalu Prison Cells	维威克城，哈拉鲁牢房
 Vivec, Hlaalu Records	维威克城，哈拉鲁资料室
@@ -1276,7 +1271,7 @@ Vivec, Jeanne: Trader	维威克城，珍妮：贸易商
 Vivec, Jobasha's Rare Books	维威克城，乔巴沙的珍藏本
 Vivec, J'Rasha: Healer	维威克城，杰'拉沙：治疗师
 Vivec, Justice Offices	维威克城，司法办公室
-Vivec, Library of Vivec	维威克城，维威克的图书馆
+Vivec, Library of Vivec	维威克城，维威克图书馆
 Vivec, Lucretinaus Olcinius: Trader	维威克城，卢克雷蒂纳斯·奥西尼乌斯：贸易商
 Vivec, Mevel Fererus: Trader	维威克城，梅维尔·费勒鲁斯：贸易商
 Vivec, Milo's Quarters	维威克城，米洛的宿舍
@@ -1315,9 +1310,9 @@ Vivec, St. Delyn Canal South-One	维威克城，圣·德林河道南部第一间
 Vivec, St. Delyn Canal South-Three	维威克城，圣·德林河道南部第三间
 Vivec, St. Delyn Canal South-Two	维威克城，圣·德林河道南部第二间
 Vivec, St. Delyn Canalworks	维威克城，圣·德林河道工作区
-Vivec, St. Delyn Glassworker's Hall	维威克城，圣·德林 玻璃工的大厅
+Vivec, St. Delyn Glassworker's Hall	维威克城，圣·德林玻璃工的大厅
 Vivec, St. Delyn Plaza	维威克城，圣·德林广场
-Vivec, St. Delyn Potter's Hall	维威克城，圣·德林 陶工的大厅
+Vivec, St. Delyn Potter's Hall	维威克城，圣·德林陶工的大厅
 Vivec, St. Delyn Storage	维威克城，圣·德林储存室
 Vivec, St. Delyn Underworks	维威克城，圣·德林区下水道
 Vivec, St. Delyn Waist North-One	维威克城，圣·德林中层北部第一间
@@ -1326,7 +1321,7 @@ Vivec, St. Delyn Waist South-One	维威克城，圣·德林中层南部第一间
 Vivec, St. Delyn Waist South-Two	维威克城，圣·德林中层南部第二间
 Vivec, St. Delyn Waistworks	维威克城，圣·德林中层工作区
 Vivec, St. Delyn	维威克城，圣·德林区
-Vivec, St. Olms Brewers and Fishmongers Hall	维威克城，圣·奥姆斯 酿酒商和鱼贩的大厅
+Vivec, St. Olms Brewers and Fishmongers Hall	维威克城，圣·奥姆斯酿酒商和鱼贩的大厅
 Vivec, St. Olms Canal North-One	维威克城，圣·奥姆斯河道北部第一间
 Vivec, St. Olms Canal North-Three	维威克城，圣·奥姆斯河道北部第三间
 Vivec, St. Olms Canal North-Two	维威克城，圣·奥姆斯河道北部第二间
@@ -1334,12 +1329,12 @@ Vivec, St. Olms Canal South-One	维威克城，圣·奥姆斯河道南部第一间
 Vivec, St. Olms Canal South-Three	维威克城，圣·奥姆斯河道南部第三间
 Vivec, St. Olms Canal South-Two	维威克城，圣·奥姆斯河道南部第二间
 Vivec, St. Olms Canalworks	维威克城，圣·奥姆斯河道工作区
-Vivec, St. Olms Farmers and Laborers Hall	维威克城，圣·奥姆斯 农人和劳工的大厅
+Vivec, St. Olms Farmers and Laborers Hall	维威克城，圣·奥姆斯农人和劳工的大厅
 Vivec, St. Olms Haunted Manor	维威克城，圣·奥姆斯闹鬼庄园
 Vivec, St. Olms Plaza	维威克城，圣·奥姆斯广场
 Vivec, St. Olms Storage	维威克城，圣·奥姆斯储存室
-Vivec, St. Olms Tailors and Dyers Hall	维威克城，圣·奥姆斯 裁缝和染色师的大厅
-Vivec, St. Olms Tanners and Miners Hall	维威克城，圣·奥姆斯 制革工和矿工的大厅
+Vivec, St. Olms Tailors and Dyers Hall	维威克城，圣·奥姆斯裁缝和染色师的大厅
+Vivec, St. Olms Tanners and Miners Hall	维威克城，圣·奥姆斯制革工和矿工的大厅
 Vivec, St. Olms Temple	维威克城，圣·奥姆斯神殿
 Vivec, St. Olms Underworks	维威克城，圣·奥姆斯区下水道
 Vivec, St. Olms Upper North-One	维威克城，圣·奥姆斯上层北部第一间
@@ -1366,13 +1361,13 @@ Vivec, Telvanni Temple	维威克城，泰瓦尼神殿
 Vivec, Telvanni Tower	维威克城，泰瓦尼塔
 Vivec, Telvanni Underworks	维威克城，泰瓦尼区下水道
 Vivec, Telvanni Upper Storage	维威克城，泰瓦尼军械库上层
-Vivec, Telvanni Vault	维威克城，泰瓦尼地下室
+Vivec, Telvanni Vault	维威克城，泰瓦尼金库
 Vivec, Telvanni Waistworks	维威克城，泰瓦尼中层工作区
 Vivec, Telvanni	维威克城，泰瓦尼行政区
 Vivec, Temple	维威克城，神殿区
 Vivec, Temporary Telvanni Housing	维威克城，泰瓦尼临时住房
 Vivec, Tervur Braven: Trader	维威克城，特维尔·布拉文：贸易商
-Vivec, The Abbey of St. Delyn the Wise	维威克城，智者圣·德林的修道院
+Vivec, The Abbey of St. Delyn the Wise	维威克城，智者圣·德林修道院
 Vivec, The Flowers of Gold	维威克城，黄金鲜花
 Vivec, The Lizard's Head	维威克城，蜥蜴脑袋
 Vor Lair, Chambers of Alta Vor	佛尔巢穴，阿尔塔·佛尔的房间
@@ -1405,16 +1400,16 @@ Yasamsi	亚萨姆西
 Yassu Mine	亚苏矿场
 Yesamsi	耶萨姆西
 Zainab Camp	哉纳布营地
-Zainab Camp, Ababael Timsar-Dadisun's Yurt	哉纳布营地，阿巴贝尔·蒂姆萨-达迪森的圆顶帐篷
-Zainab Camp, Ashibaal's Yurt	哉纳布营地，阿什巴尔的圆顶帐篷
-Zainab Camp, Ashkhan's Yurt	哉纳布营地，灰烬可汗的圆顶帐篷
-Zainab Camp, Ashur-Dan's Yurt	哉纳布营地，阿舒尔-丹的圆顶帐篷
-Zainab Camp, Kuda's Yurt	哉纳布营地，库达的圆顶帐篷
-Zainab Camp, Kummu's Yurt	哉纳布营地，库姆的圆顶帐篷
-Zainab Camp, Minassour's Yurt	哉纳布营地，米纳斯苏尔的圆顶帐篷
-Zainab Camp, Patababi's Yurt	哉纳布营地，帕塔巴比的圆顶帐篷
-Zainab Camp, Tussi's Yurt	哉纳布营地，图西的圆顶帐篷
-Zainab Camp, Wise Woman's Yurt	哉纳布营地，女智者的圆顶帐篷
+Zainab Camp, Ababael Timsar-Dadisun's Yurt	哉纳布营地，阿巴贝尔·蒂姆萨-达迪森的帐篷
+Zainab Camp, Ashibaal's Yurt	哉纳布营地，阿什巴的帐篷
+Zainab Camp, Ashkhan's Yurt	哉纳布营地，灰烬可汗的帐篷
+Zainab Camp, Ashur-Dan's Yurt	哉纳布营地，阿舒尔-丹的帐篷
+Zainab Camp, Kuda's Yurt	哉纳布营地，库达的帐篷
+Zainab Camp, Kummu's Yurt	哉纳布营地，库姆的帐篷
+Zainab Camp, Minassour's Yurt	哉纳布营地，米纳苏尔的帐篷
+Zainab Camp, Patababi's Yurt	哉纳布营地，帕塔巴比的帐篷
+Zainab Camp, Tussi's Yurt	哉纳布营地，图西的帐篷
+Zainab Camp, Wise Woman's Yurt	哉纳布营地，女智者的帐篷
 Zainsipilu	扎伊斯皮鲁
 Zaintirari	扎因蒂拉里
 Zaintiraris	扎伊蒂拉里斯
