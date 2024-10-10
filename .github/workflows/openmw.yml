@@ -94,7 +94,7 @@ jobs:
       fail-fast: true
       matrix:
         image:
-        - windows-2019
+        # - windows-2019
         - windows-2022
 
     name: ${{ matrix.image }}
