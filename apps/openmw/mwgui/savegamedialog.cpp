@@ -1,4 +1,4 @@
-#include "savegamedialog.hpp"
+﻿#include "savegamedialog.hpp"
 
 #include <iomanip>
 #include <sstream>
@@ -411,7 +411,7 @@ namespace MWGui
 
         std::stringstream text;
 
-        text << Misc::fileTimeToString(mCurrentSlot->mTimeStamp, "%Y.%m.%d %T") << "\n";
+        text << Misc::fileTimeToString(mCurrentSlot->mTimeStamp, "%Y-%m-%d %T") << "\n";
 
         if (mCurrentSlot->mProfile.mMaximumHealth > 0)
             text << "#{OMWEngine:Health} " << static_cast<int>(mCurrentSlot->mProfile.mCurrentHealth) << "/"
@@ -420,20 +420,22 @@ namespace MWGui
         text << "#{OMWEngine:Level} " << mCurrentSlot->mProfile.mPlayerLevel << "\n";
         text << "#{sCell=" << mCurrentSlot->mProfile.mPlayerCellName << "}\n";
 
-        int hour = int(mCurrentSlot->mProfile.mInGameTime.mGameHour);
-        bool pm = hour >= 12;
-        if (hour >= 13)
-            hour -= 12;
-        if (hour == 0)
-            hour = 12;
+        float iHour;
+        float fHour = modf(mCurrentSlot->mProfile.mInGameTime.mGameHour, &iHour);
+        // bool pm = hour >= 12;
+        // if (hour >= 13)
+        //     hour -= 12;
+        // if (hour == 0)
+        //     hour = 12;
 
         if (mCurrentSlot->mProfile.mCurrentDay > 0)
-            text << "#{Calendar:day} " << mCurrentSlot->mProfile.mCurrentDay << "\n";
+            text << "第" << mCurrentSlot->mProfile.mCurrentDay << "天\n";
 
-        text << mCurrentSlot->mProfile.mInGameTime.mDay << " "
-             << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(
+        text << "3E " << mCurrentSlot->mProfile.mInGameTime.mYear
+             << "年 " << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(
                     mCurrentSlot->mProfile.mInGameTime.mMonth)
-             << " " << hour << " " << (pm ? "#{Calendar:pm}" : "#{Calendar:am}");
+             << " " << mCurrentSlot->mProfile.mInGameTime.mDay
+             << "日 " << int(iHour) << ":" << std::setw(2) << std::setfill('0') << int(fHour * 60); // << (pm ? "#{Calendar:pm}" : "#{Calendar:am}");
 
         if (mCurrentSlot->mProfile.mTimePlayed > 0)
         {
