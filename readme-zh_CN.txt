@@ -4,16 +4,13 @@
 OpenMW原版官方网站: https://openmw.org/
 
 ■ 首次运行说明(必读)
-1. 首先确保操作系统是 Windows 7 以上, 必须是 x64 版本, 不支持32位的 Windows.
+1. 首先确保操作系统是 Windows 10(1809) 以上, 必须是 x64 版本, 不支持32位的 Windows.
 
 2. 如果想快捷安装配置并尽快进入游戏, 可以把 OpenMW 文件夹放到原版游戏文件夹内, 跟原版游戏的 Data Files 文件夹并列存放.
-   然后运行 OpenMW 文件夹内的 reset_cfg 安装(重置)配置文件, 成功后运行 openmw 即可开始游戏, 无需再看下面的步骤.
-   如果运行 openmw 提示"无法定位程序输入点..."则需要安装VC运行库, 安装包的官方下载地址: https://aka.ms/vs/17/release/vc_redist.x64.exe
+   然后运行 OpenMW 文件夹内的 reset_cfg 安装(重置)配置文件, 确认并完成后运行 openmw 即可开始游戏, 无需再看下面的步骤.
    如果需要配置游戏中的MOD及各种选项, 可运行 openmw-launcher.
 
-3. 以下是非快捷安装的步骤. 首次运行前先确定是否安装了较新版本的VC动态库, 可尝试启动 openmw-iniimporter,
-   如果提示"无法定位程序输入点..."则需要安装, 安装包的官方下载地址: https://aka.ms/vs/17/release/vc_redist.x64.exe
-   如果没有任何反应或者有个窗口一闪而过则说明已经装好.
+3. 以下是非快捷安装的步骤.
 4. 启动 openmw-launcher, 如果提示"无法创建目录……", 则需要再次启动一次, 或者以管理员权限再次启动.
    如果提示"运行安装向导", 则点击进入设置向导, 依次点击: "下一步" -> "已安装好的", "下一步" -> "浏览...",
    找到游戏本体中的"Morrowind.esm"选中并"打开", "下一步" -> 选"简体中文(GBK)", "下一步" -> 3个导入选项都选上, "下一步" -> "完成"
@@ -40,11 +37,19 @@ OpenMW原版官方网站: https://openmw.org/
 1. 需要准备 7z.exe, 安装 Python3, Git for Windows, Visual Studio 2022 (include CMake)
 2. 在 Git Bash 下进入 openmw 根目录, 执行: CI/before_script.msvc.sh -k -p Win64 -v 2022
 3. 用 Visual Studio 2022 打开 MSVC2022_64\OpenMW.sln 并执行编译
-4. 如果需要编译 MyGUI, 需要先下载编译FreeType, 然后使用命令: cmake -DMYGUI_DONT_USE_OBSOLETE -DMYGUI_RENDERSYSTEM=1 -DFREETYPE_INCLUDE_DIRS=... -DFREETYPE_LIBRARY=...
+4. 如果需要编译 MyGUI, 需要先下载编译FreeType, 然后使用命令: cmake -DMYGUI_DONT_USE_OBSOLETE=1 -DMYGUI_RENDERSYSTEM=1 -DFREETYPE_INCLUDE_DIRS=... -DFREETYPE_LIBRARY=...
 
 ■ 汉化版的ChangeLog:
 
-● 2024-04-?? v10
+● 2025-01-25 v11
+1. openmw: 修正Lua脚本传入引擎L10n模块时当成本地编码加载的bug,Lua脚本字符串都应该用UTF-8编码
+2. files: 内置VC运行库,Win10以上无需预先安装VC运行库; 移除2个无用的dll
+3. openmw: 游戏内存档,休息,日志的日期时间显示改用中文习惯,24小时制,增加年和分钟的显示(日志除外)
+4. openmw: 按时间排列的日志增加相关任务名,点击可跳转到该任务页面; 缩小日志段落间距
+5. openmw: 对话关键词列表,任务/话题列表,法术列表都以拼音排序
+6. files: 更新pinyin.txt到0.15.0版本
+
+● 2024-05-31 v10
 1. openmw: 窗口化可以显示输入法提示框
 2. files/lang: 增加QT中文翻译资源汉化QT界面文字,不再需要修改.ui和.cpp文件中的界面文字
 

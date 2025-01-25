@@ -37,6 +37,10 @@
         <source>&lt;br/&gt;&lt;b&gt;This content file cannot be disabled because it is enabled in a config file other than the user one.&lt;/b&gt;&lt;br/&gt;</source>
         <translation>&lt;br/&gt;&lt;b&gt;这个内容文件无法禁用因为它在非用户的配置文件中启用的。&lt;/b&gt;&lt;br/&gt;</translation>
     </message>
+    <message>
+        <source>&lt;b&gt;This file is specified in a non-user config file, but does not exist in the VFS.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;该文件在非用户配置文件中指定，而不存在于VFS中。&lt;/b&gt;</translation>
+    </message>
 </context>
 <context>
     <name>ContentSelectorView::ContentSelector</name>

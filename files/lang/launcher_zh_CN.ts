@@ -392,6 +392,14 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <source>This archive is enabled in an openmw.cfg other than the user one</source>
         <translation>这个资源在非用户的openmw.cfg中启用</translation>
     </message>
+    <message>
+        <source>&amp;Copy Path(s) to Clipboard</source>
+        <translation>复制路径到剪贴板(&amp;C)</translation>
+    </message>
+    <message>
+        <source>&amp;Open Path in File Explorer</source>
+        <translation>在文件资源管理器中打开路径(&amp;O)</translation>
+    </message>
 </context>
 <context>
     <name>Launcher::GraphicsPage</name>
@@ -450,8 +458,8 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <translation>关闭</translation>
     </message>
     <message>
-        <source> Launch OpenMW </source>
-        <translation> 启动OpenMW </translation>
+        <source>Launch OpenMW</source>
+        <translation>启动OpenMW</translation>
     </message>
     <message>
         <source>Help</source>
@@ -771,6 +779,14 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
     <message>
         <source>Use Magic Item Animation</source>
         <translation>使用魔法物品的动画</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled - makes transitions between different animations/poses much smoother. Also allows to load animation blending config YAML files that can be bundled with animations in order to customise blending styles.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如果启用，可使不同动画/姿势之间的过渡更加平滑。还允许加载动画混合配置 YAML 文件，这些文件可与动画捆绑在一起，以便自定义混合样式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Smooth Animation Transitions</source>
+        <translation>平衡动画过渡</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Makes NPCs and player movement more smooth. Recommended to use with &quot;turn to movement direction&quot; enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1141,14 +1157,6 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <translation>存档</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting determines whether the amount of the time the player has spent playing will be displayed for each saved game in the Load menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;此设置决定了在加载界面是否显示玩家玩了多长时间。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Add &quot;Time Played&quot; to Saves</source>
-        <translation>给存档增加&quot;游戏时间&quot;</translation>
-    </message>
-    <message>
         <source>JPG</source>
         <translation>JPG</translation>
     </message>
@@ -1251,6 +1259,10 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
     <message>
         <source>Factor Strength into Hand-to-Hand Combat</source>
         <translation>徒手战斗中的力量因素</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting controls the behavior of factoring of Strength attribute into hand-to-hand damage: damage is multiplied by Strength value divided by 40.&lt;/p&gt;&lt;p&gt;Can apply to all actors or only to non-werewolf actors.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;此设置可控制将力量属性计入徒手伤害的行为：伤害会被乘以力量值除以40。&lt;/p&gt;&lt;p&gt;可应用到所有的角色，或只应用到非狼人的角色。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Background Physics Threads</source>
@@ -1425,33 +1437,13 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <translation>屏幕截图格式</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum distance at which lights will appear (measured in units).&lt;/p&gt;&lt;p&gt;Set this to 0 to use an unlimited distance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;光源出现的最大距离 (单位: units)。.&lt;/p&gt;&lt;p&gt;设置为0表示无限距离。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Maximum Light Distance</source>
-        <translation>最大光照距离</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of lights per object.&lt;/p&gt;&lt;p&gt;A low number near default will cause light popping similar to what you would see with legacy lighting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;每个物体接受的最大光源数。&lt;/p&gt;&lt;p&gt;比默认值小的值会导致光源闪现, 就像传统光照效果那样。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Max Lights</source>
-        <translation>最大光源数</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fraction of maximum distance at which lights will start to fade.&lt;/p&gt;&lt;p&gt;Set this to a low value for slower transitions or a high value for quicker transitions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;光源开始衰减的最大距离系数。&lt;/p&gt;&lt;p&gt;设置为较低值会让衰减更慢，而较高值会让衰减更快。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the internal handling of light sources.&lt;/p&gt;
-&lt;p&gt; &quot;Legacy&quot; always uses 8 lights per object and provides a lighting closest to an original game.&lt;/p&gt;
-&lt;p&gt;&quot;Shaders (compatibility)&quot; removes the 8 light limit. This mode also enables lighting on groundcover and a configurable light fade. It is recommended to use this with older hardware and a light limit closer to 8.&lt;/p&gt;
+&lt;p&gt; &quot;Legacy&quot; always uses 8 lights per object. It provides results most similar to Morrowind&apos;s lighting.&lt;/p&gt;
+&lt;p&gt;&quot;Shaders (compatibility)&quot; removes the 8 light limit. This mode also enables lighting on groundcover. It is recommended to use this with older hardware and a light limit closer to 8.&lt;/p&gt;
 &lt;p&gt; &quot;Shaders&quot; carries all of the benefits that &quot;Shaders (compatibility)&quot; does, but uses a modern approach that allows for a higher max lights count with little to no performance penalties on modern hardware.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设置光源的内部处理。&lt;/p&gt;
-&lt;p&gt; &quot;传统&quot; 每个物体总是使用8个灯光，并提供最接近原版游戏的光照。&lt;/p&gt;
-&lt;p&gt;&quot;着色器 (兼容)&quot; 移除8个灯光限制。此模式还支持地面覆盖物的光照和可配置的光照衰减。建议在较旧的硬件和接近8个灯光限制下使用此模式。&lt;/p&gt;
+&lt;p&gt; &quot;传统&quot; 每个物体总是使用8个灯光，提供最像原版游戏的光照。&lt;/p&gt;
+&lt;p&gt;&quot;着色器 (兼容)&quot; 移除8个灯光限制。此模式还支持地面覆盖物的光照。建议在较旧的硬件和接近8个灯光限制下使用此模式。&lt;/p&gt;
 &lt;p&gt; &quot;着色器&quot; 具有“着色器 (兼容)”的所有优点，还使用了一种现代方法，允许更高的最大灯光数量，在现代硬件上几乎没有性能损失。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -1463,36 +1455,12 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <translation>着色器 (兼容)</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Multipler for bounding sphere of lights.&lt;/p&gt;&lt;p&gt;Higher numbers allows for smooth falloff but require an increase in number of max lights.&lt;/p&gt;&lt;p&gt;Does not effect the illumination or strength of lights.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;光源边界球体的倍数。&lt;/p&gt;&lt;p&gt;更高的值可以平滑衰减，但需要增加最大光源数。&lt;/p&gt;&lt;p&gt;不影响光源的照度或强度。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Bounding Sphere Multiplier</source>
-        <translation>边界球倍数</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Minimum ambient interior brightness.&lt;/p&gt;&lt;p&gt;Increase this if you feel interiors are too dark.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;室内环境光最小亮度。&lt;/p&gt;&lt;p&gt;如果你觉得室内太暗，可以增加这个值。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>In third-person view, use the camera as the sound listener instead of the player character.</source>
         <translation>在第三人称视角下，使用摄像机作为声音监听者而不是玩家角色。</translation>
     </message>
     <message>
         <source>Use the Camera as the Sound Listener</source>
         <translation>使用摄像机作为声音监听者</translation>
-    </message>
-    <message>
-        <source>Minimum Interior Brightness</source>
-        <translation>最小室内亮度</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Force the use of per pixel lighting. By default, only bump and normal mapped objects use per-pixel lighting. Only affects objects drawn with shaders. Enabling per-pixel lighting results in visual differences to the original MW engine as certain lights in Morrowind rely on vertex lighting to look as intended. Note that groundcover shaders and particle effects ignore this setting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;强制使用逐像素光照。默认情况下，只有凹凸和法线贴图对象使用逐像素光照。只影响使用着色器绘制的物体。启用逐像素光照会导致视觉效果与原版晨风引擎不同，因为晨风中的某些光照需要依赖顶点光照才能达到预期效果。请注意，地面覆盖着色器和粒子效果会忽略此设置。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Force Per-Pixel Lighting</source>
-        <translation>强制逐像素光照</translation>
     </message>
 </context>
 </TS>
