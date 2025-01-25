@@ -10,6 +10,8 @@
 
 #include "bookpage.hpp"
 
+#include "../mwdialogue/quest.hpp"
+
 namespace MWGui
 {
     /// View-Model for the journal GUI
@@ -81,7 +83,7 @@ namespace MWGui
         /// walks over the journal entries related to all quests with the given name
         /// If \a questName is empty, simply visits all journal entries
         virtual void visitJournalEntries(
-            std::string_view questName, std::function<void(JournalEntry const&)> visitor) const = 0;
+            std::string_view questName, std::function<void(JournalEntry const&, const MWDialogue::Quest*)> visitor) const = 0;
 
         /// provides the name of the topic specified by its id
         virtual void visitTopicName(TopicId topicId, std::function<void(Utf8Span)> visitor) const = 0;

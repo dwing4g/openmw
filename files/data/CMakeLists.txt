@@ -70,6 +70,7 @@ set(BUILTIN_DATA_FILES
     l10n/OMWMusic/ru.yaml
     l10n/OMWMusic/sv.yaml
     l10n/OMWMusic/fr.yaml
+    l10n/OMWMusic/zh_CN.yaml
 
     # L10n for post-processing HUD and built-in shaders
     l10n/OMWShaders/de.yaml

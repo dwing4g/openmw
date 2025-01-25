@@ -37,6 +37,7 @@ namespace Translation
 
     bool isFirstChar(unsigned int first, char checkChar);
     // void translateCellName(std::string& str);
+    int compareStrByPinyin(std::string_view a, std::string_view b);
 }
 
 #endif
