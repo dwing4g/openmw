@@ -34,6 +34,12 @@ xcopy /y    files\*_reset.cfg                MSVC2022_64\Release\
 xcopy /y    files\reset_cfg.bat              MSVC2022_64\Release\
 xcopy /y    readme-zh_CN.txt                 MSVC2022_64\Release\
 
+xcopy /y    %SystemRoot%\System32\vcruntime140.dll   MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\vcruntime140_1.dll MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140.dll       MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140_1.dll     MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140_2.dll     MSVC2022_64\Release\
+
 del MSVC2022_64\Debug\resources\vfs\CMakeLists.txt
 del MSVC2022_64\Debug\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\Debug\resources\lua_api\CMakeLists.txt
@@ -50,3 +56,12 @@ del MSVC2022_64\Release\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\Release\resources\shaders\CMakeLists.txt
 
 pause
+
+rem https://github.com/mikeakohn/print_pe
+rem for %%a in (..\MSVC2022_64\Release\*.exe)                  do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\*.dll)                  do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\iconengines\*.dll)      do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\imageformats\*.dll)     do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\osgPlugins-3.6.5\*.dll) do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\platforms\*.dll)        do @print_pe.exe %%a | findstr "ModuleName:"
+rem for %%a in (..\MSVC2022_64\Release\styles\*.dll)           do @print_pe.exe %%a | findstr "ModuleName:"
