@@ -336,6 +336,8 @@ namespace Gui
                          << font->getTextureFont()->getHeight() << 'x' << font->getTextureFont()->getNumElemBytes()
                          << ", fontSize=" << Settings::gui().mFontSize << ", resolution=" << resolutionNode->findAttribute("value");
 
+        if (fontId != "DefaultFont") // only use one default font for Chinese to reduce GPU memory
+        {
         resolutionNode->setAttribute(
             "value", MyGUI::utility::toString(static_cast<int>(resolution * bookScale * mScalingFactor)));
 
@@ -347,7 +349,7 @@ namespace Gui
         Log(Debug::Info) << "Created journal font texture size=" << font->getTextureFont()->getWidth() << 'x'
                          << font->getTextureFont()->getHeight() << 'x' << font->getTextureFont()->getNumElemBytes()
                          << ", fontSize=" << Settings::gui().mFontSize << ", resolution=" << resolutionNode->findAttribute("value");
-
+        }
         dataManager->setResourcePath(oldDataPath);
 
         if (resourceNode.next("Resource"))
