@@ -412,6 +412,13 @@ namespace
 
         void notifyTopicClicked(intptr_t linkId)
         {
+            if (linkId < 0)
+            {
+                const auto* quest = reinterpret_cast<const MWDialogue::Quest*>(-linkId);
+                notifyQuestClicked(std::string(quest->getName()), 0);
+                return;
+            }
+
             Book topicBook = createTopicBook(linkId);
 
             if (mStates.size() > 1)

@@ -1,4 +1,4 @@
-#include "mainwizard.hpp"
+﻿#include "mainwizard.hpp"
 
 #include <QDateTime>
 #include <QDebug>
@@ -279,6 +279,14 @@ void Wizard::MainWizard::runSettingsImporter()
     {
         arguments.append(QLatin1String("win1251"));
     }
+    else if (language == QLatin1String("Chinese(GBK)"))
+    {
+        arguments.append(QLatin1String("gbk"));
+    }
+    else if (language == QLatin1String("UTF-8"))
+    {
+        arguments.append(QLatin1String("utf8"));
+    }
     else
     {
         arguments.append(QLatin1String("win1252"));
@@ -403,6 +411,14 @@ void Wizard::MainWizard::writeSettings()
     else if (language == QLatin1String("Russian"))
     {
         mGameSettings.setValue(QLatin1String("encoding"), { "win1251" });
+    }
+    else if (language == QLatin1String("Chinese(GBK)"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), { "gbk" });
+    }
+    else if (language == QLatin1String("UTF-8"))
+    {
+        mGameSettings.setValue(QLatin1String("encoding"), { "utf8" });
     }
     else
     {
