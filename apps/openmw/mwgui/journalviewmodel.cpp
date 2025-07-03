@@ -1,4 +1,4 @@
-#include "journalviewmodel.hpp"
+﻿#include "journalviewmodel.hpp"
 
 #include <map>
 
@@ -147,7 +147,8 @@ namespace MWGui
                 return toUtf8Span(utf8text);
             }
 
-            void visitSpans(std::function<void(TopicId, size_t, size_t)> visitor) const override
+            void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter,
+                std::function<void(TopicId, size_t, size_t)> visitor) const override
             {
                 ensureLoaded();
                 mModel->ensureKeyWordSearchLoaded();
@@ -155,6 +156,8 @@ namespace MWGui
                 if (mHyperLinks.size()
                     && MWBase::Environment::get().getWindowManager()->getTranslationDataStorage().hasTranslation())
                 {
+                    mTypesetter->addContent(body());
+
                     size_t formatted = 0; // points to the first character that is not laid out yet
                     for (std::map<Range, intptr_t>::const_iterator it = mHyperLinks.begin(); it != mHyperLinks.end();
                          ++it)
@@ -172,6 +175,9 @@ namespace MWGui
                 {
                     std::vector<KeywordSearchT::Match> matches;
                     mModel->mKeywordSearch.highlightKeywords(utf8text.begin(), utf8text.end(), matches);
+
+                    KeywordSearchT::removeUnusedPostfix(utf8text, matches);
+                    mTypesetter->addContent(body());
 
                     std::string::const_iterator i = utf8text.begin();
                     for (std::vector<KeywordSearchT::Match>::const_iterator it = matches.begin(); it != matches.end();
@@ -250,13 +256,13 @@ namespace MWGui
             {
                 if (timestamp_buffer.empty())
                 {
-                    std::string dayStr = MyGUI::LanguageManager::getInstance().replaceTags("#{sDay}");
+                    // std::string dayStr = MyGUI::LanguageManager::getInstance().replaceTags("#{sDay}");
 
                     std::ostringstream os;
 
-                    os << itr->mDayOfMonth << ' '
-                       << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(itr->mMonth) << " ("
-                       << dayStr << " " << (itr->mDay) << ')';
+                    os << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(itr->mMonth)
+                       << " " << itr->mDayOfMonth
+                       << "日 (第" << itr->mDay << "天)";
 
                     timestamp_buffer = os.str();
                 }
@@ -266,22 +272,23 @@ namespace MWGui
         };
 
         void visitJournalEntries(
-            std::string_view questName, std::function<void(JournalEntry const&)> visitor) const override
+            std::string_view questName, std::function<void(JournalEntry const&, const MWDialogue::Quest*)> visitor) const override
         {
             MWBase::Journal* journal = MWBase::Environment::get().getJournal();
 
-            if (!questName.empty())
+            // if (!questName.empty())
             {
                 std::vector<MWDialogue::Quest const*> quests;
                 for (MWBase::Journal::TQuestIter questIt = journal->questBegin(); questIt != journal->questEnd();
                      ++questIt)
                 {
-                    if (Misc::StringUtils::ciEqual(questIt->second.getName(), questName))
+                    if (questName.empty() || Misc::StringUtils::ciEqual(questIt->second.getName(), questName))
                         quests.push_back(&questIt->second);
                 }
 
                 for (MWBase::Journal::TEntryIter i = journal->begin(); i != journal->end(); ++i)
                 {
+                    bool visited = false;
                     for (std::vector<MWDialogue::Quest const*>::iterator questIt = quests.begin();
                          questIt != quests.end(); ++questIt)
                     {
@@ -289,16 +296,22 @@ namespace MWGui
                         for (MWDialogue::Topic::TEntryIter j = quest->begin(); j != quest->end(); ++j)
                         {
                             if (i->mInfoId == j->mInfoId)
-                                visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i));
+                            {
+                                visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i),
+                                    questName.empty() ? quest : nullptr);
+                                visited = true;
+                            }
                         }
                     }
+                    if (!visited && questName.empty())
+                        visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i), nullptr);
                 }
             }
-            else
-            {
-                for (MWBase::Journal::TEntryIter i = journal->begin(); i != journal->end(); ++i)
-                    visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i));
-            }
+            // else
+            // {
+            //     for (MWBase::Journal::TEntryIter i = journal->begin(); i != journal->end(); ++i)
+            //         visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i));
+            // }
         }
 
         void visitTopicName(TopicId topicId, std::function<void(Utf8Span)> visitor) const override
@@ -312,15 +325,14 @@ namespace MWGui
         {
             MWBase::Journal* journal = MWBase::Environment::get().getJournal();
 
+            character = Utf8Stream::toLowerUtf8(character);
             for (MWBase::Journal::TTopicIter i = journal->topicBegin(); i != journal->topicEnd(); ++i)
             {
                 Utf8Stream stream(i->second.getName());
                 Utf8Stream::UnicodeChar first = Utf8Stream::toLowerUtf8(stream.peek());
 
-                if (first != Utf8Stream::toLowerUtf8(character))
-                    continue;
-
-                visitor(i->second.getName());
+                if (Translation::isFirstChar(first, (char)character))
+                    visitor(i->second.getName());
             }
         }
 
