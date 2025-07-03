@@ -1,0 +1,38 @@
+- 准备工作,转换esm/esp成txt格式:
+
+把原版的3个esm和汉化导出的3个esp文件(tes3cn_*.esp)放到 openmw\scripts 目录下,
+打开命令行, 进入 openmw\scripts 目录, 依次运行下面几行命令, 生成出对应的6个txt文件:
+luajit tes3dec.lua Morrowind.esm        1252 > Morrowind.txt
+luajit tes3dec.lua Tribunal.esm         1252 > Tribunal.txt
+luajit tes3dec.lua Bloodmoon.esm        1252 > Bloodmoon.txt
+luajit tes3dec.lua tes3cn_Morrowind.esp gbk  > tes3cn_Morrowind.txt
+luajit tes3dec.lua tes3cn_Tribunal.esp  gbk  > tes3cn_Tribunal.txt
+luajit tes3dec.lua tes3cn_Bloodmoon.esp gbk  > tes3cn_Bloodmoon.txt
+
+- 检查并补充关键词
+
+运行下面一行命令检查以上6个txt文件和topics.txt,检查通过会生成3个tes3cn_*_fix.txt:
+luajit check_topic.lua topics.txt > errors.txt
+
+有些错误信息会输出到命令行和errors.txt, 如果命令行显示出"ERROR:"开头的错误, 需要先修正.
+各种错误信息的解释:
+invalid topic [xxx] at line ... 原版txt里找不到xxx关键词(txt里有DIAL.NAME "xxx"且紧接着下面那行必须是DIAL.DATA [00]的)
+invalid check topic [xxx] at line ... 汉化txt里找不到xxx关键词
+duplicated topic [xxx] at line ... topics.txt里原文xxx出现了重复
+duplicated checkTopic [xxx] at line ... topics.txt里译文xxx出现了重复
+undefined topic [xxx] 原版txt里出现过关键词xxx,但topics.txt里没定义
+undefined check topic [xxx], ref [yyy] 汉化txt里出现过关键词xxx,但topics.txt里没定义,可能对应的原版关键词是yyy
+
+- 最后转换txt成esp格式
+
+luajit tes3enc.lua tes3cn_Morrowind_fix.txt tes3cn_Morrowind_fix.esp
+luajit tes3enc.lua tes3cn_Tribunal_fix.txt  tes3cn_Tribunal_fix.esp
+luajit tes3enc.lua tes3cn_Bloodmoon_fix.txt tes3cn_Bloodmoon_fix.esp
+
+其它说明:
+1. topics.txt要求所有英文字母全部小写.
+2. 如果有额外的esm/esp文件需要处理, 也需要转换成txt, 再修改check_topic.lua:
+   在src_filenames补充原版的txt文件, dst_filenames补充汉化版导出的txt和修正后的txt文件名.
+3. 如果mod增加关键词, 需要补充topics.txt
+4. tes3dec和tes3enc是万能的esm/esp处理工具, 转化为纯文本文件, 方便修改, 包括汉化
+   目前支持上古卷轴3/4/5,辐射3/nv/4, 但上古卷轴5和辐射4的文字不放到esm/esp里了.

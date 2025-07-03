@@ -8,6 +8,10 @@
 
 #include <components/misc/utf8stream.hpp>
 
+#include "bookpage.hpp"
+
+#include "../mwdialogue/quest.hpp"
+
 namespace MWGui
 {
     /// View-Model for the journal GUI
@@ -38,7 +42,8 @@ namespace MWGui
             /// Visits each subset of text in the body, delivering the beginning
             /// and end of the span relative to the body, and a valid topic ID if
             /// the span represents a keyword, or zero if not.
-            virtual void visitSpans(std::function<void(TopicId, size_t, size_t)> visitor) const = 0;
+            virtual void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter,
+                std::function<void(TopicId, size_t, size_t)> visitor) const = 0;
 
             virtual ~Entry() = default;
         };
@@ -78,7 +83,7 @@ namespace MWGui
         /// walks over the journal entries related to all quests with the given name
         /// If \a questName is empty, simply visits all journal entries
         virtual void visitJournalEntries(
-            std::string_view questName, std::function<void(JournalEntry const&)> visitor) const = 0;
+            std::string_view questName, std::function<void(JournalEntry const&, const MWDialogue::Quest*)> visitor) const = 0;
 
         /// provides the name of the topic specified by its id
         virtual void visitTopicName(TopicId topicId, std::function<void(Utf8Span)> visitor) const = 0;

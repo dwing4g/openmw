@@ -18,11 +18,11 @@ QString Files::pathToQString(std::filesystem::path&& path)
 std::filesystem::path Files::pathFromQString(QStringView path)
 {
     const auto tmp = path.toUtf8();
-    return std::filesystem::path{ Misc::StringUtils::stringToU8String(tmp) };
+    return std::filesystem::u8path(Misc::StringUtils::stringToU8String(tmp));
 }
 
 std::filesystem::path Files::pathFromQString(QString&& path)
 {
     const auto tmp = path.toUtf8();
-    return std::filesystem::path{ Misc::StringUtils::stringToU8String(tmp) };
+    return std::filesystem::u8path(Misc::StringUtils::stringToU8String(tmp));
 }
