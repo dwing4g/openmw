@@ -447,7 +447,9 @@ namespace Debug
 #endif
 
         int ret = 0;
+#if defined(NDEBUG)
         try
+#endif
         {
             if (const auto env = std::getenv("OPENMW_DISABLE_CRASH_CATCHER");
                 env == nullptr || Misc::StringUtils::toNumeric<int>(env, 0) == 0)
@@ -473,6 +475,7 @@ namespace Debug
             else
                 ret = innerApplication(argc, argv);
         }
+#if defined(NDEBUG)
         catch (const std::exception& e)
         {
 #if (defined(__APPLE__) || defined(__linux) || defined(__unix) || defined(__posix))
@@ -484,6 +487,7 @@ namespace Debug
 
             ret = 1;
         }
+#endif
 
         // Restore cout and cerr
         std::cout.rdbuf(rawStdout->rdbuf());

@@ -422,6 +422,13 @@ namespace
 
         void notifyTopicClicked(const MWDialogue::Topic& topic)
         {
+            if (linkId < 0)
+            {
+                const auto* quest = reinterpret_cast<const MWDialogue::Quest*>(-linkId);
+                notifyQuestClicked(std::string(quest->getName()), 0);
+                return;
+            }
+
             std::shared_ptr<MWGui::TypesetBook> topicBook = createTopicBook(topic);
 
             if (mStates.size() > 1)
