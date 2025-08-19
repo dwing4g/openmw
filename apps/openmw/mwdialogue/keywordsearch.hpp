@@ -81,7 +81,7 @@ namespace MWDialogue
                 {
                     Point prev = i;
                     --prev;
-                    if (!isWordSeparator(*prev))
+                    if (!isWordSeparator(*prev) && (unsigned char)*i < 0xe0) // for any 3/4-bytes utf-8 char
                         continue;
                 }
 
