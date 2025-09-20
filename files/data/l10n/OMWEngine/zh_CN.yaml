@@ -212,3 +212,14 @@ WindowModeHint: "提示：无边框窗口化模式\n总是使用原始显示分�
 WindowModeWindowed: "窗口化"
 WindowModeWindowedFullscreen: "无边框窗口化"
 WobblyShores: "摇晃海岸"
+
+
+# Controller button names
+
+EnchantType: "施法类型"
+InventorySelect: "放置"
+JournalQuests: "任务"
+JournalShowAll: "显示所有"
+LoadingSelectCharacter: "更换角色"
+RechargeSelect: "充能"
+RepairTool: "工具"

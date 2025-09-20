@@ -205,7 +205,7 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
     </message>
     <message>
         <source>Don&apos;t have a copy?</source>
-        <translation>没有买过？</translation>
+        <translation>还没买过？</translation>
     </message>
     <message>
         <source>Buy the game</source>

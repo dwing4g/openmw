@@ -292,7 +292,7 @@ namespace MWGui
                         }
                     }
                     if (!visited && questName.empty())
-                        visitor(JournalEntryImpl<MWBase::Journal::TEntryIter>(this, i), nullptr);
+                        visitor(JournalEntryImpl(this, journalEntry), nullptr);
                 }
             }
             // else
