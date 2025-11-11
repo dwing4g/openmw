@@ -1,9 +1,7 @@
 #ifndef GAME_MWDIALOGUE_KEYWORDSEARCH_H
 #define GAME_MWDIALOGUE_KEYWORDSEARCH_H
 
-#include <algorithm> // std::reverse
-#include <cctype>
-#include <cstring>
+#include <algorithm>
 #include <set>
 #include <map>
 #include <stdexcept>
@@ -69,7 +67,7 @@ namespace MWDialogue
                     Point prev = i;
                     --prev;
                     constexpr std::string_view wordSeparators = "\n\r \t'\"";
-                    if (wordSeparators.find(*prev) == std::string_view::npos)
+                    if (wordSeparators.find(*prev) == std::string_view::npos && (unsigned char)*i < 0xe0) // for any 3/4-bytes utf-8 char
                         continue;
                 }
 
