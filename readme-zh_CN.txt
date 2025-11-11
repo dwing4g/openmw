@@ -41,6 +41,9 @@ OpenMW原版官方网站: https://openmw.org/
 
 ■ 汉化版的ChangeLog:
 
+● 2025-??-?? v13
+1. openmw: lua的UI文字支持tag替换
+
 ● 2025-07-02 v12
 1. openmw: 日志字体复用默认中文字体,不再生成两张字体贴图,减少显存占用(32MB)
 2. openmw: 游戏内控制台改用默认字体以正常显示中文
