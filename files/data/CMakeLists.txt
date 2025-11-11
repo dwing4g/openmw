@@ -88,6 +88,7 @@ set(BUILTIN_DATA_FILES
     l10n/OMWCombat/ru.yaml
     l10n/OMWCombat/sv.yaml
     l10n/OMWCombat/pl.yaml
+    l10n/OMWCombat/zh_CN.yaml
 
     l10n/OMWControls/de.yaml
     l10n/OMWControls/en.yaml
