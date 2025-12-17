@@ -132,7 +132,8 @@ namespace MWGui
                 return utf8text;
             }
 
-            void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter, std::function<void(const MWDialogue::Topic*, size_t, size_t)> visitor) const override
+            void visitSpans(std::shared_ptr<BookTypesetter> mTypesetter,
+                std::function<void(const MWDialogue::Topic*, size_t, size_t)> visitor) const override
             {
                 ensureLoaded();
                 mModel->ensureKeyWordSearchLoaded();
@@ -158,7 +159,7 @@ namespace MWGui
                     std::vector<TopicSearch::Match> matches;
                     mModel->mKeywordSearch.highlightKeywords(utf8text.begin(), utf8text.end(), matches);
 
-                    KeywordSearchT::removeUnusedPostfix(utf8text, matches);
+                    TopicSearch::removeUnusedPostfix(utf8text, matches);
                     mTypesetter->addContent(body());
 
                     std::string::const_iterator i = utf8text.begin();
