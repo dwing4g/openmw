@@ -90,7 +90,7 @@ namespace
                     intptr_t id = -reinterpret_cast<intptr_t>(quest);
                     auto style = mTypesetter->createHotStyle(mBodyStyle, MyGUI::Colour(0.60f, 0.00f, 0.00f),
                         MyGUI::Colour(0.70f, 0.10f, 0.10f), MyGUI::Colour(0.80f, 0.20f, 0.20f), id);
-                    mTypesetter->write(style, MWGui::to_utf8_span(questName)); // mHeaderStyle
+                    mTypesetter->write(style, questName); // mHeaderStyle
                     mTypesetter->lineBreak();
                 }
             }
@@ -227,7 +227,7 @@ namespace MWGui
         AddQuestName addName(typesetter, header);
         addName(questName);
 
-        mModel->visitJournalEntries(questName, AddJournalEntry(typesetter, body, header, false));
+        mModel->visitJournalEntries(questName, AddJournalEntry(typesetter, body, header, true));
 
         return typesetter->complete();
     }

@@ -195,7 +195,7 @@ namespace Translation
                                 f = false;
                             }
                             if (pyIdx >= 0)
-                                pyBuf[pyIdx++] = c;
+                                pyBuf[pyIdx++] = (char)c;
                         }
                         else if (c < 0xe0)
                         {
@@ -212,7 +212,7 @@ namespace Translation
                                         f = false;
                                     }
                                     if (pyIdx >= 0)
-                                        pyBuf[pyIdx++] = c;
+                                        pyBuf[pyIdx++] = (char)c;
                                 }
                             }
                             // else
@@ -232,7 +232,7 @@ namespace Translation
                                     f = false;
                                 }
                                 if (pyIdx >= 0)
-                                    pyBuf[pyIdx++] = c;
+                                    pyBuf[pyIdx++] = (char)c;
                             }
                             // else
                             //     printf("pinyin = %d\n", n);
