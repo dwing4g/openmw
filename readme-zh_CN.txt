@@ -41,7 +41,11 @@ OpenMW原版官方网站: https://openmw.org/
 
 ■ 汉化版的ChangeLog:
 
-● 2025-??-?? v13
+● 2025-??-?? v14
+1. openmw: 适配OpenMW 0.51
+2. openmw: 任务的每条日志前增加日期信息
+
+● 2025-11-11 v13
 1. openmw: lua的UI文字支持tag替换
 
 ● 2025-07-02 v12
