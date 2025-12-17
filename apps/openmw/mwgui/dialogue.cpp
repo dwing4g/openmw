@@ -279,8 +279,8 @@ namespace MWGui
             std::vector<TopicSearch::Match> matches;
             keywordSearch.highlightKeywords(text.begin(), text.end(), matches);
 
-            KeywordSearchT::removeUnusedPostfix(text, matches);
-            typesetter->addContent(to_utf8_span(text));
+            TopicSearch::removeUnusedPostfix(text, matches);
+            typesetter->addContent(text);
 
             std::string::const_iterator i = text.begin();
             for (TopicSearch::Match& match : matches)

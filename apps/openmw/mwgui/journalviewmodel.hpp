@@ -40,7 +40,8 @@ namespace MWGui
             /// Visits each subset of text in the body, delivering the beginning
             /// and end of the span relative to the body, and a valid topic ID if
             /// the span represents a keyword, or zero if not.
-            virtual void visitSpans(MWGui::BookTypesetter::Ptr mTypesetter, std::function<void(const MWDialogue::Topic*, size_t, size_t)> visitor) const = 0;
+            virtual void visitSpans(std::shared_ptr<BookTypesetter> mTypesetter,
+                std::function<void(const MWDialogue::Topic*, size_t, size_t)> visitor) const = 0;
 
             virtual ~Entry() = default;
         };

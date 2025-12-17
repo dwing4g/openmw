@@ -128,7 +128,7 @@ std::string_view StatelessUtf8Encoder::getUtf8(
         {
 #ifdef WIN32
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
-            int n = MultiByteToWideChar(936, 0, input.data(), input.size(), wchars, input.size());
+            int n = MultiByteToWideChar(936, 0, input.data(), (int)input.size(), wchars, (int)input.size());
             resize(n * 3, bufferAllocationPolicy, buffer);
             n = WideCharToMultiByte(CP_UTF8, 0, wchars, n, buffer.data(), n * 3, 0, 0);
 #else
@@ -197,7 +197,7 @@ std::string_view StatelessUtf8Encoder::getLegacyEnc(
         {
 #ifdef WIN32
             WCHAR* wchars = (WCHAR*)_alloca(input.size() * sizeof(WCHAR));
-            int n = MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(), wchars, input.size());
+            int n = MultiByteToWideChar(CP_UTF8, 0, input.data(), (int)input.size(), wchars, (int)input.size());
             resize(n * 2, bufferAllocationPolicy, buffer);
             n = WideCharToMultiByte(936, 0, wchars, n, buffer.data(), n * 2, 0, 0);
 #else
