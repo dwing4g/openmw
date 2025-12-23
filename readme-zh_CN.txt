@@ -44,6 +44,7 @@ OpenMW原版官方网站: https://openmw.org/
 ● 2025-??-?? v14
 1. openmw: 适配OpenMW 0.51
 2. openmw: 任务的每条日志前增加日期信息
+3. openmw: 支持zip资源包及全语音包: https://www.nexusmods.com/morrowind/mods/54454
 
 ● 2025-11-11 v13
 1. openmw: lua的UI文字支持tag替换

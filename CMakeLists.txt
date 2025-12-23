@@ -462,6 +462,7 @@ endif()
 find_package(SDL2 2.0.20 REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(minizip REQUIRED)
 
 option(USE_LUAJIT "Switch Lua/LuaJit (TRUE is highly recommended)" TRUE)
 if(USE_LUAJIT)
