@@ -9,6 +9,7 @@
 #include <components/bsa/ba2gnrlfile.hpp>
 #include <components/bsa/bsa_file.hpp>
 #include <components/bsa/compressedbsafile.hpp>
+#include <components/bsa/zipfile.hpp>
 
 #include <algorithm>
 #include <memory>
@@ -87,6 +88,8 @@ namespace VFS
                 return std::make_unique<BsaArchive<Bsa::BA2GNRLFile>>(path);
             case Bsa::BsaVersion::BA2DX10:
                 return std::make_unique<BsaArchive<Bsa::BA2DX10File>>(path);
+            case Bsa::BsaVersion::Zip:
+                return std::make_unique<Bsa::ZipArchive>(path);
         }
 
         throw std::runtime_error("Unknown archive type '" + Files::pathToUnicodeString(path) + "'");

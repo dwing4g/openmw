@@ -25,7 +25,11 @@
 
 #include <components/misc/resourcehelpers.hpp>
 
+#include <components/resource/resourcesystem.hpp>
+
 #include <components/settings/values.hpp>
+
+#include <components/vfs/manager.hpp>
 
 #include "../mwbase/environment.hpp"
 #include "../mwbase/journal.hpp"
@@ -133,6 +137,37 @@ namespace MWDialogue
         }
     }
 
+    void DialogueManager::tryPlayVoice(const ESM::DialInfo* info)
+    {
+        if (mActor.getType() != ESM::NPC::sRecordId)
+            return;
+
+        const ESM::NPC* npc = mActor.get<ESM::NPC>()->mBase;
+        const std::string basePath2
+            = "AIV/" + npc->mRace.toString() + '/' + (npc->isMale() ? 'M' : 'F') + '/';
+        const std::string basePath1 = "Vvardenfell/" + basePath2;
+        const std::string endPath2 = info->mId.toString() + ".mp3";
+        const std::string endPath1 = npc->mId.toString() + '/' + endPath2;
+        const MWBase::Environment& env = MWBase::Environment::get();
+        const VFS::Manager* vfs = env.getResourceSystem()->getVFS();
+        auto path = VFS::Path::Normalized(basePath1 + endPath1);
+        if (!vfs->exists(path))
+        {
+            path = VFS::Path::Normalized(basePath2 + endPath1);
+            if (!vfs->exists(path))
+            {
+                path = VFS::Path::Normalized(basePath1 + endPath2);
+                if (!vfs->exists(path))
+                {
+                    path = VFS::Path::Normalized(basePath2 + endPath2);
+                    if (!vfs->exists(path))
+                        return;
+                }
+            }
+        }
+        env.getSoundManager()->say(mActor, path);
+    }
+
     bool DialogueManager::startDialogue(const MWWorld::Ptr& actor, ResponseCallback* callback)
     {
         updateGlobals();
@@ -177,6 +212,7 @@ namespace MWDialogue
 
                     MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
                     callback->addResponse({}, Interpreter::fixDefinesDialog(info->mResponse, interpreterContext));
+                    tryPlayVoice(info);
                     executeScript(info->mResultScript, mActor);
                     mLastTopic = dialogue.mId;
 
@@ -317,6 +353,7 @@ namespace MWDialogue
 
             MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
             callback->addResponse(title, Interpreter::fixDefinesDialog(info->mResponse, interpreterContext));
+            tryPlayVoice(info);
 
             if (dialogue.mType == ESM::Dialogue::Topic)
             {
@@ -484,6 +521,7 @@ namespace MWDialogue
 
                     MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
                     callback->addResponse({}, Interpreter::fixDefinesDialog(text, interpreterContext));
+                    tryPlayVoice(info);
 
                     if (dialogue->mType == ESM::Dialogue::Topic)
                     {

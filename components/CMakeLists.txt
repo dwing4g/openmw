@@ -111,7 +111,7 @@ add_component_dir (bgsm
     )
 
 add_component_dir (bsa
-    bsa_file compressedbsafile ba2gnrlfile ba2dx10file ba2file memorystream
+    bsa_file compressedbsafile ba2gnrlfile ba2dx10file ba2file memorystream zipfile
     )
 
 add_component_dir (bullethelpers
@@ -604,6 +604,7 @@ target_link_libraries(components
     smhasher
     ${ICU_LIBRARIES}
     ZLIB::ZLIB
+    minizip::minizip
     )
 
 if(yaml-cpp_VERSION VERSION_GREATER_EQUAL 0.8.0)

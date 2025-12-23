@@ -353,5 +353,10 @@ BsaVersion Bsa::BSAFile::detectVersion(const std::filesystem::path& filePath)
             return BsaVersion::BA2DX10;
     }
 
+    if (head[0] == ESM::fourCC("PK\x03\x04"))
+    {
+        return BsaVersion::Zip;
+    }
+
     return BsaVersion::Unknown;
 }
