@@ -41,7 +41,7 @@ OpenMW原版官方网站: https://openmw.org/
 
 ■ 汉化版的ChangeLog:
 
-● 2025-??-?? v14
+● 2025-12-24 v14
 1. openmw: 适配OpenMW 0.51
 2. openmw: 任务的每条日志前增加日期信息
 3. openmw: 支持zip资源包及全语音包: https://www.nexusmods.com/morrowind/mods/54454
