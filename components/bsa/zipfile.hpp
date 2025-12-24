@@ -91,15 +91,19 @@ namespace Bsa
 
         Files::IStreamPtr open() override;
 
-        std::filesystem::file_time_type getLastModified() const override
-        {
-            return m_filetime;
+        std::filesystem::path getPath() override { return std::filesystem::path();
+
         }
 
-        std::string getStem() const override
-        {
-            return m_stem;
-        }
+//        std::filesystem::file_time_type getLastModified() const override
+//        {
+//            return m_filetime;
+//        }
+//
+//        std::string getStem() const override
+//        {
+//            return m_stem;
+//        }
 
     private:
         ZipArchive* const m_zip; // 8 bytes
