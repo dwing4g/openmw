@@ -9,6 +9,7 @@
 
 #include <components/esm3/dialoguestate.hpp>
 #include <components/esm3/esmwriter.hpp>
+#include <components/esm3/loadcrea.hpp>
 #include <components/esm3/loaddial.hpp>
 #include <components/esm3/loadfact.hpp>
 #include <components/esm3/loadinfo.hpp>
@@ -137,35 +138,96 @@ namespace MWDialogue
         }
     }
 
+    static bool tryPlayVoicePath(const MWBase::Environment& env, const VFS::Manager* vfs,
+        const MWWorld::ConstPtr& mActor, const char* buf)
+    {
+        const auto& path = VFS::Path::Normalized(buf);
+        if (!vfs->exists(path))
+            return false;
+        env.getSoundManager()->say(mActor, path);
+        return true;
+    }
+
     void DialogueManager::tryPlayVoice(const ESM::DialInfo* info)
     {
-        if (mActor.getType() != ESM::NPC::sRecordId)
-            return;
-
-        const ESM::NPC* npc = mActor.get<ESM::NPC>()->mBase;
-        const std::string basePath2
-            = "AIV/" + npc->mRace.toString() + '/' + (npc->isMale() ? 'M' : 'F') + '/';
-        const std::string basePath1 = "Vvardenfell/" + basePath2;
-        const std::string endPath2 = info->mId.toString() + ".mp3";
-        const std::string endPath1 = npc->mId.toString() + '/' + endPath2;
         const MWBase::Environment& env = MWBase::Environment::get();
         const VFS::Manager* vfs = env.getResourceSystem()->getVFS();
-        auto path = VFS::Path::Normalized(basePath1 + endPath1);
-        if (!vfs->exists(path))
+        char buf[512];
+        if (mActor.getType() == ESM::NPC::sRecordId)
         {
-            path = VFS::Path::Normalized(basePath2 + endPath1);
-            if (!vfs->exists(path))
+            const ESM::NPC* npc = mActor.get<ESM::NPC>()->mBase;
+            const std::string race = npc->mRace.toString();
+            const char sex = npc->isMale() ? 'M' : 'F';
+            const std::string npcId = npc->mId.toString();
+            const std::string infoId = info->mId.toString();
+            std::string faction;
+            int factionRank = -1;
+            if (!npc->mFaction.empty())
             {
-                path = VFS::Path::Normalized(basePath1 + endPath2);
-                if (!vfs->exists(path))
+                faction = npc->mFaction.toString();
+                const MWWorld::Ptr player = env.getWorld()->getPlayerPtr();
+                const auto& ranks = player.getClass().getNpcStats(player).getFactionRanks();
+                const auto it = ranks.find(npc->mFaction);
+                factionRank = it != ranks.end() ? it->second : -1;
+            }
+            if (!faction.empty())
+            {
+                if (factionRank >= 0)
                 {
-                    path = VFS::Path::Normalized(basePath2 + endPath2);
-                    if (!vfs->exists(path))
+                    sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s/%d/%s.mp3",
+                        race.c_str(), sex, npcId.c_str(), faction.c_str(), factionRank, infoId.c_str());
+                    if (tryPlayVoicePath(env, vfs, mActor, buf))
                         return;
                 }
+                sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s/%s.mp3",
+                    race.c_str(), sex, npcId.c_str(), faction.c_str(), infoId.c_str());
+                if (tryPlayVoicePath(env, vfs, mActor, buf))
+                    return;
             }
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s.mp3",
+                race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            if (!faction.empty())
+            {
+                if (factionRank >= 0)
+                {
+                    sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%d/%s.mp3",
+                        race.c_str(), sex, faction.c_str(), factionRank, infoId.c_str());
+                    if (tryPlayVoicePath(env, vfs, mActor, buf))
+                        return;
+                }
+                sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s.mp3",
+                    race.c_str(), sex, faction.c_str(), infoId.c_str());
+                if (tryPlayVoicePath(env, vfs, mActor, buf))
+                    return;
+            }
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s.mp3",
+                race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "Vvardenfell/AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "Vvardenfell/AIV/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "AIV/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
         }
-        env.getSoundManager()->say(mActor, path);
+        else if (mActor.getType() == ESM::Creature::sRecordId)
+        {
+            const ESM::Creature* creature = mActor.get<ESM::Creature>()->mBase;
+            const std::string& creatureId = creature->mId.toString();
+            const std::string infoId = info->mId.toString();
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/Creature/%s/%s.mp3", creatureId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+        }
     }
 
     bool DialogueManager::startDialogue(const MWWorld::Ptr& actor, ResponseCallback* callback)
