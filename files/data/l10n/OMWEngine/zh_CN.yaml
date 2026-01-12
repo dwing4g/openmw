@@ -157,7 +157,7 @@ MatchSunlightToSunTooltip: |-
 
     此选项使太阳光源的位置与太阳的位置相匹配。
 MaxLights: "最大光源数"
-MaxLightsValue: "最大光源数 ({value, number, ::.00})"
+MaxLightsValue: "最大光源数 ({value, number, :: group-off})"
 MaxLightsTooltip: "默认: 8\n每个物体接受的最大光源数。\n\n比默认值小的值会导致光源闪现, 就像传统光照效果那样。"
 MenuHelpDelay: "帮助菜单延迟"
 MenuTransparency: "菜单透明度"
