@@ -189,6 +189,7 @@ if (NOT OPENMW_USE_SYSTEM_SQLITE3)
 endif()
 
 add_subdirectory(smhasher)
+add_subdirectory(maskedoc)
 
 if (BUILD_BENCHMARKS AND NOT OPENMW_USE_SYSTEM_BENCHMARK)
 
