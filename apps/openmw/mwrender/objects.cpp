@@ -52,7 +52,8 @@ namespace MWRender
             cellnode = new osg::Group;
             cellnode->setName("Cell Root");
             if (mOcclusionCuller)
-                cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius, mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
+                cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[ptr.getCell()] = cellnode;
         }
@@ -217,7 +218,8 @@ namespace MWRender
         {
             cellnode = new osg::Group;
             if (mOcclusionCuller)
-                cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius, mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
+                cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[newCell] = cellnode;
         }

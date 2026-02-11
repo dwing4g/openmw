@@ -15,9 +15,8 @@
 
 namespace MWRender
 {
-    SceneOcclusionCallback::SceneOcclusionCallback(
-        SceneUtil::OcclusionCuller* culler, Terrain::TerrainOccluder* occluder, int radiusCells,
-        bool enableTerrainOccluder, bool enableDebugOverlay)
+    SceneOcclusionCallback::SceneOcclusionCallback(SceneUtil::OcclusionCuller* culler,
+        Terrain::TerrainOccluder* occluder, int radiusCells, bool enableTerrainOccluder, bool enableDebugOverlay)
         : mCuller(culler)
         , mTerrainOccluder(occluder)
         , mRadiusCells(radiusCells)
@@ -151,14 +150,12 @@ namespace MWRender
         static int frameCount = 0;
         if (++frameCount % 300 == 0)
             Log(Debug::Info) << "OcclusionCull: terrain tris=" << (mIndices.size() / 3)
-                                << " bldg occluders=" << mCuller->getNumBuildingOccluders()
-                                << " tested=" << mCuller->getNumTested()
-                                << " occluded=" << mCuller->getNumOccluded();
+                             << " bldg occluders=" << mCuller->getNumBuildingOccluders()
+                             << " tested=" << mCuller->getNumTested() << " occluded=" << mCuller->getNumOccluded();
     }
 
-    CellOcclusionCallback::CellOcclusionCallback(
-        SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
-        float occluderShrinkFactor, bool enableStaticOccluders)
+    CellOcclusionCallback::CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
+        float occluderMaxRadius, float occluderShrinkFactor, bool enableStaticOccluders)
         : mCuller(culler)
         , mOccluderMinRadius(occluderMinRadius)
         , mOccluderMaxRadius(occluderMaxRadius)
@@ -177,9 +174,9 @@ namespace MWRender
         node->accept(cbv);
         const osg::BoundingBox& bb = cbv.getBoundingBox();
 
-        Log(Debug::Info) << "OccBB cached: \"" << node->getName() << "\" tight="
-                           << (bb.xMax() - bb.xMin()) << "x" << (bb.yMax() - bb.yMin()) << "x"
-                           << (bb.zMax() - bb.zMin()) << " sphere=" << node->getBound().radius();
+        Log(Debug::Info) << "OccBB cached: \"" << node->getName() << "\" tight=" << (bb.xMax() - bb.xMin()) << "x"
+                         << (bb.yMax() - bb.yMin()) << "x" << (bb.zMax() - bb.zMin())
+                         << " sphere=" << node->getBound().radius();
 
         return mTightBoundsCache.emplace(node, bb).first->second;
     }

@@ -60,14 +60,9 @@ namespace SceneUtil
         // MOC treats (x,y,z) as (x,y,w_component) and transforms via the VP matrix
         MaskedOcclusionCulling::VertexLayout vtxLayout(12, 4, 8);
 
-        mMOC->RenderTriangles(
-            reinterpret_cast<const float*>(worldPositions.data()),
-            indices.data(),
-            numTris,
-            mVPFloat,
+        mMOC->RenderTriangles(reinterpret_cast<const float*>(worldPositions.data()), indices.data(), numTris, mVPFloat,
             MaskedOcclusionCulling::BACKFACE_NONE, // terrain can be seen from below at edges
-            MaskedOcclusionCulling::CLIP_PLANE_ALL,
-            vtxLayout);
+            MaskedOcclusionCulling::CLIP_PLANE_ALL, vtxLayout);
     }
 
     void OcclusionCuller::rasterizeAABBOccluder(const osg::BoundingBox& worldBB)
@@ -90,29 +85,54 @@ namespace SceneUtil
         // 12 triangles (6 faces x 2 tris)
         static const unsigned int indices[36] = {
             // -Z face
-            0, 1, 3, 0, 3, 2,
+            0,
+            1,
+            3,
+            0,
+            3,
+            2,
             // +Z face
-            4, 6, 7, 4, 7, 5,
+            4,
+            6,
+            7,
+            4,
+            7,
+            5,
             // -Y face
-            0, 4, 5, 0, 5, 1,
+            0,
+            4,
+            5,
+            0,
+            5,
+            1,
             // +Y face
-            2, 3, 7, 2, 7, 6,
+            2,
+            3,
+            7,
+            2,
+            7,
+            6,
             // -X face
-            0, 2, 6, 0, 6, 4,
+            0,
+            2,
+            6,
+            0,
+            6,
+            4,
             // +X face
-            1, 5, 7, 1, 7, 3,
+            1,
+            5,
+            7,
+            1,
+            7,
+            3,
         };
 
         MaskedOcclusionCulling::VertexLayout vtxLayout(12, 4, 8);
 
-        mMOC->RenderTriangles(
-            reinterpret_cast<const float*>(verts),
-            indices,
-            12,
-            mVPFloat,
+        mMOC->RenderTriangles(reinterpret_cast<const float*>(verts), indices, 12, mVPFloat,
             MaskedOcclusionCulling::BACKFACE_NONE, // both sides, nearest depth wins
-            MaskedOcclusionCulling::CLIP_PLANE_ALL,
-            vtxLayout);
+            MaskedOcclusionCulling::CLIP_PLANE_ALL, vtxLayout);
 
         ++mNumBuildingOccluders;
     }

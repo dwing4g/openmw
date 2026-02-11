@@ -25,8 +25,7 @@ namespace SceneUtil
         void beginFrame(const osg::Matrixd& viewMatrix, const osg::Matrixd& projectionMatrix);
 
         /// Rasterize world-space triangles as occluders into the depth buffer.
-        void rasterizeOccluder(const std::vector<osg::Vec3f>& worldPositions,
-            const std::vector<unsigned int>& indices);
+        void rasterizeOccluder(const std::vector<osg::Vec3f>& worldPositions, const std::vector<unsigned int>& indices);
 
         /// Rasterize a world-space AABB as an occluder (12 triangles for 6 faces).
         void rasterizeAABBOccluder(const osg::BoundingBox& worldBB);

@@ -90,8 +90,8 @@ namespace MWRender
         /// Updates containing cell for object rendering data
         void updatePtr(const MWWorld::Ptr& old, const MWWorld::Ptr& cur);
 
-        void setOcclusionCuller(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-            float occluderMaxRadius, float occluderShrinkFactor, bool enableStaticOccluders);
+        void setOcclusionCuller(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
+            float occluderShrinkFactor, bool enableStaticOccluders);
 
     private:
         SceneUtil::OcclusionCuller* mOcclusionCuller = nullptr;

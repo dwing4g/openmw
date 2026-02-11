@@ -28,8 +28,8 @@ namespace Terrain
         /// Generates world-space positions and triangle indices.
         /// @param eyePoint Camera position in world space
         /// @param radius Radius in cells to include
-        void build(const osg::Vec3f& eyePoint, int radiusCells,
-            std::vector<osg::Vec3f>& outPositions, std::vector<unsigned int>& outIndices);
+        void build(const osg::Vec3f& eyePoint, int radiusCells, std::vector<osg::Vec3f>& outPositions,
+            std::vector<unsigned int>& outIndices);
 
         bool hasTerrainData() const;
 

@@ -43,8 +43,8 @@ namespace MWRender
         : public SceneUtil::NodeCallback<SceneOcclusionCallback, osg::Node*, osgUtil::CullVisitor*>
     {
     public:
-        SceneOcclusionCallback(SceneUtil::OcclusionCuller* culler, Terrain::TerrainOccluder* occluder,
-            int radiusCells, bool enableTerrainOccluder, bool enableDebugOverlay);
+        SceneOcclusionCallback(SceneUtil::OcclusionCuller* culler, Terrain::TerrainOccluder* occluder, int radiusCells,
+            bool enableTerrainOccluder, bool enableDebugOverlay);
 
         void operator()(osg::Node* node, osgUtil::CullVisitor* cv);
 
@@ -77,8 +77,8 @@ namespace MWRender
         : public SceneUtil::NodeCallback<CellOcclusionCallback, osg::Group*, osgUtil::CullVisitor*>
     {
     public:
-        CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-            float occluderMaxRadius, float occluderShrinkFactor, bool enableStaticOccluders);
+        CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
+            float occluderShrinkFactor, bool enableStaticOccluders);
 
         void operator()(osg::Group* node, osgUtil::CullVisitor* cv);
 

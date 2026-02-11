@@ -516,14 +516,15 @@ namespace MWRender
             const int radius = Settings::camera().mOcclusionTerrainRadius;
             const bool enableTerrain = Settings::camera().mOcclusionCullingTerrain;
             const bool debugOverlay = Settings::camera().mOcclusionDebugOverlay;
-            sceneRoot->addCullCallback(
-                new SceneOcclusionCallback(mOcclusionCuller, mTerrainOccluder.get(), radius, enableTerrain, debugOverlay));
+            sceneRoot->addCullCallback(new SceneOcclusionCallback(
+                mOcclusionCuller, mTerrainOccluder.get(), radius, enableTerrain, debugOverlay));
 
             const float occluderMinRadius = Settings::camera().mOcclusionOccluderMinRadius;
             const float occluderMaxRadius = Settings::camera().mOcclusionOccluderMaxRadius;
             const float occluderShrinkFactor = Settings::camera().mOcclusionOccluderShrinkFactor;
             const bool enableStatics = Settings::camera().mOcclusionCullingStatics;
-            mObjects->setOcclusionCuller(mOcclusionCuller, occluderMinRadius, occluderMaxRadius, occluderShrinkFactor, enableStatics);
+            mObjects->setOcclusionCuller(
+                mOcclusionCuller, occluderMinRadius, occluderMaxRadius, occluderShrinkFactor, enableStatics);
         }
 
         mStateUpdater = new StateUpdater;

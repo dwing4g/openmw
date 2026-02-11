@@ -20,8 +20,8 @@ namespace Terrain
         return !mWorldspace.empty();
     }
 
-    void TerrainOccluder::build(const osg::Vec3f& eyePoint, int radiusCells,
-        std::vector<osg::Vec3f>& outPositions, std::vector<unsigned int>& outIndices)
+    void TerrainOccluder::build(const osg::Vec3f& eyePoint, int radiusCells, std::vector<osg::Vec3f>& outPositions,
+        std::vector<unsigned int>& outIndices)
     {
         if (!hasTerrainData())
             return;
@@ -60,8 +60,7 @@ namespace Terrain
                 osg::ref_ptr<osg::Vec4ubArray> colors(new osg::Vec4ubArray);
                 colors->setNormalize(true);
 
-                mStorage->fillVertexBuffers(0, 1.0f, center, mWorldspace,
-                    *fullRes, *normals, *colors);
+                mStorage->fillVertexBuffers(0, 1.0f, center, mWorldspace, *fullRes, *normals, *colors);
 
                 if (fullRes->empty())
                     continue;
@@ -111,8 +110,7 @@ namespace Terrain
                             {
                                 int qi = ci + di;
                                 int qj = cj + dj;
-                                if (qi >= 0 && qi < coarsePerSide - 1
-                                    && qj >= 0 && qj < coarsePerSide - 1)
+                                if (qi >= 0 && qi < coarsePerSide - 1 && qj >= 0 && qj < coarsePerSide - 1)
                                     minH = std::min(minH, mQuadMins[qj * (coarsePerSide - 1) + qi]);
                             }
                         }
