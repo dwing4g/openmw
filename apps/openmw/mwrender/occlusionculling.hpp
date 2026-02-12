@@ -13,6 +13,16 @@
 
 #include <components/sceneutil/nodecallback.hpp>
 
+namespace MWRender
+{
+    struct OccluderMesh
+    {
+        osg::BoundingBox aabb;
+        std::vector<osg::Vec3f> vertices; // world-space, shrunk toward centroid
+        std::vector<unsigned int> indices; // triangle indices from actual geometry
+    };
+}
+
 namespace osgUtil
 {
     class CullVisitor;
@@ -78,21 +88,22 @@ namespace MWRender
     {
     public:
         CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
-            float occluderShrinkFactor, bool enableStaticOccluders);
+            float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders);
 
         void operator()(osg::Group* node, osgUtil::CullVisitor* cv);
 
     private:
-        /// Get tight world-space AABB via ComputeBoundsVisitor, cached per node.
-        const osg::BoundingBox& getTightBounds(osg::Node* node);
+        /// Get cached occluder mesh (actual triangles + AABB) for a node.
+        const OccluderMesh& getOccluderMesh(osg::Node* node);
 
         osg::ref_ptr<SceneUtil::OcclusionCuller> mCuller;
         float mOccluderMinRadius;
         float mOccluderMaxRadius;
         float mOccluderShrinkFactor;
+        int mOccluderMeshResolution;
         bool mEnableStaticOccluders;
 
-        std::unordered_map<osg::Node*, osg::BoundingBox> mTightBoundsCache;
+        std::unordered_map<osg::Node*, OccluderMesh> mMeshCache;
     };
 }
 

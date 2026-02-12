@@ -53,7 +53,7 @@ namespace MWRender
             cellnode->setName("Cell Root");
             if (mOcclusionCuller)
                 cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
-                    mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[ptr.getCell()] = cellnode;
         }
@@ -219,7 +219,7 @@ namespace MWRender
             cellnode = new osg::Group;
             if (mOcclusionCuller)
                 cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
-                    mOccluderMaxRadius, mOccluderShrinkFactor, mEnableStaticOccluders));
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[newCell] = cellnode;
         }
@@ -264,12 +264,13 @@ namespace MWRender
     }
 
     void Objects::setOcclusionCuller(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-        float occluderMaxRadius, float occluderShrinkFactor, bool enableStaticOccluders)
+        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders)
     {
         mOcclusionCuller = culler;
         mOccluderMinRadius = occluderMinRadius;
         mOccluderMaxRadius = occluderMaxRadius;
         mOccluderShrinkFactor = occluderShrinkFactor;
+        mOccluderMeshResolution = occluderMeshResolution;
         mEnableStaticOccluders = enableStaticOccluders;
     }
 

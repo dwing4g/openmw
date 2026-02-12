@@ -1,17 +1,116 @@
 #include "occlusionculling.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 #include <osg/BoundingBox>
 #include <osg/BoundingSphere>
 #include <osg/Camera>
 #include <osg/ComputeBoundsVisitor>
 #include <osg/Geometry>
 #include <osg/Group>
+#include <osg/NodeVisitor>
+#include <osg/Transform>
 #include <osgUtil/CullVisitor>
 
 #include <components/debug/debuglog.hpp>
 #include <components/misc/constants.hpp>
 #include <components/sceneutil/occlusionculling.hpp>
 #include <components/terrain/terrainoccluder.hpp>
+
+namespace
+{
+    class CollectMeshVisitor : public osg::NodeVisitor
+    {
+    public:
+        CollectMeshVisitor()
+            : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN)
+        {
+        }
+
+        void apply(osg::Transform& transform) override
+        {
+            osg::Matrix matrix;
+            if (!mMatrixStack.empty())
+                matrix = mMatrixStack.back();
+            transform.computeLocalToWorldMatrix(matrix, this);
+            mMatrixStack.push_back(matrix);
+            traverse(transform);
+            mMatrixStack.pop_back();
+        }
+
+        void apply(osg::Drawable& drawable) override
+        {
+            auto* geom = drawable.asGeometry();
+            if (!geom)
+                return;
+
+            const auto* verts = dynamic_cast<const osg::Vec3Array*>(geom->getVertexArray());
+            if (!verts || verts->empty())
+                return;
+
+            osg::Matrix matrix;
+            if (!mMatrixStack.empty())
+                matrix = mMatrixStack.back();
+
+            unsigned int baseVertex = static_cast<unsigned int>(mVertices.size());
+            for (const auto& v : *verts)
+                mVertices.push_back(v * matrix);
+
+            for (unsigned int p = 0; p < geom->getNumPrimitiveSets(); ++p)
+                collectTriangles(geom->getPrimitiveSet(p), baseVertex);
+        }
+
+        std::vector<osg::Vec3f> mVertices;
+        std::vector<unsigned int> mIndices;
+
+    private:
+        void collectTriangles(const osg::PrimitiveSet* pset, unsigned int baseVertex)
+        {
+            unsigned int count = pset->getNumIndices();
+            switch (pset->getMode())
+            {
+                case GL_TRIANGLES:
+                    for (unsigned int i = 0; i + 2 < count; i += 3)
+                    {
+                        mIndices.push_back(baseVertex + pset->index(i));
+                        mIndices.push_back(baseVertex + pset->index(i + 1));
+                        mIndices.push_back(baseVertex + pset->index(i + 2));
+                    }
+                    break;
+                case GL_TRIANGLE_STRIP:
+                    for (unsigned int i = 0; i + 2 < count; ++i)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            mIndices.push_back(baseVertex + pset->index(i));
+                            mIndices.push_back(baseVertex + pset->index(i + 1));
+                            mIndices.push_back(baseVertex + pset->index(i + 2));
+                        }
+                        else
+                        {
+                            mIndices.push_back(baseVertex + pset->index(i + 1));
+                            mIndices.push_back(baseVertex + pset->index(i));
+                            mIndices.push_back(baseVertex + pset->index(i + 2));
+                        }
+                    }
+                    break;
+                case GL_TRIANGLE_FAN:
+                    for (unsigned int i = 1; i + 1 < count; ++i)
+                    {
+                        mIndices.push_back(baseVertex + pset->index(0));
+                        mIndices.push_back(baseVertex + pset->index(i));
+                        mIndices.push_back(baseVertex + pset->index(i + 1));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        std::vector<osg::Matrix> mMatrixStack;
+    };
+}
 
 namespace MWRender
 {
@@ -155,30 +254,124 @@ namespace MWRender
     }
 
     CellOcclusionCallback::CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-        float occluderMaxRadius, float occluderShrinkFactor, bool enableStaticOccluders)
+        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders)
         : mCuller(culler)
         , mOccluderMinRadius(occluderMinRadius)
         , mOccluderMaxRadius(occluderMaxRadius)
         , mOccluderShrinkFactor(occluderShrinkFactor)
+        , mOccluderMeshResolution(occluderMeshResolution)
         , mEnableStaticOccluders(enableStaticOccluders)
     {
     }
 
-    const osg::BoundingBox& CellOcclusionCallback::getTightBounds(osg::Node* node)
+    const OccluderMesh& CellOcclusionCallback::getOccluderMesh(osg::Node* node)
     {
-        auto it = mTightBoundsCache.find(node);
-        if (it != mTightBoundsCache.end())
+        auto it = mMeshCache.find(node);
+        if (it != mMeshCache.end())
             return it->second;
 
-        osg::ComputeBoundsVisitor cbv;
-        node->accept(cbv);
-        const osg::BoundingBox& bb = cbv.getBoundingBox();
+        OccluderMesh mesh;
 
-        Log(Debug::Info) << "OccBB cached: \"" << node->getName() << "\" tight=" << (bb.xMax() - bb.xMin()) << "x"
-                         << (bb.yMax() - bb.yMin()) << "x" << (bb.zMax() - bb.zMin())
+        // Collect world-space mesh (vertices + triangle indices)
+        CollectMeshVisitor cmv;
+        node->accept(cmv);
+
+        if (cmv.mIndices.empty() || cmv.mVertices.size() < 3)
+        {
+            // No geometry — compute AABB for visibility testing only
+            osg::ComputeBoundsVisitor cbv;
+            node->accept(cbv);
+            mesh.aabb = cbv.getBoundingBox();
+            Log(Debug::Info) << "OccMesh cached (no triangles): \"" << node->getName() << "\"";
+            return mMeshCache.emplace(node, std::move(mesh)).first->second;
+        }
+
+        // Compute AABB from collected vertices
+        for (const auto& v : cmv.mVertices)
+            mesh.aabb.expandBy(v);
+
+        // Simplify mesh via vertex clustering on a coarse 3D grid.
+        // Snaps vertices to grid cells, averages positions per cell,
+        // discards degenerate triangles. Preserves concavity (arches, L-shapes).
+        const unsigned int gridRes = static_cast<unsigned int>(mOccluderMeshResolution);
+        float dx = mesh.aabb.xMax() - mesh.aabb.xMin();
+        float dy = mesh.aabb.yMax() - mesh.aabb.yMin();
+        float dz = mesh.aabb.zMax() - mesh.aabb.zMin();
+        float maxDim = std::max({ dx, dy, dz });
+        float cellSize = maxDim / gridRes;
+
+        if (cellSize > 0)
+        {
+            unsigned int resX = std::max(1u, static_cast<unsigned int>(std::ceil(dx / cellSize)));
+            unsigned int resY = std::max(1u, static_cast<unsigned int>(std::ceil(dy / cellSize)));
+
+            // Pass 1: assign each vertex to a grid cell, accumulate for averaging
+            struct CellData
+            {
+                osg::Vec3f sum;
+                unsigned int count = 0;
+                unsigned int newIndex = 0;
+            };
+            std::unordered_map<unsigned int, CellData> cells;
+            std::vector<unsigned int> vertexRemap(cmv.mVertices.size());
+
+            for (size_t i = 0; i < cmv.mVertices.size(); ++i)
+            {
+                const osg::Vec3f& v = cmv.mVertices[i];
+                float fx = (v.x() - mesh.aabb.xMin()) / cellSize;
+                float fy = (v.y() - mesh.aabb.yMin()) / cellSize;
+                float fz = (v.z() - mesh.aabb.zMin()) / cellSize;
+                unsigned int gx = std::min(static_cast<unsigned int>(std::max(fx, 0.0f)), resX - 1);
+                unsigned int gy = std::min(static_cast<unsigned int>(std::max(fy, 0.0f)), resY - 1);
+                unsigned int gz = std::min(static_cast<unsigned int>(std::max(fz, 0.0f)), gridRes - 1);
+                unsigned int cellId = gx + gy * resX + gz * resX * resY;
+
+                auto& cell = cells[cellId];
+                cell.sum += v;
+                cell.count++;
+                vertexRemap[i] = cellId;
+            }
+
+            // Assign final vertex indices, compute averaged positions
+            unsigned int nextIdx = 0;
+            for (auto& [id, cell] : cells)
+            {
+                cell.newIndex = nextIdx++;
+                mesh.vertices.push_back(cell.sum / static_cast<float>(cell.count));
+            }
+
+            // Pass 2: remap triangle indices, discard degenerate triangles
+            for (size_t i = 0; i + 2 < cmv.mIndices.size(); i += 3)
+            {
+                unsigned int a = cells[vertexRemap[cmv.mIndices[i]]].newIndex;
+                unsigned int b = cells[vertexRemap[cmv.mIndices[i + 1]]].newIndex;
+                unsigned int c = cells[vertexRemap[cmv.mIndices[i + 2]]].newIndex;
+                if (a != b && b != c && a != c)
+                {
+                    mesh.indices.push_back(a);
+                    mesh.indices.push_back(b);
+                    mesh.indices.push_back(c);
+                }
+            }
+
+            // Shrink toward centroid for conservative occlusion
+            if (!mesh.vertices.empty())
+            {
+                osg::Vec3f center(0, 0, 0);
+                for (const auto& v : mesh.vertices)
+                    center += v;
+                center /= static_cast<float>(mesh.vertices.size());
+                for (auto& v : mesh.vertices)
+                    v = center + (v - center) * mOccluderShrinkFactor;
+            }
+        }
+
+        Log(Debug::Info) << "OccMesh cached: \"" << node->getName() << "\" verts=" << mesh.vertices.size()
+                         << " tris=" << (mesh.indices.size() / 3) << " (from " << cmv.mVertices.size() << "v/"
+                         << (cmv.mIndices.size() / 3) << "t)"
                          << " sphere=" << node->getBound().radius();
 
-        return mTightBoundsCache.emplace(node, bb).first->second;
+        return mMeshCache.emplace(node, std::move(mesh)).first->second;
     }
 
     void CellOcclusionCallback::operator()(osg::Group* node, osgUtil::CullVisitor* cv)
@@ -220,25 +413,21 @@ namespace MWRender
                 continue;
             }
 
-            // Use tight AABB from ComputeBoundsVisitor for accurate occluder shape
-            const osg::BoundingBox& tightBB = getTightBounds(child);
-            if (!tightBB.valid())
+            // Get cached occluder mesh (with AABB for visibility test)
+            const OccluderMesh& mesh = getOccluderMesh(child);
+            if (!mesh.aabb.valid())
                 continue;
 
-            if (mCuller->testVisibleAABB(tightBB))
+            if (mCuller->testVisibleAABB(mesh.aabb))
             {
-                if (mEnableStaticOccluders)
+                if (mEnableStaticOccluders && !mesh.indices.empty())
                 {
-                    // Don't rasterize as occluder if camera is inside or very near the object —
-                    // otherwise its AABB fills the screen and falsely occludes everything behind it
+                    // Don't rasterize as occluder if camera is inside or very near the object
                     float distSq = (bs.center() - cv->getEyePoint()).length2();
                     if (distSq > bs.radius() * bs.radius())
                     {
-                        osg::Vec3f center = tightBB.center();
-                        osg::Vec3f halfExtents = (tightBB._max - tightBB._min) * 0.5f * mOccluderShrinkFactor;
-                        osg::BoundingBox occBB;
-                        occBB.set(center - halfExtents, center + halfExtents);
-                        mCuller->rasterizeAABBOccluder(occBB);
+                        mCuller->rasterizeOccluder(mesh.vertices, mesh.indices);
+                        mCuller->incrementBuildingOccluders();
                     }
                 }
 

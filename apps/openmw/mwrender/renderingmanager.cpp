@@ -522,9 +522,10 @@ namespace MWRender
             const float occluderMinRadius = Settings::camera().mOcclusionOccluderMinRadius;
             const float occluderMaxRadius = Settings::camera().mOcclusionOccluderMaxRadius;
             const float occluderShrinkFactor = Settings::camera().mOcclusionOccluderShrinkFactor;
+            const int occluderMeshRes = Settings::camera().mOcclusionOccluderMeshResolution;
             const bool enableStatics = Settings::camera().mOcclusionCullingStatics;
-            mObjects->setOcclusionCuller(
-                mOcclusionCuller, occluderMinRadius, occluderMaxRadius, occluderShrinkFactor, enableStatics);
+            mObjects->setOcclusionCuller(mOcclusionCuller, occluderMinRadius, occluderMaxRadius, occluderShrinkFactor,
+                occluderMeshRes, enableStatics);
         }
 
         mStateUpdater = new StateUpdater;

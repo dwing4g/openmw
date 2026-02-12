@@ -44,6 +44,8 @@ namespace Settings
             makeClampSanitizerFloat(500.0f, 100000.0f) };
         SettingValue<float> mOcclusionOccluderShrinkFactor{ mIndex, "Camera", "occlusion occluder shrink factor",
             makeClampSanitizerFloat(0.1f, 2.0f) };
+        SettingValue<int> mOcclusionOccluderMeshResolution{ mIndex, "Camera", "occlusion occluder mesh resolution",
+            makeClampSanitizerInt(4, 32) };
         SettingValue<bool> mOcclusionDebugOverlay{ mIndex, "Camera", "occlusion debug overlay" };
     };
 }

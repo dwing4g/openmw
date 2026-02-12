@@ -40,6 +40,7 @@ namespace SceneUtil
         unsigned int getNumOccluded() const { return mNumOccluded; }
         unsigned int getNumTested() const { return mNumTested; }
         unsigned int getNumBuildingOccluders() const { return mNumBuildingOccluders; }
+        void incrementBuildingOccluders() { ++mNumBuildingOccluders; }
 
         /// Write the per-pixel depth buffer to depthData (width*height floats, bottom-to-top).
         void computePixelDepthBuffer(float* depthData) const;
