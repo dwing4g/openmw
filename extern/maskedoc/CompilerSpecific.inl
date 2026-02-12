@@ -47,6 +47,49 @@
 	}
 
 #elif defined(__GNUG__)	|| defined(__clang__) // G++ or clang
+
+#if defined(__aarch64__) || defined(__ARM_NEON)
+	// ARM/NEON: use sse2neon to translate SSE intrinsics to NEON
+	#include "sse2neon.h"
+	#include <stdlib.h>
+	#include <new>
+
+	#define FORCE_INLINE inline
+
+	FORCE_INLINE unsigned long find_clear_lsb(unsigned int *mask)
+	{
+		unsigned long idx;
+		idx = __builtin_ctzl(*mask);
+		*mask &= *mask - 1;
+		return idx;
+	}
+
+	FORCE_INLINE void *aligned_alloc(size_t alignment, size_t size)
+	{
+		void *ptr = nullptr;
+		posix_memalign(&ptr, alignment, size);
+		return ptr;
+	}
+
+	FORCE_INLINE void aligned_free(void *ptr)
+	{
+		free(ptr);
+	}
+
+	// Stubs: CPUID is not available on ARM; DetectCPUFeatures() is guarded separately
+	FORCE_INLINE void __cpuidex(int* cpuinfo, int function, int subfunction)
+	{
+		(void)function; (void)subfunction;
+		cpuinfo[0] = cpuinfo[1] = cpuinfo[2] = cpuinfo[3] = 0;
+	}
+
+	FORCE_INLINE unsigned long long _xgetbv(unsigned int index)
+	{
+		(void)index;
+		return 0;
+	}
+
+#else // x86: GCC / clang
 	#include <cpuid.h>
 #if defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 	#include <malloc/malloc.h> // memalign
@@ -77,11 +120,16 @@
 		free(ptr);
 	}
 
+	// GCC 11+ provides __cpuidex in <cpuid.h>; clang always has it
+#if !defined(__clang__) && defined(__GNUC__) && __GNUC__ < 11
 	FORCE_INLINE void __cpuidex(int* cpuinfo, int function, int subfunction)
 	{
 		__cpuid_count(function, subfunction, cpuinfo[0], cpuinfo[1], cpuinfo[2], cpuinfo[3]);
 	}
+#endif
 
+	// GCC 12+ provides _xgetbv via <immintrin.h>; clang always has it
+#if !defined(__clang__) && defined(__GNUC__) && __GNUC__ < 12
 	FORCE_INLINE unsigned long long _xgetbv(unsigned int index)
 	{
 		unsigned int eax, edx;
@@ -92,6 +140,9 @@
 		);
 		return ((unsigned long long)edx << 32) | eax;
 	}
+#endif
+
+#endif // ARM vs x86
 
 #else
 	#error Unsupported compiler

@@ -34,6 +34,11 @@
 
 static MaskedOcclusionCulling::Implementation DetectCPUFeatures(MaskedOcclusionCulling::pfnAlignedAlloc alignedAlloc, MaskedOcclusionCulling::pfnAlignedFree alignedFree)
 {
+#if defined(__aarch64__) || defined(__ARM_NEON)
+	// ARM via sse2neon: all SSE/SSE4.1 intrinsics are available
+	(void)alignedAlloc; (void)alignedFree;
+	return MaskedOcclusionCulling::SSE41;
+#else
 	struct CpuInfo { int regs[4]; };
 
 	// Get regular CPUID values
@@ -45,7 +50,7 @@ static MaskedOcclusionCulling::Implementation DetectCPUFeatures(MaskedOcclusionC
     //  cpuId.resize( regs[0] );
     size_t cpuIdCount = regs[0];
     CpuInfo * cpuId = (CpuInfo*)alignedAlloc( 64, sizeof(CpuInfo) * cpuIdCount );
-    
+
 	for (size_t i = 0; i < cpuIdCount; ++i)
 		__cpuidex(cpuId[i].regs, (int)i, 0);
 
@@ -75,12 +80,13 @@ static MaskedOcclusionCulling::Implementation DetectCPUFeatures(MaskedOcclusionC
 			retVal = MaskedOcclusionCulling::AVX512;
 		else if (TEST_XMM_YMM && TEST_BMI1_BMI2_AVX2)
 			retVal = MaskedOcclusionCulling::AVX2;
-	} 
+	}
     else if (TEST_SSE41)
 		retVal = MaskedOcclusionCulling::SSE41;
     alignedFree( cpuId );
     alignedFree( cpuIdEx );
     return retVal;
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -411,6 +417,7 @@ namespace MaskedOcclusionCullingSSE2
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Object construction and allocation
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if !defined(__aarch64__) && !defined(__ARM_NEON)
 namespace MaskedOcclusionCullingAVX512
 {
 	extern MaskedOcclusionCulling *CreateMaskedOcclusionCulling(pfnAlignedAlloc alignedAlloc, pfnAlignedFree alignedFree);
@@ -420,6 +427,7 @@ namespace MaskedOcclusionCullingAVX2
 {
 	extern MaskedOcclusionCulling *CreateMaskedOcclusionCulling(pfnAlignedAlloc alignedAlloc, pfnAlignedFree alignedFree);
 }
+#endif
 
 MaskedOcclusionCulling *MaskedOcclusionCulling::Create(Implementation RequestedSIMD)
 {
@@ -436,10 +444,12 @@ MaskedOcclusionCulling *MaskedOcclusionCulling::Create(Implementation RequestedS
 		impl = RequestedSIMD;
 
 	// Return best supported version
+#if !defined(__aarch64__) && !defined(__ARM_NEON)
 	if (object == nullptr && impl >= AVX512)
 		object = MaskedOcclusionCullingAVX512::CreateMaskedOcclusionCulling(alignedAlloc, alignedFree); // Use AVX512 version
 	if (object == nullptr && impl >= AVX2)
 		object = MaskedOcclusionCullingAVX2::CreateMaskedOcclusionCulling(alignedAlloc, alignedFree); // Use AVX2 version
+#endif
 	if (object == nullptr && impl >= SSE41)
 		object = MaskedOcclusionCullingSSE41::CreateMaskedOcclusionCulling(alignedAlloc, alignedFree); // Use SSE4.1 version
 	if (object == nullptr)
