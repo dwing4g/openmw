@@ -34,22 +34,26 @@ xcopy /y    files\*_reset.cfg                MSVC2022_64\Release\
 xcopy /y    files\reset_cfg.bat              MSVC2022_64\Release\
 xcopy /y    readme-zh_CN.txt                 MSVC2022_64\Release\
 
-xcopy /y    %SystemRoot%\System32\vcruntime140.dll   MSVC2022_64\Release\
-xcopy /y    %SystemRoot%\System32\vcruntime140_1.dll MSVC2022_64\Release\
-xcopy /y    %SystemRoot%\System32\msvcp140.dll       MSVC2022_64\Release\
-xcopy /y    %SystemRoot%\System32\msvcp140_1.dll     MSVC2022_64\Release\
-xcopy /y    %SystemRoot%\System32\msvcp140_2.dll     MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\vcruntime140.dll         MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\vcruntime140_1.dll       MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140.dll             MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140_1.dll           MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140_2.dll           MSVC2022_64\Release\
+xcopy /y    %SystemRoot%\System32\msvcp140_atomic_wait.dll MSVC2022_64\Release\
 
+del MSVC2022_64\Debug\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\Debug\resources\vfs\CMakeLists.txt
 del MSVC2022_64\Debug\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\Debug\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\Debug\resources\shaders\CMakeLists.txt
 
+del MSVC2022_64\RelWithDebInfo\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\RelWithDebInfo\resources\vfs\CMakeLists.txt
 del MSVC2022_64\RelWithDebInfo\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\RelWithDebInfo\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\RelWithDebInfo\resources\shaders\CMakeLists.txt
 
+del MSVC2022_64\Release\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\Release\resources\vfs\CMakeLists.txt
 del MSVC2022_64\Release\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\Release\resources\lua_api\CMakeLists.txt

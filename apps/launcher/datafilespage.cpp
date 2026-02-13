@@ -977,7 +977,7 @@ void Launcher::DataFilesPage::addArchive(const QString& name, Qt::CheckState sel
 
 void Launcher::DataFilesPage::addArchivesFromDir(const QString& path)
 {
-    QStringList archiveFilter{ "*.bsa", "*.ba2" };
+    QStringList archiveFilter{ "*.bsa", "*.ba2", "*.zip" };
     QDir dir(path);
 
     std::unordered_set<VFS::Path::Normalized, VFS::Path::Hash> archives;

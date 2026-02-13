@@ -121,6 +121,7 @@ ForcePerPixelLightingTooltip: |-
     注意地面覆盖物着色器和粒子效果会忽略此设置。
 FrameRateHint: "提示：按下F3显示当前帧率"
 GammaCorrection: "伽马校正"
+GammaCorrectionValue: "伽马校正 ({value, number, ::.00})"
 GammaDark: "暗"
 GammaLight: "亮"
 GmstOverridesL10n: "优先选用来自 ESM 文件的字符串"
@@ -157,7 +158,7 @@ MatchSunlightToSunTooltip: |-
 
     此选项使太阳光源的位置与太阳的位置相匹配。
 MaxLights: "最大光源数"
-MaxLightsValue: "最大光源数 ({value, number, ::.00})"
+MaxLightsValue: "最大光源数 ({value, number, :: group-off})"
 MaxLightsTooltip: "默认: 8\n每个物体接受的最大光源数。\n\n比默认值小的值会导致光源闪现, 就像传统光照效果那样。"
 MenuHelpDelay: "帮助菜单延迟"
 MenuTransparency: "菜单透明度"
