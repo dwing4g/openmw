@@ -56,6 +56,23 @@ namespace SceneUtil
         if (numTris <= 0)
             return;
 
+        // Validate all vertex indices are in range to prevent out-of-bounds reads.
+        const unsigned int vertexCount = static_cast<unsigned int>(worldPositions.size());
+        for (const auto idx : indices)
+        {
+            if (idx >= vertexCount)
+                return;
+        }
+
+        // Pre-transform check: skip triangles with vertices that would produce
+        // extreme clip-space coordinates (w near zero after VP transform).
+        for (const auto& v : worldPositions)
+        {
+            float w = mVPFloat[3] * v.x() + mVPFloat[7] * v.y() + mVPFloat[11] * v.z() + mVPFloat[15];
+            if (!std::isfinite(w) || std::abs(w) < 1e-6f)
+                return;
+        }
+
         // Vec3f layout: stride=12 bytes, yOffset=4, zOffset=8
         // MOC treats (x,y,z) as (x,y,w_component) and transforms via the VP matrix
         MaskedOcclusionCulling::VertexLayout vtxLayout(12, 4, 8);
