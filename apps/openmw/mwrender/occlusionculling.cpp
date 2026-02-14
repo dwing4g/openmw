@@ -249,17 +249,23 @@ namespace MWRender
         static int frameCount = 0;
         if (++frameCount % 300 == 0)
             Log(Debug::Info) << "OcclusionCull: terrain tris=" << (mIndices.size() / 3)
+                             << " terrain verts=" << mPositions.size()
                              << " bldg occluders=" << mCuller->getNumBuildingOccluders()
+                             << " bldg tris=" << mCuller->getNumBuildingTris()
+                             << " bldg verts=" << mCuller->getNumBuildingVerts()
                              << " tested=" << mCuller->getNumTested() << " occluded=" << mCuller->getNumOccluded();
     }
 
     CellOcclusionCallback::CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders)
+        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
+        float occluderMaxDistance, bool enableStaticOccluders)
         : mCuller(culler)
         , mOccluderMinRadius(occluderMinRadius)
         , mOccluderMaxRadius(occluderMaxRadius)
         , mOccluderShrinkFactor(occluderShrinkFactor)
         , mOccluderMeshResolution(occluderMeshResolution)
+        , mOccluderInsideThreshold(occluderInsideThreshold)
+        , mOccluderMaxDistanceSq(occluderMaxDistance * occluderMaxDistance)
         , mEnableStaticOccluders(enableStaticOccluders)
     {
     }
@@ -422,12 +428,25 @@ namespace MWRender
             {
                 if (mEnableStaticOccluders && !mesh.indices.empty())
                 {
-                    // Don't rasterize as occluder if camera is inside or very near the object
+                    // Skip rasterization for distant buildings — they cover few pixels
+                    // and terrain already handles far-distance occlusion
                     float distSq = (bs.center() - cv->getEyePoint()).length2();
-                    if (distSq > bs.radius() * bs.radius())
+                    if (distSq < mOccluderMaxDistanceSq)
                     {
-                        mCuller->rasterizeOccluder(mesh.vertices, mesh.indices);
-                        mCuller->incrementBuildingOccluders();
+                        // Don't rasterize as occluder if camera is inside the (scaled) AABB
+                        osg::Vec3f center = mesh.aabb.center();
+                        osg::Vec3f halfExtent
+                            = (osg::Vec3f(mesh.aabb.xMax(), mesh.aabb.yMax(), mesh.aabb.zMax()) - center)
+                            * mOccluderInsideThreshold;
+                        osg::BoundingBox scaledBB;
+                        scaledBB.expandBy(center - halfExtent);
+                        scaledBB.expandBy(center + halfExtent);
+                        if (!scaledBB.contains(cv->getEyePoint()))
+                        {
+                            mCuller->rasterizeOccluder(mesh.vertices, mesh.indices);
+                            mCuller->incrementBuildingOccluders(static_cast<unsigned int>(mesh.indices.size() / 3),
+                                static_cast<unsigned int>(mesh.vertices.size()));
+                        }
                     }
                 }
 

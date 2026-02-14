@@ -43,6 +43,8 @@ namespace SceneUtil
         mNumOccluded = 0;
         mNumTested = 0;
         mNumBuildingOccluders = 0;
+        mNumBuildingTris = 0;
+        mNumBuildingVerts = 0;
         mFrameActive = true;
     }
 

@@ -40,7 +40,14 @@ namespace SceneUtil
         unsigned int getNumOccluded() const { return mNumOccluded; }
         unsigned int getNumTested() const { return mNumTested; }
         unsigned int getNumBuildingOccluders() const { return mNumBuildingOccluders; }
-        void incrementBuildingOccluders() { ++mNumBuildingOccluders; }
+        unsigned int getNumBuildingTris() const { return mNumBuildingTris; }
+        unsigned int getNumBuildingVerts() const { return mNumBuildingVerts; }
+        void incrementBuildingOccluders(unsigned int tris, unsigned int verts)
+        {
+            ++mNumBuildingOccluders;
+            mNumBuildingTris += tris;
+            mNumBuildingVerts += verts;
+        }
 
         /// Write the per-pixel depth buffer to depthData (width*height floats, bottom-to-top).
         void computePixelDepthBuffer(float* depthData) const;
@@ -56,6 +63,8 @@ namespace SceneUtil
         mutable unsigned int mNumOccluded = 0;
         mutable unsigned int mNumTested = 0;
         unsigned int mNumBuildingOccluders = 0;
+        unsigned int mNumBuildingTris = 0;
+        unsigned int mNumBuildingVerts = 0;
     };
 }
 

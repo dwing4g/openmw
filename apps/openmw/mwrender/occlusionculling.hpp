@@ -88,7 +88,8 @@ namespace MWRender
     {
     public:
         CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
-            float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders);
+            float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
+            float occluderMaxDistance, bool enableStaticOccluders);
 
         void operator()(osg::Group* node, osgUtil::CullVisitor* cv);
 
@@ -101,6 +102,8 @@ namespace MWRender
         float mOccluderMaxRadius;
         float mOccluderShrinkFactor;
         int mOccluderMeshResolution;
+        float mOccluderInsideThreshold;
+        float mOccluderMaxDistanceSq;
         bool mEnableStaticOccluders;
 
         std::unordered_map<osg::Node*, OccluderMesh> mMeshCache;

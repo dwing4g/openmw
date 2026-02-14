@@ -53,7 +53,8 @@ namespace MWRender
             cellnode->setName("Cell Root");
             if (mOcclusionCuller)
                 cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
-                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mEnableStaticOccluders));
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mOccluderInsideThreshold,
+                    mOccluderMaxDistance, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[ptr.getCell()] = cellnode;
         }
@@ -219,7 +220,8 @@ namespace MWRender
             cellnode = new osg::Group;
             if (mOcclusionCuller)
                 cellnode->addCullCallback(new CellOcclusionCallback(mOcclusionCuller, mOccluderMinRadius,
-                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mEnableStaticOccluders));
+                    mOccluderMaxRadius, mOccluderShrinkFactor, mOccluderMeshResolution, mOccluderInsideThreshold,
+                    mOccluderMaxDistance, mEnableStaticOccluders));
             mRootNode->addChild(cellnode);
             mCellSceneNodes[newCell] = cellnode;
         }
@@ -264,13 +266,16 @@ namespace MWRender
     }
 
     void Objects::setOcclusionCuller(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, bool enableStaticOccluders)
+        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
+        float occluderMaxDistance, bool enableStaticOccluders)
     {
         mOcclusionCuller = culler;
         mOccluderMinRadius = occluderMinRadius;
         mOccluderMaxRadius = occluderMaxRadius;
         mOccluderShrinkFactor = occluderShrinkFactor;
         mOccluderMeshResolution = occluderMeshResolution;
+        mOccluderInsideThreshold = occluderInsideThreshold;
+        mOccluderMaxDistance = occluderMaxDistance;
         mEnableStaticOccluders = enableStaticOccluders;
     }
 
