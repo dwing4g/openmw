@@ -114,6 +114,96 @@ namespace
 
 namespace MWRender
 {
+    OccluderMesh buildSimplifiedMesh(osg::Node* node, int gridRes, float shrinkFactor)
+    {
+        OccluderMesh mesh;
+
+        CollectMeshVisitor cmv;
+        node->accept(cmv);
+
+        if (cmv.mIndices.empty() || cmv.mVertices.size() < 3)
+        {
+            osg::ComputeBoundsVisitor cbv;
+            node->accept(cbv);
+            mesh.aabb = cbv.getBoundingBox();
+            return mesh;
+        }
+
+        for (const auto& v : cmv.mVertices)
+            mesh.aabb.expandBy(v);
+
+        const unsigned int res = static_cast<unsigned int>(gridRes);
+        float dx = mesh.aabb.xMax() - mesh.aabb.xMin();
+        float dy = mesh.aabb.yMax() - mesh.aabb.yMin();
+        float dz = mesh.aabb.zMax() - mesh.aabb.zMin();
+        float maxDim = std::max({ dx, dy, dz });
+        float cellSize = maxDim / res;
+
+        if (cellSize > 0)
+        {
+            unsigned int resX = std::max(1u, static_cast<unsigned int>(std::ceil(dx / cellSize)));
+            unsigned int resY = std::max(1u, static_cast<unsigned int>(std::ceil(dy / cellSize)));
+
+            struct CellData
+            {
+                osg::Vec3f sum;
+                unsigned int count = 0;
+                unsigned int newIndex = 0;
+            };
+            std::unordered_map<unsigned int, CellData> cells;
+            std::vector<unsigned int> vertexRemap(cmv.mVertices.size());
+
+            for (size_t i = 0; i < cmv.mVertices.size(); ++i)
+            {
+                const osg::Vec3f& v = cmv.mVertices[i];
+                float fx = (v.x() - mesh.aabb.xMin()) / cellSize;
+                float fy = (v.y() - mesh.aabb.yMin()) / cellSize;
+                float fz = (v.z() - mesh.aabb.zMin()) / cellSize;
+                unsigned int gx = std::min(static_cast<unsigned int>(std::max(fx, 0.0f)), resX - 1);
+                unsigned int gy = std::min(static_cast<unsigned int>(std::max(fy, 0.0f)), resY - 1);
+                unsigned int gz = std::min(static_cast<unsigned int>(std::max(fz, 0.0f)), res - 1);
+                unsigned int cellId = gx + gy * resX + gz * resX * resY;
+
+                auto& cell = cells[cellId];
+                cell.sum += v;
+                cell.count++;
+                vertexRemap[i] = cellId;
+            }
+
+            unsigned int nextIdx = 0;
+            for (auto& [id, cell] : cells)
+            {
+                cell.newIndex = nextIdx++;
+                mesh.vertices.push_back(cell.sum / static_cast<float>(cell.count));
+            }
+
+            for (size_t i = 0; i + 2 < cmv.mIndices.size(); i += 3)
+            {
+                unsigned int a = cells[vertexRemap[cmv.mIndices[i]]].newIndex;
+                unsigned int b = cells[vertexRemap[cmv.mIndices[i + 1]]].newIndex;
+                unsigned int c = cells[vertexRemap[cmv.mIndices[i + 2]]].newIndex;
+                if (a != b && b != c && a != c)
+                {
+                    mesh.indices.push_back(a);
+                    mesh.indices.push_back(b);
+                    mesh.indices.push_back(c);
+                }
+            }
+
+            if (!mesh.vertices.empty())
+            {
+                osg::Vec3f center(0, 0, 0);
+                for (const auto& v : mesh.vertices)
+                    center += v;
+                center /= static_cast<float>(mesh.vertices.size());
+                for (auto& v : mesh.vertices)
+                    v = center + (v - center) * shrinkFactor;
+            }
+        }
+
+        return mesh;
+    }
+
     SceneOcclusionCallback::SceneOcclusionCallback(SceneUtil::OcclusionCuller* culler,
         Terrain::TerrainOccluder* occluder, int radiusCells, bool enableTerrainOccluder, bool enableDebugOverlay)
         : mCuller(culler)
@@ -256,6 +346,50 @@ namespace MWRender
                              << " tested=" << mCuller->getNumTested() << " occluded=" << mCuller->getNumOccluded();
     }
 
+    PagedOccluderCallback::PagedOccluderCallback(SceneUtil::OcclusionCuller* culler, float maxDistance)
+        : mCuller(culler)
+        , mMaxDistanceSq(maxDistance * maxDistance)
+    {
+    }
+
+    void PagedOccluderCallback::operator()(osg::Node* node, osgUtil::CullVisitor* cv)
+    {
+        if (mCuller->isFrameActive())
+        {
+            // Get eye position in world space (AABB centers are world-space).
+            // cv->getEyePoint() is in chunk-local space due to the parent PAT transform.
+            osg::Matrixd viewInverse;
+            viewInverse.invert(cv->getCurrentCamera()->getViewMatrix());
+            const osg::Vec3f eyeWorld(viewInverse(3, 0), viewInverse(3, 1), viewInverse(3, 2));
+
+            if (auto* udc = node->getUserDataContainer())
+            {
+                for (unsigned int i = 0; i < udc->getNumUserObjects(); ++i)
+                {
+                    if (auto* pod = dynamic_cast<PagedOccluderData*>(udc->getUserObject(i)))
+                    {
+                        for (const auto& occMesh : pod->mOccluderMeshes)
+                        {
+                            if (occMesh.indices.empty())
+                                continue;
+
+                            // Skip distant occluders
+                            const osg::Vec3f center = occMesh.aabb.center();
+                            if ((center - eyeWorld).length2() > mMaxDistanceSq)
+                                continue;
+
+                            mCuller->rasterizeOccluder(occMesh.vertices, occMesh.indices);
+                            mCuller->incrementBuildingOccluders(static_cast<unsigned int>(occMesh.indices.size() / 3),
+                                static_cast<unsigned int>(occMesh.vertices.size()));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        traverse(node, cv);
+    }
+
     CellOcclusionCallback::CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
         float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
         float occluderMaxDistance, bool enableStaticOccluders)
@@ -276,106 +410,17 @@ namespace MWRender
         if (it != mMeshCache.end())
             return it->second;
 
-        OccluderMesh mesh;
+        OccluderMesh mesh = buildSimplifiedMesh(node, mOccluderMeshResolution, mOccluderShrinkFactor);
 
-        // Collect world-space mesh (vertices + triangle indices)
-        CollectMeshVisitor cmv;
-        node->accept(cmv);
-
-        if (cmv.mIndices.empty() || cmv.mVertices.size() < 3)
+        if (mesh.indices.empty() && !mesh.aabb.valid())
         {
-            // No geometry — compute AABB for visibility testing only
-            osg::ComputeBoundsVisitor cbv;
-            node->accept(cbv);
-            mesh.aabb = cbv.getBoundingBox();
             Log(Debug::Info) << "OccMesh cached (no triangles): \"" << node->getName() << "\"";
-            return mMeshCache.emplace(node, std::move(mesh)).first->second;
         }
-
-        // Compute AABB from collected vertices
-        for (const auto& v : cmv.mVertices)
-            mesh.aabb.expandBy(v);
-
-        // Simplify mesh via vertex clustering on a coarse 3D grid.
-        // Snaps vertices to grid cells, averages positions per cell,
-        // discards degenerate triangles. Preserves concavity (arches, L-shapes).
-        const unsigned int gridRes = static_cast<unsigned int>(mOccluderMeshResolution);
-        float dx = mesh.aabb.xMax() - mesh.aabb.xMin();
-        float dy = mesh.aabb.yMax() - mesh.aabb.yMin();
-        float dz = mesh.aabb.zMax() - mesh.aabb.zMin();
-        float maxDim = std::max({ dx, dy, dz });
-        float cellSize = maxDim / gridRes;
-
-        if (cellSize > 0)
+        else
         {
-            unsigned int resX = std::max(1u, static_cast<unsigned int>(std::ceil(dx / cellSize)));
-            unsigned int resY = std::max(1u, static_cast<unsigned int>(std::ceil(dy / cellSize)));
-
-            // Pass 1: assign each vertex to a grid cell, accumulate for averaging
-            struct CellData
-            {
-                osg::Vec3f sum;
-                unsigned int count = 0;
-                unsigned int newIndex = 0;
-            };
-            std::unordered_map<unsigned int, CellData> cells;
-            std::vector<unsigned int> vertexRemap(cmv.mVertices.size());
-
-            for (size_t i = 0; i < cmv.mVertices.size(); ++i)
-            {
-                const osg::Vec3f& v = cmv.mVertices[i];
-                float fx = (v.x() - mesh.aabb.xMin()) / cellSize;
-                float fy = (v.y() - mesh.aabb.yMin()) / cellSize;
-                float fz = (v.z() - mesh.aabb.zMin()) / cellSize;
-                unsigned int gx = std::min(static_cast<unsigned int>(std::max(fx, 0.0f)), resX - 1);
-                unsigned int gy = std::min(static_cast<unsigned int>(std::max(fy, 0.0f)), resY - 1);
-                unsigned int gz = std::min(static_cast<unsigned int>(std::max(fz, 0.0f)), gridRes - 1);
-                unsigned int cellId = gx + gy * resX + gz * resX * resY;
-
-                auto& cell = cells[cellId];
-                cell.sum += v;
-                cell.count++;
-                vertexRemap[i] = cellId;
-            }
-
-            // Assign final vertex indices, compute averaged positions
-            unsigned int nextIdx = 0;
-            for (auto& [id, cell] : cells)
-            {
-                cell.newIndex = nextIdx++;
-                mesh.vertices.push_back(cell.sum / static_cast<float>(cell.count));
-            }
-
-            // Pass 2: remap triangle indices, discard degenerate triangles
-            for (size_t i = 0; i + 2 < cmv.mIndices.size(); i += 3)
-            {
-                unsigned int a = cells[vertexRemap[cmv.mIndices[i]]].newIndex;
-                unsigned int b = cells[vertexRemap[cmv.mIndices[i + 1]]].newIndex;
-                unsigned int c = cells[vertexRemap[cmv.mIndices[i + 2]]].newIndex;
-                if (a != b && b != c && a != c)
-                {
-                    mesh.indices.push_back(a);
-                    mesh.indices.push_back(b);
-                    mesh.indices.push_back(c);
-                }
-            }
-
-            // Shrink toward centroid for conservative occlusion
-            if (!mesh.vertices.empty())
-            {
-                osg::Vec3f center(0, 0, 0);
-                for (const auto& v : mesh.vertices)
-                    center += v;
-                center /= static_cast<float>(mesh.vertices.size());
-                for (auto& v : mesh.vertices)
-                    v = center + (v - center) * mOccluderShrinkFactor;
-            }
+            Log(Debug::Info) << "OccMesh cached: \"" << node->getName() << "\" verts=" << mesh.vertices.size()
+                             << " tris=" << (mesh.indices.size() / 3) << " sphere=" << node->getBound().radius();
         }
-
-        Log(Debug::Info) << "OccMesh cached: \"" << node->getName() << "\" verts=" << mesh.vertices.size()
-                         << " tris=" << (mesh.indices.size() / 3) << " (from " << cmv.mVertices.size() << "v/"
-                         << (cmv.mIndices.size() / 3) << "t)"
-                         << " sphere=" << node->getBound().radius();
 
         return mMeshCache.emplace(node, std::move(mesh)).first->second;
     }
@@ -411,11 +456,39 @@ namespace MWRender
             if (!bs.valid() || bs.radius() < mOccluderMinRadius)
                 continue;
 
-            // Objects above maxRadius are still rendered, just not used as occluders
-            // (they're likely terrain chunks or object paging nodes)
+            // Paged chunks and other oversized objects — test visibility, rasterize stored occluders
             if (bs.radius() > mOccluderMaxRadius)
             {
-                child->accept(*cv);
+                // Rasterize sub-object occluder meshes stored at chunk creation time
+                if (mEnableStaticOccluders)
+                {
+                    if (auto* udc = child->getUserDataContainer())
+                    {
+                        for (unsigned int j = 0; j < udc->getNumUserObjects(); ++j)
+                        {
+                            if (auto* pod = dynamic_cast<PagedOccluderData*>(udc->getUserObject(j)))
+                            {
+                                for (const auto& occMesh : pod->mOccluderMeshes)
+                                {
+                                    if (!occMesh.indices.empty())
+                                    {
+                                        mCuller->rasterizeOccluder(occMesh.vertices, occMesh.indices);
+                                        mCuller->incrementBuildingOccluders(
+                                            static_cast<unsigned int>(occMesh.indices.size() / 3),
+                                            static_cast<unsigned int>(occMesh.vertices.size()));
+                                    }
+                                }
+                                break; // Only one PagedOccluderData per chunk
+                            }
+                        }
+                    }
+                }
+
+                // Test chunk visibility against depth buffer (may now include its own occluders)
+                osg::BoundingBox pageBB;
+                pageBB.expandBy(bs);
+                if (mCuller->testVisibleAABB(pageBB))
+                    child->accept(*cv);
                 continue;
             }
 

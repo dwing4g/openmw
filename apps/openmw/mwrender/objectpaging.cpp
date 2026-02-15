@@ -1,5 +1,9 @@
 #include "objectpaging.hpp"
 
+#include "occlusionculling.hpp"
+
+#include <components/sceneutil/occlusionculling.hpp>
+
 #include <unordered_map>
 #include <vector>
 
@@ -511,6 +515,11 @@ namespace MWRender
     {
     }
 
+    void ObjectPaging::setOcclusionCuller(SceneUtil::OcclusionCuller* culler)
+    {
+        mOcclusionCuller = culler;
+    }
+
     namespace
     {
         struct PagedCellRef
@@ -824,6 +833,20 @@ namespace MWRender
         osg::ref_ptr<Resource::TemplateMultiRef> templateRefs = new Resource::TemplateMultiRef;
         osgUtil::StateToCompile stateToCompile(0, nullptr);
         CopyOp copyop(activeGrid, copyMask);
+
+        const bool buildOccluders = Settings::camera().mOcclusionCulling && Settings::camera().mOcclusionCullingStatics;
+        osg::ref_ptr<PagedOccluderData> pagedOccluderData;
+        float occluderMinRadius = 0;
+        int occluderMeshRes = 6;
+        float occluderShrinkFactor = 0.9f;
+        if (buildOccluders)
+        {
+            pagedOccluderData = new PagedOccluderData;
+            occluderMinRadius = Settings::camera().mOcclusionOccluderMinRadius;
+            occluderMeshRes = Settings::camera().mOcclusionOccluderMeshResolution;
+            occluderShrinkFactor = Settings::camera().mOcclusionOccluderShrinkFactor;
+        }
+
         for (const auto& pair : nodes)
         {
             const osg::Node* cnode = pair.first;
@@ -890,6 +913,26 @@ namespace MWRender
                 copyop.mViewVector = (viewPoint - worldCenter);
                 copyop.copy(cnode, trans);
                 copyop.mNodePath.pop_back();
+
+                // Build occluder mesh for building-sized objects
+                if (buildOccluders)
+                {
+                    float scaledRadius = cnode->getBound().radius() * ref.mScale;
+                    if (scaledRadius >= occluderMinRadius)
+                    {
+                        auto occMesh = buildSimplifiedMesh(trans, occluderMeshRes, occluderShrinkFactor);
+                        if (!occMesh.indices.empty())
+                        {
+                            // Offset from chunk-relative to world-space
+                            for (auto& v : occMesh.vertices)
+                                v += worldCenter;
+                            occMesh.aabb = osg::BoundingBox();
+                            for (const auto& v : occMesh.vertices)
+                                occMesh.aabb.expandBy(v);
+                            pagedOccluderData->mOccluderMeshes.push_back(std::move(occMesh));
+                        }
+                    }
+                }
 
                 if (activeGrid)
                 {
@@ -977,6 +1020,15 @@ namespace MWRender
             group->addCullCallback(new SceneUtil::LightListCallback);
         }
         udc->addUserObject(templateRefs);
+        if (pagedOccluderData && !pagedOccluderData->mOccluderMeshes.empty())
+        {
+            udc->addUserObject(pagedOccluderData);
+            if (mOcclusionCuller)
+            {
+                float maxDist = Settings::camera().mOcclusionOccluderMaxDistance;
+                group->addCullCallback(new PagedOccluderCallback(mOcclusionCuller, maxDist));
+            }
+        }
 
         return group;
     }

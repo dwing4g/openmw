@@ -528,6 +528,8 @@ namespace MWRender
             const bool enableStatics = Settings::camera().mOcclusionCullingStatics;
             mObjects->setOcclusionCuller(mOcclusionCuller, occluderMinRadius, occluderMaxRadius, occluderShrinkFactor,
                 occluderMeshRes, occluderInsideThreshold, occluderMaxDistance, enableStatics);
+            if (mObjectPaging)
+                mObjectPaging->setOcclusionCuller(mOcclusionCuller);
         }
 
         mStateUpdater = new StateUpdater;

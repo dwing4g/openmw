@@ -5,11 +5,18 @@
 #include <components/resource/resourcemanager.hpp>
 #include <components/terrain/quadtreeworld.hpp>
 
+#include <osg/ref_ptr>
+
 #include <mutex>
 
 namespace Resource
 {
     class SceneManager;
+}
+
+namespace SceneUtil
+{
+    class OcclusionCuller;
 }
 
 namespace MWRender
@@ -47,8 +54,11 @@ namespace MWRender
 
         void getPagedRefnums(const osg::Vec4i& activeGrid, std::vector<ESM::RefNum>& out);
 
+        void setOcclusionCuller(SceneUtil::OcclusionCuller* culler);
+
     private:
         Resource::SceneManager* mSceneManager;
+        osg::ref_ptr<SceneUtil::OcclusionCuller> mOcclusionCuller;
         bool mActiveGrid;
         bool mDebugBatches;
         float mMergeFactor;

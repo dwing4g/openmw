@@ -4,6 +4,7 @@
 #include <osg/BoundingBox>
 #include <osg/Camera>
 #include <osg/Image>
+#include <osg/Object>
 #include <osg/Texture2D>
 #include <osg/Vec3f>
 #include <osg/ref_ptr>
@@ -20,6 +21,31 @@ namespace MWRender
         osg::BoundingBox aabb;
         std::vector<osg::Vec3f> vertices; // world-space, shrunk toward centroid
         std::vector<unsigned int> indices; // triangle indices from actual geometry
+    };
+
+    /// Build a simplified occluder mesh from an OSG node's geometry.
+    /// Collects world-space triangles, applies vertex clustering on a coarse 3D grid,
+    /// and shrinks the result toward the centroid for conservative occlusion.
+    /// @param node        Source node to collect geometry from
+    /// @param gridRes     Grid resolution for vertex clustering (higher = more detail)
+    /// @param shrinkFactor How much to shrink toward centroid (0..1, 1 = no shrink)
+    /// @return Simplified mesh with AABB, or empty mesh if no geometry found
+    OccluderMesh buildSimplifiedMesh(osg::Node* node, int gridRes, float shrinkFactor);
+
+    /// Stored on paged chunk nodes (UserDataContainer) to provide sub-object
+    /// occluder meshes for MOC rasterization during cull traversal.
+    class PagedOccluderData : public osg::Object
+    {
+    public:
+        PagedOccluderData() = default;
+        PagedOccluderData(const PagedOccluderData& copy, const osg::CopyOp& = {})
+            : osg::Object(copy)
+            , mOccluderMeshes(copy.mOccluderMeshes)
+        {
+        }
+        META_Object(MWRender, PagedOccluderData)
+
+        std::vector<OccluderMesh> mOccluderMeshes;
     };
 }
 
@@ -77,6 +103,22 @@ namespace MWRender
         osg::ref_ptr<osg::Image> mDebugImage;
         osg::ref_ptr<osg::Texture2D> mDebugTexture;
         std::vector<float> mDepthPixels;
+    };
+
+    /// Installed on paged chunk nodes (from ObjectPaging). Rasterizes the chunk's
+    /// pre-built occluder meshes into MOC during the terrain traversal, before cell
+    /// objects are tested.
+    class PagedOccluderCallback
+        : public SceneUtil::NodeCallback<PagedOccluderCallback, osg::Node*, osgUtil::CullVisitor*>
+    {
+    public:
+        PagedOccluderCallback(SceneUtil::OcclusionCuller* culler, float maxDistance);
+
+        void operator()(osg::Node* node, osgUtil::CullVisitor* cv);
+
+    private:
+        osg::ref_ptr<SceneUtil::OcclusionCuller> mCuller;
+        float mMaxDistanceSq;
     };
 
     /// Installed on each Cell Root group. Two-pass approach:
