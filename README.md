@@ -1,3 +1,37 @@
+[MoC Object Culling](https://gitlab.com/OpenMW/openmw/-/merge_requests/5150) <--- Read more here.
+======
+What is this good for?
+
+It stops objects out of view from being rendered. This ideally gives you a lot of FPS. This works best in areas like crowded interiors or dense cities.
+
+Recommended settings:
+```ini
+[Camera]
+occlusion culling = true
+occlusion culling terrain = true
+occlusion culling statics = true
+occlusion buffer width = 512
+occlusion buffer height = 256
+occlusion terrain lod = 3
+occlusion terrain radius = 2
+occlusion occluder min radius = 300
+occlusion occluder max radius = 5000
+occlusion occluder shrink factor = 1
+occlusion occluder mesh resolution = 7
+occlusion occluder max mesh resolution = 24
+occlusion occluder inside threshold = 1.0
+occlusion occluder max distance = 6144
+occlusion debug overlay = true
+```
+Additional Performance settings:
+```ini
+[Terrain]
+distant terrain = true
+object paging = true
+object paging active grid = true
+```
+
+
 OpenMW
 ======
 
