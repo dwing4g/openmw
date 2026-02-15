@@ -4,6 +4,28 @@ What is this good for?
 
 It stops objects out of view from being rendered. This ideally gives you a lot of FPS. This works best in areas like crowded interiors or dense cities.
 
+## No culling, No in cell paging:
+<img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/c1c6ec57-eedb-4ea0-9b8c-74b8897adb65" />
+
+## Culling:
+<img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/31c96d5e-94b6-4628-9296-64107f6b1a24" />
+
+## In Cell Paging (alread in openmw, you just have to turn it on):
+<img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/b2891825-00af-4abe-9786-411a0be34449" />
+
+## Culling and Paging (best of both worlds):
+<img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/4ebfd644-df5a-43a1-9db0-075887760bcf" />
+
+##Example of walking through a tunnel in Vivec. Notice the occlusion doesn't make the banner disappear.
+
+
+
+https://github.com/user-attachments/assets/85aeebc1-a40c-4581-b69f-7c362f1a263b
+
+
+
+
+
 Recommended settings:
 ```ini
 [Camera]
