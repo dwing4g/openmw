@@ -46,6 +46,8 @@ namespace Settings
             makeClampSanitizerFloat(0.1f, 2.0f) };
         SettingValue<int> mOcclusionOccluderMeshResolution{ mIndex, "Camera", "occlusion occluder mesh resolution",
             makeClampSanitizerInt(4, 32) };
+        SettingValue<int> mOcclusionOccluderMaxMeshResolution{ mIndex, "Camera",
+            "occlusion occluder max mesh resolution", makeClampSanitizerInt(4, 64) };
         SettingValue<float> mOcclusionOccluderInsideThreshold{ mIndex, "Camera", "occlusion occluder inside threshold",
             makeClampSanitizerFloat(0.1f, 5.0f) };
         SettingValue<float> mOcclusionOccluderMaxDistance{ mIndex, "Camera", "occlusion occluder max distance",

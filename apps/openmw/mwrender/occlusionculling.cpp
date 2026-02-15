@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <queue>
 
 #include <osg/BoundingBox>
 #include <osg/BoundingSphere>
@@ -131,7 +132,6 @@ namespace MWRender
 
         for (const auto& v : cmv.mVertices)
             mesh.aabb.expandBy(v);
-
         const unsigned int res = static_cast<unsigned int>(gridRes);
         float dx = mesh.aabb.xMax() - mesh.aabb.xMin();
         float dy = mesh.aabb.yMax() - mesh.aabb.yMin();
@@ -189,16 +189,16 @@ namespace MWRender
                     mesh.indices.push_back(c);
                 }
             }
+        }
 
-            if (!mesh.vertices.empty())
-            {
-                osg::Vec3f center(0, 0, 0);
-                for (const auto& v : mesh.vertices)
-                    center += v;
-                center /= static_cast<float>(mesh.vertices.size());
-                for (auto& v : mesh.vertices)
-                    v = center + (v - center) * shrinkFactor;
-            }
+        if (!mesh.vertices.empty())
+        {
+            osg::Vec3f center(0, 0, 0);
+            for (const auto& v : mesh.vertices)
+                center += v;
+            center /= static_cast<float>(mesh.vertices.size());
+            for (auto& v : mesh.vertices)
+                v = center + (v - center) * shrinkFactor;
         }
 
         return mesh;
@@ -304,6 +304,17 @@ namespace MWRender
             return;
         }
 
+        // The scene is traversed multiple times per frame: once for the main cull pass,
+        // and again by MWShadowTechnique::cullShadowReceivingScene (same camera name).
+        // Only set up MOC on the first traversal; subsequent passes just traverse normally.
+        unsigned int frameNumber = cv->getFrameStamp()->getFrameNumber();
+        if (frameNumber == mLastFrameNumber)
+        {
+            traverse(node, cv);
+            return;
+        }
+        mLastFrameNumber = frameNumber;
+
         // Skip if no terrain data (interiors)
         if (!mTerrainOccluder->hasTerrainData())
         {
@@ -338,12 +349,17 @@ namespace MWRender
 
         static int frameCount = 0;
         if (++frameCount % 300 == 0)
-            Log(Debug::Info) << "OcclusionCull: terrain tris=" << (mIndices.size() / 3)
-                             << " terrain verts=" << mPositions.size()
-                             << " bldg occluders=" << mCuller->getNumBuildingOccluders()
-                             << " bldg tris=" << mCuller->getNumBuildingTris()
-                             << " bldg verts=" << mCuller->getNumBuildingVerts()
-                             << " tested=" << mCuller->getNumTested() << " occluded=" << mCuller->getNumOccluded();
+        {
+            const auto terrainTris = mIndices.size() / 3;
+            const auto bldgTris = mCuller->getNumBuildingTris();
+            const auto terrainVerts = mPositions.size();
+            const auto bldgVerts = mCuller->getNumBuildingVerts();
+            Log(Debug::Info) << "OcclusionCull: terrain tris=" << terrainTris << " terrain verts=" << terrainVerts
+                             << " bldg occluders=" << mCuller->getNumBuildingOccluders() << " bldg tris=" << bldgTris
+                             << " bldg verts=" << bldgVerts << " total tris=" << (terrainTris + bldgTris)
+                             << " total verts=" << (terrainVerts + bldgVerts) << " tested=" << mCuller->getNumTested()
+                             << " occluded=" << mCuller->getNumOccluded();
+        }
     }
 
     PagedOccluderCallback::PagedOccluderCallback(SceneUtil::OcclusionCuller* culler, float maxDistance)
@@ -354,12 +370,31 @@ namespace MWRender
 
     void PagedOccluderCallback::operator()(osg::Node* node, osgUtil::CullVisitor* cv)
     {
-        if (mCuller->isFrameActive())
+        if (!mCuller->isFrameActive())
         {
-            // Get eye position in world space (AABB centers are world-space).
-            // cv->getEyePoint() is in chunk-local space due to the parent PAT transform.
+            traverse(node, cv);
+            return;
+        }
+
+        // Transform chunk bounding sphere from local to world space.
+        // The chunk sits under a PAT, so node->getBound() is in chunk-local space.
+        const osg::BoundingSphere& bs = node->getBound();
+        if (bs.valid())
+        {
             osg::Matrixd viewInverse;
             viewInverse.invert(cv->getCurrentCamera()->getViewMatrix());
+            const osg::Matrixd modelToWorld = *cv->getModelViewMatrix() * viewInverse;
+            const osg::Vec3f worldCenter = bs.center() * modelToWorld;
+            const float r = bs.radius();
+
+            osg::BoundingBox worldBB(worldCenter.x() - r, worldCenter.y() - r, worldCenter.z() - r, worldCenter.x() + r,
+                worldCenter.y() + r, worldCenter.z() + r);
+
+            // If entire chunk is occluded, skip rasterization AND traversal
+            if (!mCuller->testVisibleAABB(worldBB))
+                return;
+
+            // Rasterize nearby building occluder meshes for visible chunks
             const osg::Vec3f eyeWorld(viewInverse(3, 0), viewInverse(3, 1), viewInverse(3, 2));
 
             if (auto* udc = node->getUserDataContainer())
@@ -373,7 +408,6 @@ namespace MWRender
                             if (occMesh.indices.empty())
                                 continue;
 
-                            // Skip distant occluders
                             const osg::Vec3f center = occMesh.aabb.center();
                             if ((center - eyeWorld).length2() > mMaxDistanceSq)
                                 continue;
@@ -387,17 +421,19 @@ namespace MWRender
                 }
             }
         }
+
         traverse(node, cv);
     }
 
     CellOcclusionCallback::CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius,
-        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
-        float occluderMaxDistance, bool enableStaticOccluders)
+        float occluderMaxRadius, float occluderShrinkFactor, int occluderMeshResolution, int occluderMaxMeshResolution,
+        float occluderInsideThreshold, float occluderMaxDistance, bool enableStaticOccluders)
         : mCuller(culler)
         , mOccluderMinRadius(occluderMinRadius)
         , mOccluderMaxRadius(occluderMaxRadius)
         , mOccluderShrinkFactor(occluderShrinkFactor)
         , mOccluderMeshResolution(occluderMeshResolution)
+        , mOccluderMaxMeshResolution(occluderMaxMeshResolution)
         , mOccluderInsideThreshold(occluderInsideThreshold)
         , mOccluderMaxDistanceSq(occluderMaxDistance * occluderMaxDistance)
         , mEnableStaticOccluders(enableStaticOccluders)
@@ -410,7 +446,15 @@ namespace MWRender
         if (it != mMeshCache.end())
             return it->second;
 
-        OccluderMesh mesh = buildSimplifiedMesh(node, mOccluderMeshResolution, mOccluderShrinkFactor);
+        int meshRes = mOccluderMeshResolution;
+        float radius = node->getBound().radius();
+        if (radius > mOccluderMinRadius && mOccluderMinRadius > 0)
+        {
+            float scale = radius / mOccluderMinRadius;
+            meshRes = std::clamp(
+                static_cast<int>(mOccluderMeshResolution * scale), mOccluderMeshResolution, mOccluderMaxMeshResolution);
+        }
+        OccluderMesh mesh = buildSimplifiedMesh(node, meshRes, mOccluderShrinkFactor);
 
         if (mesh.indices.empty() && !mesh.aabb.valid())
         {

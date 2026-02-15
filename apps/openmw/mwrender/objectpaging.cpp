@@ -838,12 +838,14 @@ namespace MWRender
         osg::ref_ptr<PagedOccluderData> pagedOccluderData;
         float occluderMinRadius = 0;
         int occluderMeshRes = 6;
+        int occluderMaxMeshRes = 24;
         float occluderShrinkFactor = 0.9f;
         if (buildOccluders)
         {
             pagedOccluderData = new PagedOccluderData;
             occluderMinRadius = Settings::camera().mOcclusionOccluderMinRadius;
             occluderMeshRes = Settings::camera().mOcclusionOccluderMeshResolution;
+            occluderMaxMeshRes = Settings::camera().mOcclusionOccluderMaxMeshResolution;
             occluderShrinkFactor = Settings::camera().mOcclusionOccluderShrinkFactor;
         }
 
@@ -920,7 +922,17 @@ namespace MWRender
                     float scaledRadius = cnode->getBound().radius() * ref.mScale;
                     if (scaledRadius >= occluderMinRadius)
                     {
-                        auto occMesh = buildSimplifiedMesh(trans, occluderMeshRes, occluderShrinkFactor);
+                        // Scale grid resolution with object size so grid cell size stays ~constant.
+                        // A small building (radius 300) uses base resolution, a canton (radius 3000+)
+                        // gets proportionally higher resolution to preserve shape detail.
+                        int adaptiveRes = occluderMeshRes;
+                        if (scaledRadius > occluderMinRadius)
+                        {
+                            float scale = scaledRadius / occluderMinRadius;
+                            adaptiveRes = std::clamp(
+                                static_cast<int>(occluderMeshRes * scale), occluderMeshRes, occluderMaxMeshRes);
+                        }
+                        auto occMesh = buildSimplifiedMesh(trans, adaptiveRes, occluderShrinkFactor);
                         if (!occMesh.indices.empty())
                         {
                             // Offset from chunk-relative to world-space

@@ -91,8 +91,8 @@ namespace MWRender
         void updatePtr(const MWWorld::Ptr& old, const MWWorld::Ptr& cur);
 
         void setOcclusionCuller(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
-            float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
-            float occluderMaxDistance, bool enableStaticOccluders);
+            float occluderShrinkFactor, int occluderMeshResolution, int occluderMaxMeshResolution,
+            float occluderInsideThreshold, float occluderMaxDistance, bool enableStaticOccluders);
 
     private:
         SceneUtil::OcclusionCuller* mOcclusionCuller = nullptr;
@@ -100,6 +100,7 @@ namespace MWRender
         float mOccluderMaxRadius = 5000.0f;
         float mOccluderShrinkFactor = 0.5f;
         int mOccluderMeshResolution = 8;
+        int mOccluderMaxMeshResolution = 24;
         float mOccluderInsideThreshold = 1.0f;
         float mOccluderMaxDistance = 6144.0f;
         bool mEnableStaticOccluders = true;

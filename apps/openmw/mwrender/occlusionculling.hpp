@@ -93,6 +93,7 @@ namespace MWRender
         int mRadiusCells;
         bool mEnableTerrainOccluder;
         bool mEnableDebugOverlay;
+        unsigned int mLastFrameNumber = 0;
 
         // Scratch buffers reused across frames
         std::vector<osg::Vec3f> mPositions;
@@ -130,8 +131,8 @@ namespace MWRender
     {
     public:
         CellOcclusionCallback(SceneUtil::OcclusionCuller* culler, float occluderMinRadius, float occluderMaxRadius,
-            float occluderShrinkFactor, int occluderMeshResolution, float occluderInsideThreshold,
-            float occluderMaxDistance, bool enableStaticOccluders);
+            float occluderShrinkFactor, int occluderMeshResolution, int occluderMaxMeshResolution,
+            float occluderInsideThreshold, float occluderMaxDistance, bool enableStaticOccluders);
 
         void operator()(osg::Group* node, osgUtil::CullVisitor* cv);
 
@@ -144,6 +145,7 @@ namespace MWRender
         float mOccluderMaxRadius;
         float mOccluderShrinkFactor;
         int mOccluderMeshResolution;
+        int mOccluderMaxMeshResolution;
         float mOccluderInsideThreshold;
         float mOccluderMaxDistanceSq;
         bool mEnableStaticOccluders;
