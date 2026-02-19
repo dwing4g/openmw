@@ -1009,10 +1009,11 @@ void SceneUtil::MWShadowTechnique::setCustomFrustumCallback(CustomFrustumCallbac
 
 void SceneUtil::MWShadowTechnique::copyShadowStateSettings(osgUtil::CullVisitor& cv, ViewDependentData* vdd)
 {
+    unsigned int slot = cv.getTraversalNumber() % 2;
     for (const auto& sd : vdd->getShadowDataList())
     {
-        assignValidRegionSettings(cv, sd->_camera, sd->_sm_i, vdd->_uniforms[cv.getTraversalNumber()%2]);
-        assignShadowStateSettings(cv, sd->_camera, sd->_sm_i, vdd->_uniforms[cv.getTraversalNumber()%2]);
+        assignValidRegionSettings(cv, sd->_camera, sd->_sm_i, vdd->_uniforms[slot]);
+        assignShadowStateSettings(cv, sd->_camera, sd->_sm_i, vdd->_uniforms[slot]);
     }
 }
 
@@ -1115,6 +1116,41 @@ void MWShadowTechnique::cull(osgUtil::CullVisitor& cv)
     cullShadowReceivingScene(&cv);
 
     cv.popStateSet();
+
+    // Temporal reuse: skip shadow cascade cull on non-update frames.
+    // Reuse previous frame's shadow textures (FBO-persistent) + uniforms (already in correct slot).
+    // Per-VDD counter: each CullVisitor has its own VDD (two CVs alternate in DrawThreadPerContext),
+    // so we count per-VDD calls rather than using global frame numbers.
+    // Note: we do NOT recompute uniforms here. Each VDD always uses the same uniform slot
+    // (traversalNumber % 2), so the values from the previous UPDATE are still valid.
+    // Recomputing via copyShadowStateSettings would produce wrong validRegionMatrix values
+    // because shadow cameras have post-adjustment projection matrices, but assignValidRegionSettings
+    // needs pre-adjustment projections (the adjustment happens between the two assign calls
+    // in the UPDATE path).
+    if (_shadowUpdateInterval > 1
+        && vdd->_framesSinceLastShadowCull > 0
+        && vdd->_framesSinceLastShadowCull < _shadowUpdateInterval)
+    {
+        ++vdd->_framesSinceLastShadowCull;
+
+        // Recompute only shadowSpaceMatrix (SSM) for current camera position.
+        // VRM (validRegionMatrix) stays from previous UPDATE — it was computed with
+        // pre-adjustment projection which we no longer have access to.
+        // SSM needs current inverse(ModelView) so fragments in current eye space
+        // map correctly to the stale shadow textures.
+        {
+            unsigned int slot = cv.getTraversalNumber() % 2;
+            for (const auto& sd : vdd->getShadowDataList())
+                assignShadowStateSettings(cv, sd->_camera, sd->_sm_i, vdd->_uniforms[slot]);
+        }
+
+        if (vdd->numValidShadows() > 0)
+            prepareStateSetForRenderingShadow(*vdd, cv.getTraversalNumber());
+
+        cv.setComputeNearFarMode(cachedNearFarMode);
+        return;
+    }
+    vdd->_framesSinceLastShadowCull = 1;
 
     if (cv.getComputeNearFarMode()!=osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR)
     {
@@ -2662,6 +2698,21 @@ bool MWShadowTechnique::cropShadowCameraToMainFrustum(Frustum& frustum, osg::Cam
     }
     else
         return false;
+
+    // Snap shadow frustum to texel grid for temporal stability.
+    // Range stays fixed, only the origin snaps to discrete texel-sized steps.
+    {
+        const ShadowSettings* settings = getShadowedScene()->getShadowSettings();
+        double shadowMapRes = settings->getTextureSize().x();
+        double xRange = xMax - xMin;
+        double yRange = yMax - yMin;
+        double texelSizeX = xRange / shadowMapRes;
+        double texelSizeY = yRange / shadowMapRes;
+        xMin = floor(xMin / texelSizeX) * texelSizeX;
+        xMax = xMin + xRange;
+        yMin = floor(yMin / texelSizeY) * texelSizeY;
+        yMax = yMin + yRange;
+    }
 
     if (xMin != -1.0 || yMin != -1.0 || zMin != -1.0 ||
         xMax != 1.0 || yMax != 1.0 || zMax != 1.0)

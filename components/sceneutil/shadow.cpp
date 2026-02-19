@@ -67,6 +67,8 @@ namespace SceneUtil
         mShadowTechnique->setSplitPointUniformLogarithmicRatio(settings.mSplitPointUniformLogarithmicRatio);
         mShadowTechnique->setSplitPointDeltaBias(settings.mSplitPointBias);
 
+        mShadowTechnique->setShadowUpdateInterval(settings.mShadowUpdateInterval);
+
         mShadowTechnique->setPolygonOffset(settings.mPolygonOffsetFactor, settings.mPolygonOffsetUnits);
 
         if (settings.mUseFrontFaceCulling)
