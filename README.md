@@ -1,8 +1,15 @@
-[MoC Object Culling](https://gitlab.com/OpenMW/openmw/-/merge_requests/5150) <--- Read more here.
+Aggressive Performance
 ======
-What is this good for?
 
-It stops objects out of view from being rendered. This ideally gives you a lot of FPS. This works best in areas like crowded interiors or dense cities.
+Two experimental optimizations for OpenMW that reduce CPU-side bottlenecks in the scene graph. Works best in dense cities like Narsis and Old Ebonheart.
+
+[MoC Object Culling MR](https://gitlab.com/OpenMW/openmw/-/merge_requests/5150) — Read more about the occlusion culling approach.
+
+---
+
+## Software Occlusion Culling (Intel Masked Occlusion Culling)
+
+Terrain and building meshes are rasterized into a low-resolution CPU depth buffer during cull traversal. Objects whose screen-space AABB is fully behind the depth buffer are rejected before reaching the draw thread, saving draw calls for hidden geometry.
 
 ## No culling, No in cell paging:
 <img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/c1c6ec57-eedb-4ea0-9b8c-74b8897adb65" />
@@ -10,7 +17,7 @@ It stops objects out of view from being rendered. This ideally gives you a lot o
 ## Culling:
 <img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/31c96d5e-94b6-4628-9296-64107f6b1a24" />
 
-## In Cell Paging (alread in openmw, you just have to turn it on):
+## In Cell Paging (alread in OpenMW, you just have to turn it on):
 <img width="2175" height="1209" alt="image" src="https://github.com/user-attachments/assets/b2891825-00af-4abe-9786-411a0be34449" />
 
 ## Culling and Paging (best of both worlds):
@@ -45,13 +52,67 @@ occlusion occluder inside threshold = 1.0
 occlusion occluder max distance = 6144
 occlusion debug overlay = true
 ```
-Additional Performance settings:
+### Known Issues
+
+- **Shadow casters culled too early** — If a building is occluded but would normally cast a visible shadow, that shadow disappears. Rarely noticeable in practice. Workarounds: disable shadows, use soft shadows, or use higher resolution shadows.
+- **Mournhold terrain** — The terrain LOD in Mournhold renders as an invisible ceiling that breaks occlusion. Workaround: `occlusion culling terrain = false`
+
+---
+
+## Shadow Temporal Reuse
+
+Skips shadow cascade cull traversals on non-update frames while reusing the previous shadow map FBO textures. Only the shadow-space matrices are recomputed each frame so shadows track the moving camera.
+
+**Setting:** `[Shadows] shadow update interval` (default `1` = off, max `4`)
+
+```
+interval=1 (off):
+  Frame 1: [main cull][shadow cull x3][CLSB] → draw
+  Frame 2: [main cull][shadow cull x3][CLSB] → draw
+
+interval=2:
+  Frame 1: [main cull][shadow cull x3][CLSB] → draw   ← full update
+  Frame 2: [main cull]                       → draw   ← reuse FBOs
+
+interval=3:
+  Frame 1: [main cull][shadow cull x3][CLSB] → draw   ← full update
+  Frame 2: [main cull]                       → draw   ← reuse
+  Frame 3: [main cull]                       → draw   ← reuse
+
+interval=4:
+  Frame 1: [main cull][shadow cull x3][CLSB] → draw   ← full update
+  Frame 2: [main cull]                       → draw   ← reuse
+  Frame 3: [main cull]                       → draw   ← reuse
+  Frame 4: [main cull]                       → draw   ← reuse
+```
+
+### Recommended Settings
+
+```ini
+[Shadows]
+shadow update interval = 2
+```
+
+### Known Issues
+
+- **FPS jitter** — Average FPS increases but alternates between update and reuse frames (e.g. 60-70 instead of a steady 40-45). Use a framerate cap if this is distracting.
+- **Lagging NPC shadows** — At interval 2 this is negligible. At interval 4, NPC shadows visibly trail their owners. Use 4 only with NPC shadows disabled — it works well for terrain and statics, whose shadows only shift with time-of-day.
+- **Shadow glitches** — Occasional brief visual artifacts on shadows during reuse frames.
+
+---
+
+The two systems are independent: occlusion culling saves draw calls by rejecting hidden objects, shadow reuse saves CPU cull traversals by skipping shadow cascade walks.
+
+### Additional Performance Settings
+
 ```ini
 [Terrain]
 distant terrain = true
 object paging = true
 object paging active grid = true
 ```
+
+---
 
 
 OpenMW
