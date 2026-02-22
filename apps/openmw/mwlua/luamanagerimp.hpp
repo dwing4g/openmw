@@ -105,6 +105,8 @@ namespace MWLua
         void questUpdated(const ESM::RefId& questId, int stage) override;
         void uiModeChanged(const MWWorld::Ptr& arg) override;
         void actorDied(const MWWorld::Ptr& actor) override;
+        void onDialogueResponse(
+            const MWWorld::Ptr& actor, const ESM::DialInfo& info, const ESM::Dialogue& record) override;
 
         MWBase::LuaManager::ActorControls* getActorControls(const MWWorld::Ptr&) const override;
 
@@ -177,7 +179,7 @@ namespace MWLua
         bool isSynchronizedUpdateRunning() const { return mRunningSynchronizedUpdates; }
 
     private:
-        void initConfiguration();
+        void initConfiguration(bool reload);
         LocalScripts* createLocalScripts(const MWWorld::Ptr& ptr,
             std::optional<LuaUtil::ScriptIdsWithInitializationData> autoStartConf = std::nullopt);
         void reloadAllScriptsImpl();
