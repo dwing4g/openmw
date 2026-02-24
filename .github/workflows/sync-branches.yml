@@ -1,0 +1,79 @@
+name: Sync feature branches onto master
+
+on:
+  workflow_dispatch:
+
+# Edit this list to control which branches auto-rebase onto master.
+# Branches not listed here (e.g. aggressive-3 through 5) stay local/manual.
+env:
+  SYNC_BRANCHES: >-
+    wip-aggressive-performance
+    wip-aggressive-performance-2
+
+permissions:
+  contents: write
+
+jobs:
+  rebase-branches:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Fetch all remote branches
+      run: git fetch origin
+
+    - name: Configure git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Rebase feature branches onto master
+      run: |
+        failed=""
+        succeeded=""
+        skipped=""
+
+        for branch in $SYNC_BRANCHES; do
+          echo "========================================="
+          echo "Rebasing $branch onto master"
+          echo "========================================="
+
+          # Skip if branch doesn't exist on remote
+          if ! git rev-parse --verify "origin/$branch" >/dev/null 2>&1; then
+            echo "  -> $branch not found on remote, skipping"
+            skipped="$skipped\n  $branch"
+            echo ""
+            continue
+          fi
+
+          git checkout "$branch"
+
+          if git rebase origin/master; then
+            git push --force-with-lease origin "$branch"
+            echo "  -> $branch rebased and pushed"
+            succeeded="$succeeded\n  $branch"
+          else
+            git rebase --abort
+            echo "  -> $branch has conflicts, skipping"
+            failed="$failed\n  $branch"
+          fi
+
+          echo ""
+        done
+
+        echo "========================================="
+        echo "SUMMARY"
+        echo "========================================="
+        if [ -n "$succeeded" ]; then
+          echo -e "Succeeded:$succeeded"
+        fi
+        if [ -n "$skipped" ]; then
+          echo -e "Skipped (not on remote):$skipped"
+        fi
+        if [ -n "$failed" ]; then
+          echo -e "Failed (conflicts):$failed"
+          echo "::warning::Branches with rebase conflicts:$failed"
+        fi

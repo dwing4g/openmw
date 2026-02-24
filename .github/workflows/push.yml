@@ -1,8 +1,7 @@
 name: Build
 
 on:
-- push
-- pull_request
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -64,6 +63,7 @@ jobs:
       build-type: RelWithDebInfo
 
   Release:
+    if: github.ref == 'refs/heads/wip-aggressive-performance-2'
     needs: [Ubuntu, Windows]
     runs-on: ubuntu-latest
     permissions:
@@ -84,8 +84,6 @@ jobs:
         make_latest: false
         body: |
           Automated build from `${{ github.ref_name }}` @ ${{ github.sha }}
-
-          Built on ${{ github.event.head_commit.timestamp }}
         files: |
           artifacts/**/*.zip
           artifacts/**/*.tar.gz
