@@ -13,7 +13,7 @@ env:
 
 jobs:
   Ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: linux-16core
 
     steps:
     - uses: actions/checkout@v4

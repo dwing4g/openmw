@@ -23,7 +23,7 @@ jobs:
   Windows:
     name: windows-${{ inputs.image }}
 
-    runs-on: windows-latest
+    runs-on: windows-16core
 
     env:
       archive: FAILEDTODOWNLOAD
