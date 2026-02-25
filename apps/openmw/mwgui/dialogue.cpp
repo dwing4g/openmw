@@ -253,11 +253,11 @@ namespace MWGui
                 break;
         }
 
-        typesetter->addContent(text);
-
         if (hyperLinks.size()
             && MWBase::Environment::get().getWindowManager()->getTranslationDataStorage().hasTranslation())
         {
+            typesetter->addContent(text);
+
             const TextColours& textColours = MWBase::Environment::get().getWindowManager()->getTextColours();
 
             BookTypesetter::Style* style = typesetter->createStyle({}, textColours.normal, false);
@@ -278,6 +278,9 @@ namespace MWGui
         {
             std::vector<TopicSearch::Match> matches;
             keywordSearch.highlightKeywords(text.begin(), text.end(), matches);
+
+            TopicSearch::removeUnusedPostfix(text, matches);
+            typesetter->addContent(text);
 
             std::string::const_iterator i = text.begin();
             for (TopicSearch::Match& match : matches)
@@ -424,8 +427,8 @@ namespace MWGui
     {
         if (!mScrollBar->getVisible())
             return;
-        mScrollBar->setScrollPosition(std::clamp<size_t>(
-            static_cast<size_t>(mScrollBar->getScrollPosition() - rel * 0.3), 0, mScrollBar->getScrollRange() - 1));
+        mScrollBar->setScrollPosition(static_cast<size_t>(std::clamp<ptrdiff_t>(
+            static_cast<ptrdiff_t>(mScrollBar->getScrollPosition() - rel * 0.3), 0, mScrollBar->getScrollRange() - 1)));
         onScrollbarMoved(mScrollBar, mScrollBar->getScrollPosition());
     }
 

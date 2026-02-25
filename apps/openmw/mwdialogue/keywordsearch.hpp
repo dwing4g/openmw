@@ -2,6 +2,7 @@
 #define GAME_MWDIALOGUE_KEYWORDSEARCH_H
 
 #include <algorithm>
+#include <set>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -66,7 +67,7 @@ namespace MWDialogue
                     Point prev = i;
                     --prev;
                     constexpr std::string_view wordSeparators = "\n\r \t'\"";
-                    if (wordSeparators.find(*prev) == std::string_view::npos)
+                    if (wordSeparators.find(*prev) == std::string_view::npos && (unsigned char)*i < 0xe0) // for any 3/4-bytes utf-8 char
                         continue;
                 }
 
@@ -127,6 +128,60 @@ namespace MWDialogue
 
             std::sort(
                 out.begin(), out.end(), [](const Match& left, const Match& right) { return left.mBeg < right.mBeg; });
+        }
+
+        static bool removeUnusedPostfix(std::string& text, std::vector<Match>& matches)
+        {
+            if (text.empty() || text.back() != '}')
+                return false;
+            const auto pos = text.find_last_of('{');
+            if (pos == std::string::npos)
+                return false;
+            auto it = text.cbegin() + pos;
+            if (matches.empty() || matches.back().mEnd < it)
+                text.erase(pos > 0 && text[pos - 1] == ' ' ? pos - 1 : pos);
+            else
+            {
+                it++;
+                size_t n = 0;
+                std::set<std::string> kws;
+                for (auto i = matches.begin(); i != matches.end();)
+                {
+                    auto& match = *i;
+                    match.mBeg -= n;
+                    match.mEnd -= n;
+                    if (match.mEnd <= it)
+                        kws.insert(std::string(match.mBeg, match.mEnd));
+                    else
+                    {
+                        if (match.mBeg < it || match.mEnd >= text.cend()
+                            || *(match.mBeg - 1) != ',' && *(match.mBeg - 1) != '{'
+                            || *match.mEnd != ',' && *match.mEnd != '}'
+                            || kws.contains(std::string(match.mBeg, match.mEnd)))
+                        {
+                            i = matches.erase(i);
+                            continue;
+                        }
+                        if (it < match.mBeg)
+                        {
+                            auto s = match.mBeg - it;
+                            n += s;
+                            text.erase(it, match.mBeg);
+                            match.mBeg -= s;
+                            match.mEnd -= s;
+                        }
+                        it = match.mEnd;
+                        if (it < text.cend() && *it == ',')
+                            it++;
+                    }
+                    i++;
+                }
+                if (it - 1 == text.cbegin() + pos)
+                    text.erase(pos > 0 && text[pos - 1] == ' ' ? pos - 1 : pos);
+                else if (it < text.cend() - 1)
+                    text.erase(*(it - 1) == ',' ? it - 1 : it, text.cend() - 1);
+            }
+            return true;
         }
 
     private:

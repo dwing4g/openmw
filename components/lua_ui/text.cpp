@@ -23,7 +23,7 @@ namespace LuaUi
     {
         mAutoSized = propertyValue("autoSize", true);
 
-        setCaption(propertyValue("text", std::string()));
+        setCaptionWithReplacing(propertyValue("text", std::string()));
         setFontHeight(propertyValue("textSize", 10));
         setTextColour(propertyValue("textColor", MyGUI::Colour(0, 0, 0, 1)));
         setEditMultiLine(propertyValue("multiline", false));
