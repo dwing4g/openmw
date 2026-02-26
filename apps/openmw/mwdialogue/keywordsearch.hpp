@@ -44,6 +44,8 @@ namespace MWDialogue
         void highlightKeywords(Point beg, Point end, std::vector<Match>& out) const;
         std::vector<KeywordSearch::Match> parseHyperText(
             const std::string& text, const Translation::Storage& storage) const;
+
+        static bool removeUnusedPostfix(std::string& text, std::vector<Match>& matches);
     };
 
 }

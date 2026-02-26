@@ -9,6 +9,7 @@
 
 #include <components/esm3/dialoguestate.hpp>
 #include <components/esm3/esmwriter.hpp>
+#include <components/esm3/loadcrea.hpp>
 #include <components/esm3/loaddial.hpp>
 #include <components/esm3/loadfact.hpp>
 #include <components/esm3/loadinfo.hpp>
@@ -26,7 +27,11 @@
 
 #include <components/misc/resourcehelpers.hpp>
 
+#include <components/resource/resourcesystem.hpp>
+
 #include <components/settings/values.hpp>
+
+#include <components/vfs/manager.hpp>
 
 #include "../mwbase/environment.hpp"
 #include "../mwbase/journal.hpp"
@@ -139,6 +144,98 @@ namespace MWDialogue
         }
     }
 
+    static bool tryPlayVoicePath(const MWBase::Environment& env, const VFS::Manager* vfs,
+        const MWWorld::ConstPtr& mActor, const char* buf)
+    {
+        const auto& path = VFS::Path::Normalized(buf);
+        if (!vfs->exists(path))
+            return false;
+        env.getSoundManager()->say(mActor, path);
+        return true;
+    }
+
+    void DialogueManager::tryPlayVoice(const ESM::DialInfo* info)
+    {
+        const MWBase::Environment& env = MWBase::Environment::get();
+        const VFS::Manager* vfs = env.getResourceSystem()->getVFS();
+        char buf[512];
+        if (mActor.getType() == ESM::NPC::sRecordId)
+        {
+            const ESM::NPC* npc = mActor.get<ESM::NPC>()->mBase;
+            const std::string race = npc->mRace.toString();
+            const char sex = npc->isMale() ? 'M' : 'F';
+            const std::string npcId = npc->mId.toString();
+            const std::string infoId = info->mId.toString();
+            std::string faction;
+            int factionRank = -1;
+            if (!npc->mFaction.empty())
+            {
+                faction = npc->mFaction.toString();
+                const MWWorld::Ptr player = env.getWorld()->getPlayerPtr();
+                const auto& ranks = player.getClass().getNpcStats(player).getFactionRanks();
+                const auto it = ranks.find(npc->mFaction);
+                factionRank = it != ranks.end() ? it->second : -1;
+            }
+            if (!faction.empty())
+            {
+                if (factionRank >= 0)
+                {
+                    sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s/%d/%s.mp3",
+                        race.c_str(), sex, npcId.c_str(), faction.c_str(), factionRank, infoId.c_str());
+                    if (tryPlayVoicePath(env, vfs, mActor, buf))
+                        return;
+                }
+                sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s/%s.mp3",
+                    race.c_str(), sex, npcId.c_str(), faction.c_str(), infoId.c_str());
+                if (tryPlayVoicePath(env, vfs, mActor, buf))
+                    return;
+            }
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s.mp3",
+                race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            if (!faction.empty())
+            {
+                if (factionRank >= 0)
+                {
+                    sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%d/%s.mp3",
+                        race.c_str(), sex, faction.c_str(), factionRank, infoId.c_str());
+                    if (tryPlayVoicePath(env, vfs, mActor, buf))
+                        return;
+                }
+                sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s/%s.mp3",
+                    race.c_str(), sex, faction.c_str(), infoId.c_str());
+                if (tryPlayVoicePath(env, vfs, mActor, buf))
+                    return;
+            }
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/%s/%c/%s.mp3",
+                race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "Vvardenfell/AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "Vvardenfell/AIV/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "AIV/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+        }
+        else if (mActor.getType() == ESM::Creature::sRecordId)
+        {
+            const ESM::Creature* creature = mActor.get<ESM::Creature>()->mBase;
+            const std::string& creatureId = creature->mId.toString();
+            const std::string infoId = info->mId.toString();
+            sprintf(buf, "00 - Core/Sound/Vo/AIV/Creature/%s/%s.mp3", creatureId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+        }
+    }
+
     bool DialogueManager::startDialogue(const MWWorld::Ptr& actor, ResponseCallback* callback)
     {
         updateGlobals();
@@ -184,6 +281,7 @@ namespace MWDialogue
                     MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
                     callback->addResponse({}, Interpreter::fixDefinesDialog(info->mResponse, interpreterContext));
                     MWBase::Environment::get().getLuaManager()->onDialogueResponse(mActor, *info, dialogue);
+                    tryPlayVoice(info);
                     executeScript(info->mResultScript, mActor);
                     mLastTopic = dialogue.mId;
 
@@ -314,6 +412,7 @@ namespace MWDialogue
             MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
             callback->addResponse(title, Interpreter::fixDefinesDialog(info->mResponse, interpreterContext));
             MWBase::Environment::get().getLuaManager()->onDialogueResponse(mActor, *info, dialogue);
+            tryPlayVoice(info);
 
             if (dialogue.mType == ESM::Dialogue::Topic)
             {
@@ -485,6 +584,7 @@ namespace MWDialogue
                     MWScript::InterpreterContext interpreterContext(&mActor.getRefData().getLocals(), mActor);
                     callback->addResponse({}, Interpreter::fixDefinesDialog(text, interpreterContext));
                     MWBase::Environment::get().getLuaManager()->onDialogueResponse(mActor, *info, *dialogue);
+                    tryPlayVoice(info);
 
                     if (dialogue->mType == ESM::Dialogue::Topic)
                     {
