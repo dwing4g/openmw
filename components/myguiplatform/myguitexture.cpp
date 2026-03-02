@@ -150,6 +150,26 @@ namespace MyGUIPlatform
 
         mTexture = newTexture;
 
+//        if (getWidth() >= 4096) // for dumping font image
+//        {
+//            static int id = 0;
+//            char buf[128];
+//            sprintf(buf, "font%d.tga", id++);
+//            FILE* fp = fopen(buf, "wb");
+//            char head[18] = { 0 };
+//            head[2] = 3;
+//            head[12] = (char)getWidth();
+//            head[13] = (char)(getWidth() >> 8);
+//            head[14] = (char)getHeight();
+//            head[15] = (char)(getHeight() >> 8);
+//            head[16] = 8;
+//            fwrite(head, 1, 18, fp);
+//            const char* p = (const char*)mLockedImage->getDataPointer();
+//            for (int i = 0, n = mLockedImage->getTotalDataSize(); i < n; i += 2)
+//                fputc(p[i + 1], fp);
+//            fclose(fp);
+//        }
+
         mLockedImage = nullptr;
     }
 
