@@ -23,7 +23,7 @@ namespace
             return {};
 
         // With small text size we can use up to 4 characters, while with large ones - only up to 3.
-        if (Settings::gui().mFontSize > 16)
+        if (Settings::gui().mFontSize > 18)
         {
             if (count > 999999999)
                 return MyGUI::utility::toString(count / 1000000000) + "b";

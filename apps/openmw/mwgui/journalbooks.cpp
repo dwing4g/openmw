@@ -8,6 +8,8 @@
 
 #include "textcolours.hpp"
 
+#include "../mwdialogue/quest.hpp"
+
 namespace
 {
     struct AddContent
@@ -74,7 +76,7 @@ namespace
         {
         }
 
-        void operator()(MWGui::JournalViewModel::JournalEntry const& entry)
+        void operator()(MWGui::JournalViewModel::JournalEntry const& entry, const MWDialogue::Quest* quest)
         {
             if (mAddHeader)
             {
@@ -82,9 +84,22 @@ namespace
                 mTypesetter->lineBreak();
             }
 
+            if (quest)
+            {
+                auto questName = quest->getName();
+                if (!questName.empty())
+                {
+                    intptr_t id = -reinterpret_cast<intptr_t>(quest);
+                    auto style = mTypesetter->createHotStyle(mBodyStyle, MyGUI::Colour(0.60f, 0.00f, 0.00f),
+                        MyGUI::Colour(0.70f, 0.10f, 0.10f), MyGUI::Colour(0.80f, 0.20f, 0.20f), id);
+                    mTypesetter->write(style, questName); // mHeaderStyle
+                    mTypesetter->lineBreak();
+                }
+            }
+
             AddEntry::operator()(entry);
 
-            mTypesetter->sectionBreak(30);
+            mTypesetter->sectionBreak(10);
         }
     };
 
@@ -112,7 +127,7 @@ namespace
             mTypesetter->selectContent(mContentId);
             mTypesetter->write(mBodyStyle, 2, 3); // end quote
 
-            mTypesetter->sectionBreak(30);
+            mTypesetter->sectionBreak(10);
         }
     };
 
@@ -126,7 +141,7 @@ namespace
         void operator()(std::string_view topicName)
         {
             mTypesetter->write(mBodyStyle, topicName);
-            mTypesetter->sectionBreak();
+            mTypesetter->sectionBreak(10);
         }
     };
 
@@ -140,7 +155,7 @@ namespace
         void operator()(std::string_view topicName)
         {
             mTypesetter->write(mBodyStyle, topicName);
-            mTypesetter->sectionBreak();
+            mTypesetter->sectionBreak(10);
         }
     };
 }
@@ -197,7 +212,7 @@ namespace MWGui
 
         mModel->visitTopicName(topic, AddTopicName(typesetter, header));
 
-        const TypesetBook::Content* contentId = typesetter->addContent(", \"");
+        const TypesetBook::Content* contentId = typesetter->addContent(": \"");
 
         mModel->visitTopicEntries(topic, AddTopicEntry(typesetter, body, header, contentId));
 
@@ -214,7 +229,7 @@ namespace MWGui
         AddQuestName addName(typesetter, header);
         addName(questName);
 
-        mModel->visitJournalEntries(questName, AddJournalEntry(typesetter, body, header, false));
+        mModel->visitJournalEntries(questName, AddJournalEntry(typesetter, body, header, true));
 
         return typesetter->complete();
     }
