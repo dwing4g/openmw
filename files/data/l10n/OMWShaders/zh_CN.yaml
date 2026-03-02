@@ -1,0 +1,51 @@
+# Post-processing HUD
+
+Abovewater: "水面"
+ActiveShaders: "启用的着色器"
+Author: "作者"
+Description: "说明"
+InactiveShaders: "未启用的着色器"
+InExteriors: "室外"
+InInteriors: "室内"
+KeyboardControls: |
+    键盘控制:
+
+    Shift+右方向键 > 启用着色器
+    Shift+左方向键 > 禁用着色器
+    Shift+上方向键 > 向上移动着色器
+    Shift+下方向键 > 向下移动着色器
+PostProcessHUD: "后处理HUD"
+ResetShader: "将着色器重置为默认状态"
+ShaderLocked: "已锁定"
+ShaderLockedDescription: "无法转换或移动，该目标由外部Lua脚本所控制。"
+ShaderResetUniform: "重置着色器"
+Underwater: "水下"
+Version: "版本"
+
+
+# Built-in post-processing shaders
+
+AdjustmentsDescription: "调整颜色。"
+BloomDescription: "Bloom着色器在（近似于）线性灯光的环境下进行渲染。"
+DebugDescription: "调试用着色器。"
+DebugHeaderDepth: "深度缓冲区"
+DebugHeaderNormals: "法线"
+DisplayDepthFactorName: "深度颜色系数"
+DisplayDepthFactorDescription: "确定像素深度值和输出颜色之间的相关性，数值越高，图像越亮。"
+DisplayDepthName: "可视化深度缓冲区"
+DisplayNormalsName: "可视化过程法线"
+NormalsInWorldSpace: "在世界空间里显示法线"
+ContrastLevelDescription: "图像对比度级别。"
+ContrastLevelName: "图像对比度"
+GammaLevelDescription: "伽马强度。"
+GammaLevelName: "伽马"
+StrengthLevelName: "强度"
+StrengthLevelDescription: "特效的强度。"
+RadiusLevelName: "半径"
+RadiusLevelDescription: "特效的半径。"
+SkyFactorLevelName: "天空光照"
+SkyFactorLevelDescription: "直接来自天空的光的倍增系数。"
+BloomClampLevelName: "钳制级别"
+BloomClampLevelDescription: "将光晕混合到场景中时，钳制比该值亮的光晕像素。"
+BloomThresholdLevelName: "阈值"
+BloomThresholdLevelDescription: "计算模糊时忽略亮度低于此值的像素，不会影响天空。"
