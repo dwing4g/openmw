@@ -48,6 +48,8 @@ namespace ESM
                     break;
                 case fourCC("FNAM"):
                     mName = esm.getHString();
+                    if (mName.empty())
+                        mName = mId.toString();
                     break;
                 case fourCC("CLDT"):
                     esm.getSubComposite(mData);
