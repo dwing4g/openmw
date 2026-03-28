@@ -215,22 +215,6 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
 <context>
     <name>QObject</name>
     <message>
-        <source>&lt;br&gt;&lt;b&gt;Could not find Morrowind.ini&lt;/b&gt;&lt;br&gt;&lt;br&gt;The Wizard needs to update settings in this file.&lt;br&gt;&lt;br&gt;Press &quot;Browse...&quot; to specify the location manually.&lt;br&gt;</source>
-        <translation>&lt;br&gt;&lt;b&gt;无法找到Morrowind.ini&lt;/b&gt;&lt;br&gt;&lt;br&gt;向导需要用这个文件更新设置。&lt;br&gt;&lt;br&gt;点击“浏览...”来手动指定位置。&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>B&amp;rowse...</source>
-        <translation>浏览(&amp;R)...</translation>
-    </message>
-    <message>
-        <source>Select configuration file</source>
-        <translation>选择配置文件</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Morrowind.bsa&lt;/b&gt; is missing!&lt;br&gt;Make sure your Morrowind installation is complete.</source>
-        <translation>&lt;b&gt;Morrowind.bsa&lt;/b&gt;文件丢失！&lt;br&gt;确保你已经完整安装了晨风。</translation>
-    </message>
-    <message>
         <source>&lt;br&gt;&lt;b&gt;There may be a more recent version of Morrowind available.&lt;/b&gt;&lt;br&gt;&lt;br&gt;Do you wish to continue anyway?&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;b&gt;可能还有更新版本的晨风可用。&lt;/b&gt;&lt;br&gt;&lt;br&gt;你仍然想要继续吗？&lt;br&gt;</translation>
     </message>
@@ -241,10 +225,6 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
     <message>
         <source>Select a valid %1 installation media.&lt;br&gt;&lt;b&gt;Hint&lt;/b&gt;: make sure that it contains at least one &lt;b&gt;.cab&lt;/b&gt; file.</source>
         <translation>选择一份合法的 %1 安装介质。&lt;br&gt;&lt;b&gt;提示&lt;/b&gt;：确保它至少包含一个&lt;b&gt;.cab&lt;/b&gt;文件。</translation>
-    </message>
-    <message>
-        <source>There may be a more recent version of Morrowind available.&lt;br&gt;&lt;br&gt;Do you wish to continue anyway?</source>
-        <translation>可能还有更新版本的晨风可用。&lt;br&gt;&lt;br&gt;你仍然想要继续吗？</translation>
     </message>
 </context>
 <context>
@@ -334,6 +314,22 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
     <message>
         <source>Error detecting Morrowind files</source>
         <translation>检测晨风文件出错</translation>
+    </message>
+    <message>
+        <source>&lt;br&gt;&lt;b&gt;Could not find Morrowind.ini&lt;/b&gt;&lt;br&gt;&lt;br&gt;The Wizard needs to update settings in this file.&lt;br&gt;&lt;br&gt;Press &quot;Browse...&quot; to specify the location manually.&lt;br&gt;</source>
+        <translation>&lt;br&gt;&lt;b&gt;无法找到Morrowind.ini&lt;/b&gt;&lt;br&gt;&lt;br&gt;向导需要用这个文件更新设置。&lt;br&gt;&lt;br&gt;点击“浏览...”来手动指定位置。&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>B&amp;rowse...</source>
+        <translation>浏览(&amp;R)...</translation>
+    </message>
+    <message>
+        <source>Select configuration file</source>
+        <translation>选择配置文件</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Morrowind.bsa&lt;/b&gt; is missing!&lt;br&gt;Make sure your Morrowind installation is complete.</source>
+        <translation>&lt;b&gt;Morrowind.bsa&lt;/b&gt;文件丢失！&lt;br&gt;确保你已经完整安装了晨风。</translation>
     </message>
 </context>
 <context>
