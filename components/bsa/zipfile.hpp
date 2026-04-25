@@ -3,6 +3,8 @@
 
 #include <string.h>
 #include <istream>
+#include <fstream>
+#include <chrono>
 #include <mutex>
 
 #include <minizip/unzip.h>
@@ -81,10 +83,28 @@ namespace Bsa
             int hour = static_cast<int>((dosTime >> 11) & 0x1f);
             int minute = static_cast<int>((dosTime >> 5) & 0x3f);
             int second = static_cast<int>((dosTime & 0x1f) * 2);
+
+            #if __cplusplus >= 202002L
+
             auto st = std::chrono::sys_days{ std::chrono::year_month_day{
                 std::chrono::year{ year }, std::chrono::month{ month }, std::chrono::day{ day } } } +
                 std::chrono::hours{ hour } + std::chrono::minutes{ minute } + std::chrono::seconds{ second };
             return std::chrono::clock_cast<std::chrono::file_clock>(st);
+            #else
+            std::tm tm{};
+            tm.tm_year = year - 1900; 
+            tm.tm_mon = month - 1; 
+            tm.tm_mday = day;
+            tm.tm_hour = hour; 
+            tm.tm_min = minute; 
+            tm.tm_sec = second;
+            
+            auto sys_time = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+            return std::filesystem::file_time_type::clock::now() + 
+                   std::chrono::duration_cast<std::filesystem::file_time_type::duration>(
+                       sys_time - std::chrono::system_clock::now()
+                   );
+            #endif
         }
 
         static std::string filenameToStem(const char* filename)
