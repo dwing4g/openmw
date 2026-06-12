@@ -34,7 +34,7 @@ namespace MWDialogue
         mRoot.mKeyword.clear();
     }
 
-    void KeywordSearch::highlightKeywords(Point beg, Point end, std::vector<Match>& out) const
+    void KeywordSearch::highlightKeywords(Point beg, Point end, std::vector<Match>& out, bool overlaps) const
     {
         std::vector<Match> matches;
         for (Point i = beg; i != end; ++i)
@@ -63,6 +63,11 @@ namespace MWDialogue
                         matches.emplace_back(i, i + current->mKeyword.size(), current->mTopicId);
                 }
             }
+        }
+        if (overlaps)
+        {
+            out = matches;
+            return;
         }
         // resolve overlapping keywords
         while (!matches.empty())
@@ -139,7 +144,7 @@ namespace MWDialogue
     }
 
     std::vector<KeywordSearch::Match> KeywordSearch::parseHyperText(
-        const std::string& text, const Translation::Storage& storage) const
+        const std::string& text, const Translation::Storage& storage, bool overlaps) const
     {
         std::vector<Match> matches;
         size_t posEnd = std::string::npos;
@@ -175,7 +180,7 @@ namespace MWDialogue
             else
             {
                 if (iterationPos < text.size())
-                    highlightKeywords(text.begin() + iterationPos, text.end(), matches);
+                    highlightKeywords(text.begin() + iterationPos, text.end(), matches, overlaps);
                 break;
             }
         }

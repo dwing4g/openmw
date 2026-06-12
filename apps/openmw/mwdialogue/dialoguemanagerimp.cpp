@@ -111,7 +111,7 @@ namespace MWDialogue
     {
         std::vector<ESM::RefId> topicIdList;
 
-        std::vector<KeywordSearch::Match> matches = getKeywordSearch().parseHyperText(text, mTranslationDataStorage);
+        std::vector<KeywordSearch::Match> matches = getKeywordSearch().parseHyperText(text, mTranslationDataStorage, true);
 
         for (const auto& match : matches)
             topicIdList.push_back(ESM::RefId::stringRefId(match.mTopicId));
@@ -212,10 +212,16 @@ namespace MWDialogue
                 race.c_str(), sex, infoId.c_str());
             if (tryPlayVoicePath(env, vfs, mActor, buf))
                 return;
+            sprintf(buf, "sound/vo/aiv/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
             sprintf(buf, "Vvardenfell/AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
             if (tryPlayVoicePath(env, vfs, mActor, buf))
                 return;
             sprintf(buf, "AIV/%s/%c/%s/%s.mp3", race.c_str(), sex, npcId.c_str(), infoId.c_str());
+            if (tryPlayVoicePath(env, vfs, mActor, buf))
+                return;
+            sprintf(buf, "sound/vo/aiv/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());
             if (tryPlayVoicePath(env, vfs, mActor, buf))
                 return;
             sprintf(buf, "Vvardenfell/AIV/%s/%c/%s.mp3", race.c_str(), sex, infoId.c_str());

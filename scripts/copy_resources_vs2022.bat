@@ -43,18 +43,21 @@ xcopy /y    %SystemRoot%\System32\msvcp140_atomic_wait.dll MSVC2022_64\Release\
 
 del MSVC2022_64\Debug\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\Debug\resources\vfs\CMakeLists.txt
+del MSVC2022_64\Debug\resources\vfs-mw\builtin.omwscripts.in
 del MSVC2022_64\Debug\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\Debug\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\Debug\resources\shaders\CMakeLists.txt
 
 del MSVC2022_64\RelWithDebInfo\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\RelWithDebInfo\resources\vfs\CMakeLists.txt
+del MSVC2022_64\RelWithDebInfo\resources\vfs-mw\builtin.omwscripts.in
 del MSVC2022_64\RelWithDebInfo\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\RelWithDebInfo\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\RelWithDebInfo\resources\shaders\CMakeLists.txt
 
 del MSVC2022_64\Release\resources\vfs\builtin.omwscripts.in
 del MSVC2022_64\Release\resources\vfs\CMakeLists.txt
+del MSVC2022_64\Release\resources\vfs-mw\builtin.omwscripts.in
 del MSVC2022_64\Release\resources\vfs-mw\CMakeLists.txt
 del MSVC2022_64\Release\resources\lua_api\CMakeLists.txt
 del MSVC2022_64\Release\resources\shaders\CMakeLists.txt

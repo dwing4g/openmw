@@ -41,9 +41,13 @@ OpenMW原版官方网站: https://openmw.org/
 
 ■ 汉化版的ChangeLog:
 
-● 2026-??-?? v16
+● 2026-06-12 v16
 1. openmw: 修正对话中"%class"显示职业名"Buoyant Armiger"的bug
 2. openmw: 存档文件名支持宽字符
+3. openmw: 修正对话中关键词重叠可能导致无法激活其中某个关键词的bug
+4. openmw: 修正zip资源包在GCC的支持
+5. openmw: 更新拼音数据
+6. openmw: 内置支持更新的bsa格式全语音包
 
 ● 2026-02-26 v15
 1. openmw: 支持zip资源包及2个语音包: https://www.nexusmods.com/morrowind/mods/54454 https://www.nexusmods.com/morrowind/mods/52279
