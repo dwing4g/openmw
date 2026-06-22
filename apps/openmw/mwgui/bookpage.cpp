@@ -577,6 +577,8 @@ namespace MWGui
 
         void writeImpl(StyleImpl* style, Utf8Stream&& stream)
         {
+            Utf8Stream::UnicodeChar lastChar = 0;
+
             while (!stream.eof())
             {
                 if (ucsLineBreak(stream.peek()))
@@ -588,7 +590,7 @@ namespace MWGui
                     continue;
                 }
 
-                if (ucsBreakingSpace(stream.peek()) && !mPartialWord.empty())
+                if (!mPartialWord.empty())
                     add_partial_text();
 
                 int wordWidth = 0;
@@ -611,7 +613,9 @@ namespace MWGui
                     std::optional<MyGUI::GlyphInfo> info = getGlyphInfo(style->mFont, stream.peek());
                     if (info)
                         wordWidth += static_cast<int>(info->advance + info->bearingX);
-                    stream.consume();
+                    lastChar = stream.consume();
+                    if (lastChar >= 0x2000 || stream.eof() || stream.peek() >= 0x2000) // for wide char
+                        break;
                 }
 
                 Utf8Stream::Point extent = stream.current();

@@ -234,6 +234,7 @@ namespace MWGui
         };
 
         std::vector<KeywordSearch::Match> matches = keywordSearch.parseHyperText(mText, translationStorage);
+        MWDialogue::KeywordSearch::removeUnusedPostfix(const_cast<std::string&>(mText), matches);
         std::vector<Token> tokens;
         tokens.reserve(matches.size());
         std::string text;

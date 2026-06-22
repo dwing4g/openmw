@@ -9,6 +9,11 @@
 #include <string>
 #include <string_view>
 
+namespace Translation
+{
+    int compareStrByPinyin(std::string_view a, std::string_view b);
+}
+
 namespace Misc::StringUtils
 {
     struct CiCharLess
@@ -25,7 +30,8 @@ namespace Misc::StringUtils
 
     inline bool ciLess(std::string_view x, std::string_view y)
     {
-        return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end(), CiCharLess());
+        return Translation::compareStrByPinyin(x, y) < 0;
+        // return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end(), CiCharLess());
     }
 
     inline bool ciEqual(std::string_view x, std::string_view y)
