@@ -1,0 +1,7 @@
+Music: "OpenMW音乐"
+settingsPageDescription: "OpenMW音乐设置"
+
+musicSettings: "音乐配置"
+
+CombatMusicEnabled: "播放战斗音乐"
+CombatMusicEnabledDescription: "开启时，如果有角色在战斗中，游戏会切换到战斗音乐。"

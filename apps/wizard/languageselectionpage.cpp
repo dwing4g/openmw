@@ -1,4 +1,4 @@
-#include "languageselectionpage.hpp"
+﻿#include "languageselectionpage.hpp"
 
 #include <components/misc/scalableicon.hpp>
 
@@ -18,7 +18,8 @@ Wizard::LanguageSelectionPage::LanguageSelectionPage(QWidget* parent)
     const QList<std::pair<QString, QString>> languages = { { tr("English"), QStringLiteral("English") },
         { tr("French"), QStringLiteral("French") }, { tr("German"), QStringLiteral("German") },
         { tr("Italian"), QStringLiteral("Italian") }, { tr("Polish"), QStringLiteral("Polish") },
-        { tr("Russian"), QStringLiteral("Russian") }, { tr("Spanish"), QStringLiteral("Spanish") } };
+        { tr("Russian"), QStringLiteral("Russian") }, { tr("Spanish"), QStringLiteral("Spanish") },
+        { tr("Chinese(GBK)"), QStringLiteral("简体中文(GBK)") }, { tr("UTF-8"), QStringLiteral("UTF-8") } };
 
     for (const auto& [localizedName, name] : languages)
     {
