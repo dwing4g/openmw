@@ -122,8 +122,7 @@ namespace
 
             {
                 MWGui::BookPage::ClickCallback callback = [this](MWGui::TypesetBook::InteractiveId linkId) {
-                    const MWDialogue::Topic& topic = *reinterpret_cast<const MWDialogue::Topic*>(linkId);
-                    notifyTopicClicked(topic);
+                    notifyTopicClicked(linkId);
                 };
 
                 getPage(LeftBookPage)->adviseLinkClicked(callback);
@@ -418,6 +417,17 @@ namespace
                 notifyPrevPage(sender);
             else if (key == MyGUI::KeyCode::ArrowDown)
                 notifyNextPage(sender);
+        }
+
+        void notifyTopicClicked(MWGui::TypesetBook::InteractiveId linkId)
+        {
+            if (linkId < 0)
+            {
+                const auto* quest = reinterpret_cast<const MWDialogue::Quest*>(-linkId);
+                notifyQuestClicked(std::string(quest->getName()), 0);
+                return;
+            }
+            notifyTopicClicked(*reinterpret_cast<const MWDialogue::Topic*>(linkId));
         }
 
         void notifyTopicClicked(const MWDialogue::Topic& topic)

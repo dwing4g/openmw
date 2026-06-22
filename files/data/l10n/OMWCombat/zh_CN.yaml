@@ -1,0 +1,16 @@
+Combat: "OpenMW战斗"
+combatSettingsPageDescription: "OpenMW战斗设置"
+
+combatSettings: "战斗"
+
+unarmedCreatureAttacksDamageArmor: "徒手生物的攻击会伤害护甲"
+unarmedCreatureAttacksDamageArmorDescription: |
+    徒手生物现在也能伤害护甲。
+
+redistributeShieldHitsWhenNotWearingShield: "当未装备盾牌时重新分配盾牌所受的攻击"
+redistributeShieldHitsWhenNotWearingShieldDescription: |
+    相当于晨风代码补丁(Morrowind Code Patch)中的“盾牌受击位置修正”。当未装备盾牌时，将原本应击中盾牌护甲槽的攻击重新分配至左肩甲或胸甲。
+
+spawnBloodEffectsOnPlayer: "在玩家身上生成血液效果"
+spawnBloodEffectsOnPlayerDescription: |
+    如果启用，玩家在战斗中受击会生成血液效果，与其他角色相同。
