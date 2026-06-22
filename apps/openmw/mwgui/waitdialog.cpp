@@ -1,4 +1,4 @@
-#include "waitdialog.hpp"
+﻿#include "waitdialog.hpp"
 
 #include <MyGUI_InputManager.h>
 #include <MyGUI_ProgressBar.h>
@@ -160,17 +160,21 @@ namespace MWGui
 
         const MWWorld::DateTimeManager& timeManager = *MWBase::Environment::get().getWorld()->getTimeManager();
         std::string_view month = timeManager.getMonthName();
-        int hour = static_cast<int>(timeManager.getTimeStamp().getHour());
-        bool pm = hour >= 12;
-        if (hour >= 13)
-            hour -= 12;
-        if (hour == 0)
-            hour = 12;
+        float iHour;
+        float fHour = modf(timeManager.getTimeStamp().getHour(), &iHour);
+        // bool pm = hour >= 12;
+        // if (hour >= 13)
+        //     hour -= 12;
+        // if (hour == 0)
+        //     hour = 12;
 
         ESM::EpochTimeStamp currentDate = timeManager.getEpochTimeStamp();
-        std::string_view formattedHour(pm ? "#{Calendar:pm}" : "#{Calendar:am}");
-        std::string dateTimeText = std::format("{} {} (#{{Calendar:day}} {}) {} {}", currentDate.mDay, month,
-            timeManager.getTimeStamp().getDay(), hour, formattedHour);
+        // std::string_view formattedHour(pm ? "#{Calendar:pm}" : "#{Calendar:am}");
+        // std::string dateTimeText = std::format("{} {} (#{{Calendar:day}} {}) {} {}", currentDate.mDay, month,
+        //     timeManager.getTimeStamp().getDay(), hour, formattedHour);
+        std::string dateTimeText = std::format("3E {}年 {} {}日 (第{}天) {}:{:02d}",
+            currentDate.mYear, month, currentDate.mDay, timeManager.getTimeStamp().getDay(),
+            static_cast<int>(iHour), static_cast<int>(fHour * 60));
         mDateTimeText->setCaptionWithReplacing(dateTimeText);
     }
 

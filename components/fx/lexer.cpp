@@ -169,10 +169,10 @@ namespace Fx
             if (head() == '\"')
                 return scanStringLiteral();
 
-            if (std::isalpha(head()))
+            if (std::isalpha(static_cast<unsigned char>(head())))
                 return scanLiteral();
 
-            if (std::isdigit(head()) || head() == '.' || head() == '-')
+            if (std::isdigit(static_cast<unsigned char>(head())) || head() == '.' || head() == '-')
                 return scanNumber();
 
             switch (head())

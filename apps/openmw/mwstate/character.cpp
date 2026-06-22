@@ -65,27 +65,27 @@ void MWState::Character::addSlot(const ESM::SavedGame& profile)
 {
     Slot slot;
 
-    std::ostringstream stream;
+    std::wostringstream stream;
 
     // The profile description is user-supplied, so we need to escape the path
     Utf8Stream description(profile.mDescription);
     while (!description.eof())
     {
         auto c = description.consume();
-        if (c <= 0x7F && std::isalnum(c)) // Ignore multibyte characters and non alphanumeric characters
-            stream << static_cast<char>(c);
+        if (c > 0x7F || std::isalnum(c)) // Ignore non alphanumeric narrow characters
+            stream << static_cast<wchar_t>(c);
         else
-            stream << '_';
+            stream << L'_';
     }
 
-    const std::string ext = ".omwsave";
+    const std::wstring ext = L".omwsave";
     slot.mPath = mPath / (stream.str() + ext);
 
     // Append an index if necessary to ensure a unique file
     int i = 0;
     while (std::filesystem::exists(slot.mPath))
     {
-        const std::string test = stream.str() + " - " + std::to_string(++i);
+        const std::wstring test = stream.str() + L" - " + std::to_wstring(++i);
         slot.mPath = mPath / (test + ext);
     }
 

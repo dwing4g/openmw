@@ -232,7 +232,7 @@ namespace Gui
         , mScalingFactor(scalingFactor)
         , mExportFonts(exportFonts)
     {
-        if (encoding == ToUTF8::WINDOWS_1252)
+        if (encoding == ToUTF8::WINDOWS_1252 || encoding == ToUTF8::GBK || encoding == ToUTF8::UTF_8)
             mEncoding = ToUTF8::CP437;
         else
             mEncoding = encoding;
@@ -295,7 +295,7 @@ namespace Gui
 
     void FontLoader::loadTrueTypeFont(FontId fontId, const VFS::Path::Normalized& path, std::istream& stream)
     {
-        Log(Debug::Info) << "Loading TrueType font file " << path;
+        Log(Debug::Info) << "Loading TrueType font file " << path << " for " << fontId.mValue;
 
         MyGUIPlatform::DataManager* const dataManager
             = dynamic_cast<MyGUIPlatform::DataManager*>(&MyGUIPlatform::DataManager::getInstance());
@@ -368,7 +368,12 @@ namespace Gui
         font->deserialization(resourceNode.current(), MyGUI::Version(3, 2, 0));
         font->setResourceName(fontId.mValue);
         MyGUI::ResourceManager::getInstance().addResource(font);
+        Log(Debug::Info) << "Created font texture size=" << font->getTextureFont()->getWidth() << 'x'
+                         << font->getTextureFont()->getHeight() << 'x' << font->getTextureFont()->getNumElemBytes()
+                         << ", fontSize=" << Settings::gui().mFontSize << ", resolution=" << resolutionNode->findAttribute("value");
 
+        if (fontId.mValue != "DefaultFont") // only use one default font for Chinese to reduce GPU memory
+        {
         resolutionNode->setAttribute(
             "value", MyGUI::utility::toString(static_cast<int>(resolution * bookScale * mScalingFactor)));
 
@@ -377,7 +382,10 @@ namespace Gui
         bookFont->deserialization(resourceNode.current(), MyGUI::Version(3, 2, 0));
         bookFont->setResourceName(std::format("Journalbook {}", fontId.mValue));
         MyGUI::ResourceManager::getInstance().addResource(bookFont);
-
+        Log(Debug::Info) << "Created journal font texture size=" << font->getTextureFont()->getWidth() << 'x'
+                         << font->getTextureFont()->getHeight() << 'x' << font->getTextureFont()->getNumElemBytes()
+                         << ", fontSize=" << Settings::gui().mFontSize << ", resolution=" << resolutionNode->findAttribute("value");
+        }
         dataManagerPtr.reset();
 
         if (resourceNode.next("Resource"))
