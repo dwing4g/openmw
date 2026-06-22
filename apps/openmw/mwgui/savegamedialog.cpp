@@ -1,4 +1,4 @@
-#include "savegamedialog.hpp"
+﻿#include "savegamedialog.hpp"
 
 #include <iomanip>
 #include <sstream>
@@ -452,31 +452,33 @@ namespace MWGui
 
         text << "#{OMWEngine:Level} " << mCurrentSlot->mProfile.mPlayerLevel << "\n";
 
-        if (mCurrentSlot->mProfile.mCurrentDay > 0)
-            text << "#{Calendar:day} " << mCurrentSlot->mProfile.mCurrentDay << "\n";
-
         if (mCurrentSlot->mProfile.mMaximumHealth > 0)
             text << "#{OMWEngine:Health} " << static_cast<int>(mCurrentSlot->mProfile.mCurrentHealth) << "/"
                  << static_cast<int>(mCurrentSlot->mProfile.mMaximumHealth) << "\n";
 
-        int hour = int(mCurrentSlot->mProfile.mInGameTime.mGameHour);
-        bool pm = hour >= 12;
-        if (hour >= 13)
-            hour -= 12;
-        if (hour == 0)
-            hour = 12;
+        if (mCurrentSlot->mProfile.mCurrentDay > 0)
+            text << "第" << mCurrentSlot->mProfile.mCurrentDay << "天\n";
 
-        text << mCurrentSlot->mProfile.mInGameTime.mDay << " "
-             << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(
+        float iHour;
+        float fHour = modf(mCurrentSlot->mProfile.mInGameTime.mGameHour, &iHour);
+        // bool pm = hour >= 12;
+        // if (hour >= 13)
+        //     hour -= 12;
+        // if (hour == 0)
+        //     hour = 12;
+
+        text << "3E " << mCurrentSlot->mProfile.mInGameTime.mYear
+             << "年 " << MWBase::Environment::get().getWorld()->getTimeManager()->getMonthName(
                     mCurrentSlot->mProfile.mInGameTime.mMonth)
-             << " " << hour << " " << (pm ? "#{Calendar:pm}" : "#{Calendar:am}") << "\n";
+             << " " << mCurrentSlot->mProfile.mInGameTime.mDay
+             << "日 " << int(iHour) << ":" << std::setw(2) << std::setfill('0') << int(fHour * 60) << "\n"; // << (pm ? "#{Calendar:pm}" : "#{Calendar:am}") << "\n";
 
         if (mCurrentSlot->mProfile.mTimePlayed > 0)
         {
             text << "#{OMWEngine:TimePlayed}: " << formatTimeplayed(mCurrentSlot->mProfile.mTimePlayed) << "\n";
         }
 
-        text << Misc::fileTimeToString(mCurrentSlot->mTimeStamp, "%Y.%m.%d %T") << "\n";
+        text << "存档时间: " << Misc::fileTimeToString(mCurrentSlot->mTimeStamp, "%Y-%m-%d %T") << "\n";
 
         mCellName->setCaptionWithReplacing("#{sCell=" + mCurrentSlot->mProfile.mPlayerCellName + "}");
         mInfoText->setCaptionWithReplacing(text.str());
