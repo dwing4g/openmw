@@ -450,6 +450,14 @@ do domyślnych czcionek Morrowind. Zaznacz to pole, jeśli nadal wolisz oryginal
         <source>Spanish</source>
         <translation>Hiszpański</translation>
     </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Wizard::MainWizard</name>

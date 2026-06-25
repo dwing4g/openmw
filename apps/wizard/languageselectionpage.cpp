@@ -19,7 +19,7 @@ Wizard::LanguageSelectionPage::LanguageSelectionPage(QWidget* parent)
         { tr("French"), QStringLiteral("French") }, { tr("German"), QStringLiteral("German") },
         { tr("Italian"), QStringLiteral("Italian") }, { tr("Polish"), QStringLiteral("Polish") },
         { tr("Russian"), QStringLiteral("Russian") }, { tr("Spanish"), QStringLiteral("Spanish") },
-        { tr("Chinese(GBK)"), QStringLiteral("简体中文(GBK)") }, { tr("UTF-8"), QStringLiteral("UTF-8") } };
+        { tr("Chinese(GBK)"), QStringLiteral("Chinese(GBK)") }, { tr("UTF-8"), QStringLiteral("UTF-8") } };
 
     for (const auto& [localizedName, name] : languages)
     {
