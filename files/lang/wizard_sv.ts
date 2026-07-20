@@ -448,6 +448,14 @@ de ordinarie fonterna i Morrowind. Bocka i denna ruta om du ändå föredrar ord
         <source>Spanish</source>
         <translation>Spanska</translation>
     </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Wizard::MainWizard</name>
