@@ -401,6 +401,14 @@ de ordinarie fonterna i Morrowind. Bocka denna ruta om du ändå föredrar ordin
         <source>&amp;Open Path in File Explorer</source>
         <translation>Öppna katalogen i filutforskaren</translation>
     </message>
+    <message>
+        <source>UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Launcher::GraphicsPage</name>

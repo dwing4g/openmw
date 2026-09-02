@@ -448,6 +448,14 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <source>Spanish</source>
         <translation>西班牙语</translation>
     </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation>简体中文(GBK)</translation>
+    </message>
+    <message>
+        <source>UTF-8</source>
+        <translation>UTF-8</translation>
+    </message>
 </context>
 <context>
     <name>Wizard::MainWizard</name>

@@ -1,13 +1,18 @@
-Camera: "OpenMW镜头"
-settingsPageDescription: "OpenMW镜头设置"
+Camera: "OpenMW相机"
+settingsPageDescription: "OpenMW相机设置"
 
 thirdPersonSettings: "第三人称视角"
 
+maxDistance: "相机最大距离"
+maxDistanceDescription: |
+    相机可以向外缩放(拉远)的最远距离。
+    (默认: 800游戏单位)
+
 viewOverShoulder: "越肩视角"
 viewOverShoulderDescription: |
-    控制你的第三人称视角镜头
+    控制你的第三人称视角相机
       禁用: 视角正对着角色的后脑勺,隐藏HUD准心
-      启用: 镜头越过角色的肩膀,总是显示HUD准心
+      启用: 相机越过角色的肩膀,总是显示HUD准心
 
 shoulderOffsetX: "越肩视角水平方向设置"
 shoulderOffsetXDescription: >
@@ -20,8 +25,8 @@ shoulderOffsetYDescription: >
 
 autoSwitchShoulder: "自动切换左右越肩视角"
 autoSwitchShoulderDescription: >
-    当玩家一侧贴在障碍物旁时将镜头移动到另一侧
-    此设置可将镜头自动切换到远离障碍物的一侧
+    当玩家一侧贴在障碍物旁时将相机移动到另一侧
+    此设置可将相机自动切换到远离障碍物的一侧
 
 zoomOutWhenMoveCoef: "移动时退出缩放"
 zoomOutWhenMoveCoefDescription: >
@@ -39,18 +44,18 @@ deferredPreviewRotationDescription: |
 
 ignoreNC: "忽略“无碰撞”标识"
 ignoreNCDescription: >
-    防止镜头穿过在NIF模型中启用无碰撞标志的对象。
+    防止相机穿过在NIF模型中启用无碰撞标志的对象。
 
 move360: "360度自由移动"
 move360Description: >
     使玩家收起武器时的移动方向独立于摄像机
-    比如当玩家向后移动时会面向镜头
+    比如当玩家向后移动时会面向相机
 
 move360TurnSpeed: "360度移动转向速度"
 move360TurnSpeedDescription: "转向的速度 (默认: 5.0)."
 
 slowViewChange: "顺滑的视角切换"
-slowViewChangeDescription: "使一三人称视角转换时的镜头平滑移动"
+slowViewChangeDescription: "使第一到第三人称视角转换时的相机平滑移动"
 
 povAutoSwitch: "自动切换第一人称视角"
 povAutoSwitchDescription: "如果玩家身后紧贴着障碍物则自动切换到第一人称视角。"

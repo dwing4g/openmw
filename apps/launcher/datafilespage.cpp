@@ -173,7 +173,7 @@ Launcher::DataFilesPage::DataFilesPage(const Files::ConfigurationManager& cfg, C
 
     QVector<std::pair<QString, QString>> languages = { { "English", tr("English") }, { "French", tr("French") },
         { "German", tr("German") }, { "Italian", tr("Italian") }, { "Polish", tr("Polish") },
-        { "Russian", tr("Russian") }, { "Spanish", tr("Spanish") }, { "Chinese(GBK)", tr("简体中文(GBK)") }, { "UTF-8", tr("UTF-8") } };
+        { "Russian", tr("Russian") }, { "Spanish", tr("Spanish") }, { "Chinese(GBK)", tr("Chinese(GBK)") }, { "UTF-8", tr("UTF-8") } };
 
     for (auto lang : languages)
     {

@@ -80,8 +80,6 @@ namespace MWDialogue
 
         void updateOriginalDisposition();
 
-        void tryPlayVoice(const ESM::DialInfo* info);
-
     public:
         DialogueManager(const Compiler::Extensions& extensions, Translation::Storage& translationDataStorage);
 
