@@ -34,12 +34,16 @@ OpenMW原版官方网站: https://openmw.org/
    默认字体 LXGWWenKaiGB-Regular.ttf 是免费开源的, 来自 https://github.com/lxgw/LxgwWenkaiGB
 
 ■ 编译源码的一些说明:
-1. 需要准备 7z.exe, 安装 Python3, Git for Windows, Visual Studio 2022 (include CMake)
-2. 在 Git Bash 下进入 openmw 根目录, 执行: CI/before_script.msvc.sh -k -p Win64 -v 2022
-3. 用 Visual Studio 2022 打开 MSVC2022_64\OpenMW.sln 并执行编译
+1. 需要准备 7z.exe, 安装 Python3, Git for Windows, Visual Studio 2026 (include CMake)
+2. 在 Git Bash 下进入 openmw 根目录, 执行: CI/before_script.msvc.sh -k -p Win64 -v 2026
+3. 用 Visual Studio 2026 打开 MSVC2026_64\OpenMW.sln 并执行编译
 4. 如果需要编译 MyGUI, 需要先下载编译FreeType, 然后使用命令: cmake -DMYGUI_DONT_USE_OBSOLETE=1 -DMYGUI_RENDERSYSTEM=1 -DFREETYPE_INCLUDE_DIRS=... -DFREETYPE_LIBRARY=...
 
 ■ 汉化版的ChangeLog:
+
+● 2026-??-?? v17
+1. openmw: 适配OpenMW 0.52
+2. openmw: 移除内置对全语音MOD的支持(保留对zip资源包的支持),可使用"Voices Of Vvardenfell - Scripts"支持2个全语音包的最新版: https://www.nexusmods.com/morrowind/mods/52279
 
 ● 2026-06-12 v16
 1. openmw: 修正对话中"%class"显示职业名"Buoyant Armiger"的bug
