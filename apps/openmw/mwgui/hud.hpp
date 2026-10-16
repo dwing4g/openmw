@@ -78,6 +78,7 @@ namespace MWGui
         MyGUI::Button* mMinimapButton = nullptr;
         MyGUI::ScrollView* mMinimap = nullptr;
         MyGUI::ImageBox* mCrosshair = nullptr;
+        MyGUI::ImageBox* mCombatLockOnMarker = nullptr;
         MyGUI::ImageBox* mMouseEmulationCursor = nullptr;
         MyGUI::TextBox* mCellNameBox = nullptr;
         MyGUI::TextBox* mWeaponSpellBox = nullptr;
@@ -118,6 +119,7 @@ namespace MWGui
         void doorMarkerCreated(MyGUI::Widget* marker) override;
 
         void updateEnemyHealthBar();
+        void updateCombatLockOnMarker();
 
         void updatePositions();
     };

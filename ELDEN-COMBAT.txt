@@ -1,0 +1,861 @@
+OpenMW Elden combat integration
+
+This branch ports the supplied ELDEN-RING-Combat-Rewrite state machine into
+OpenMW C++, using Morrowind health, fatigue, equipment, collision,
+damage callbacks, skills, enchantments and AI navigation. The Rust/Bevy program
+is a reference; it is not run as a second game process.
+
+Combat pursuit and obstacle recovery
+
+Stuck recovery retains each selected escape direction and cycles through the
+actor's supported movement directions. Creatures with only forward movement
+can try both forward diagonals instead of repeatedly pushing into the same side
+of terrain. Combat checks actual reach, height separation and visibility before
+switching from path steering to attack steering; completing a projected path
+alone does not mean the target is within reach. Turning keeps tactical timers
+and path replanning active. Elden melee uses its own defensive movement instead
+of also receiving the native short random sidesteps.
+
+Movement and imported poses
+
+With Turn to movement direction enabled, unlocked third-person walking,
+running and crouching use forward Elden clips facing the smoothed direction
+of travel. Lock-on and the disabled setting retain directional walk/run
+animations. Sprinting faces travel in either mode. The camera/aim frame stays
+under the existing controls.
+
+An unlocked third-person player keeps the last visible facing direction when
+standing still, including after sideways or backward travel. Rotating the camera
+orbits that idle pose. Resuming movement follows the selected gait and smoothed
+travel direction; attacks, guarding, lock-on and native aiming retain their
+existing facing. Teleports, death, first person and native/scripted poses reset
+the remembered idle heading.
+
+Active Elden movement uses the same ground speed forwards, backwards, sideways
+and diagonally at the same stick strength. Native strafing and leg-turn penalties
+are bypassed, and native locomotion root motion cannot replace this velocity.
+Directional clips retain their own stride rates, adjusted to actual travel.
+Directional walk/run/crouch selection now retains its current clip through small
+steering changes around a diagonal. A deliberate direction change still switches
+clips immediately; minor input variation no longer repeatedly restarts the blend.
+
+Smooth Movement controls third-person acceleration and turning. Enabled, it
+smooths heading in world space using Smooth Movement Player Turning Delay,
+without slowing down merely because direction changes. Disabled, movement
+responds immediately. Toggling it never restores an old movement direction.
+Player release-to-stop and first-person controls remain immediate; NPCs also
+decelerate smoothly. Turn to movement direction and lock-on affect pose facing,
+independently of movement speed and the smoothing preference.
+
+An established sprint tolerates up to 0.12 seconds of lost ground contact on
+stairs and terrain seams. Releasing sprint, exhaustion, jumps and longer
+falls still stop it. This grace does not grant grounded attacks in the air.
+Idle/walking poses also tolerate 0.12 seconds of lost contact, so uneven terrain
+does not repeatedly switch the displayed body into its falling pose. This is a
+visual-only allowance; actual jumps, combat grounding and physics are unchanged.
+
+Knee bend reconstruction starts from the hip axis and retains a continuous
+bend plane through attacks. Re-selecting its sign against the hips every frame
+had caused near-180-degree leg twists in the two-handed greatsword combo.
+Foot reconstruction also retains its lateral plane when the toes pass through
+vertical during a stride; using torso-up alone had produced 100-160-degree
+sole flips in the two-handed greatsword running loop used with Magebane.
+Foot orientation is calibrated against the imported neutral standing pose.
+Morrowind's stock rigs omit toe bones; treating their virtual toe direction
+as the source reference had tilted the native feet down by about 39 degrees.
+Neutral calibration preserves the native sole alignment while retaining
+animated heel lift, toe-off and whole-body rotations.
+
+Arm bend planes remain continuous through weapon swings and nearly straight
+elbows. Selecting their orientation against the chest on every sample had caused
+near-180-degree twists within a single source frame in several imported combat
+clips. New clip/layer transitions retain the existing displayed-pose crossfade.
+
+Imported transitions blend bone rotations in model space before converting
+them back to each displayed parent's local frame. Independently blending
+local rotations could compound arm twists during rolls and jumps, briefly
+turning the sword hand away from both endpoint poses. Native weapon attachment
+offsets and bone lengths are preserved.
+
+Movement-facing yaw is blended once for the whole pose, separately from the
+anatomical rotations. Reversing direction therefore turns the hips, torso,
+head and weapon along the same arc. The heading target stays continuous across
+the +/-180-degree boundary, including during an interrupted pose transition.
+
+Buffered repeats of the same non-looping action restart the pose blend from
+the currently displayed pose. Consecutive rolls no longer snap directly from
+recovery to the first frame; ordinary gait loop seams and hit-stop retain
+their existing playback timing.
+
+Seal / incantation spell animations
+
+With Elden combat enabled, stationary grounded third-person humanoid casts use
+three imported seal gestures, selected by the first spell effect's native range:
+
+  Self       Urgent Heal    a433_045000 -> a433_045010
+  Touch      Catch Flame    a506_045000 -> a506_045010
+  Target     Flame Sling   a417_045000 -> a417_045011 (uncharged)
+
+Both the wind-up and release phases are imported. Their timeline is fitted to
+the native spellcast start/release/stop text keys so the release gesture matches
+OpenMW's actual spell event. Magicka, success/failure, effects, spell selection
+and recovery remain controlled by OpenMW. These are range-based casting poses;
+they do not add a seal item, Elden Ring spell effects or new spell mechanics.
+
+Player and NPC casts use the same mapping. First-person, moving, crouched,
+airborne, swimming and unsupported creature/rig poses keep their existing
+animation behavior. Scripted animation overrides also retain control. Missing
+clips or invalid spell text keys fall back to native casting. The full-body
+source gestures are currently used only while standing still to avoid
+overriding walking legs.
+Enchanted items use them only when native magic-item casting animations are on.
+
+Rebuild the engine and install the expanded player_anims.bin together. The
+existing CI/eldenring-update-windows.ps1 command below copies both. The installer
+rejects older banks missing any of the six incantation phases. For regeneration,
+the selective unpacker now also includes chr/c0000_a9x.anibnd.dcx; see
+CI/eldenring-assets.txt. No installed game files are modified by extraction.
+
+Regional and boss music, and existing saves
+
+The launcher has Settings > Gameplay > Elden Ring regional and boss music. This
+is independent of the combat overhaul and defaults to off. Twenty ambience profiles
+cover all 16 regions and 1,328 interior record IDs in Morrowind, Tribunal and
+Bloodmoon:
+
+  Bitter Coast                       Liurnia of the Lakes
+  Ascadian Isles / Grazelands         Limgrave
+  West Gash                          Altus Plateau
+  Ashlands                           Mountaintops of the Giants
+  Molag Amur                         Volcano Manor
+  Azura's Coast / Sheogorad           Liurnia of the Lakes
+  Red Mountain / Sixth House lairs    Caelid
+  Mournhold / palaces                 Leyndell, Royal Capital
+  Felsaad Coast / Isinfier / Thirsk    Consecrated Snowfield
+  Moesring Mountains                 Mountaintops of the Giants
+  Hirstaang Forest                   Limgrave
+  Brodir Grove                       Miquella's Haligtree
+  Ice caves                         Consecrated Snowfield
+  Homes / shops / inns / guild halls  Roundtable Hold
+  Temples / shrines                  Divine Tower
+  Caves                             Caves
+  Mines                             Tunnels
+  Ancestral tombs / barrows          Catacombs
+  Grottos / shipwrecks               Great Underground Rivers
+  Dwemer / Clockwork / Old Mournhold  Eternal City
+  Daedric ruins                      Crumbling Farum Azula
+  Forts / strongholds                Stormveil Castle
+  Telvanni / mages                   Academy of Raya Lucaria
+  Sewers / prisons                   Subterranean Shunning-Grounds
+
+Regional choices follow landscape and exploration mood: misty marshes use
+Liurnia, while open grassland and southern pine forest use Limgrave. The
+Ashlands use Mountaintops for exposed, lonely wilderness; Caelid is reserved
+for Red Mountain's blighted core and Sixth House interiors. Molag Amur keeps
+Volcano Manor for its volcanic badlands. Snowfield covers Solstheim's snowy
+lowlands, while Mountaintops also covers the Moesring range. Brodir's cursed
+standing stones keep Haligtree's more mysterious ambience. These mappings
+reuse the existing imported tracks.
+
+Original-game interiors use a record-ID lookup classified from their actual
+architecture and names, including caves without "cave" in the name. Added
+cells use name and sky-status fallbacks; unknown exteriors use Limgrave and ordinary
+interiors use Roundtable Hold. Interior cells with outdoor skies use regional
+ambience unless their name or mapped identity selects a more specific profile.
+Ordinary battles override ambience; named boss encounters use the themes below.
+Death and explicitly scripted music keep their existing priority. Missing tracks
+fall back to the existing music system. The original five-track and twenty-track
+asset imports are still supported; reimport to install the expanded selection.
+Existing saves pick up the updated music script without starting a new game.
+Molag Amur's internal vanilla region ID is "Molag Mar Region"; both names are
+recognized. The setting can also be changed in elden-profile/settings.cfg:
+
+  [Game]
+  elden ring music = true
+
+scripts/import_eldenring_music.py selectively reads the installed game's sound
+archive, verifies the requested WEM IDs against cs_smain.bnk music records, and
+converts full recordings losslessly to Ogg Vorbis. It does not modify the game.
+Python 3.10+, cryptography and the public BinderKeys EldenRing_PC/Key/sd.pem key
+are required for packed game data. The Python decoder and its third-party
+licenses/codebook are included under scripts/eldenring_music; no Oodle, Wwise,
+FFmpeg or Windows executable is needed for conversion.
+
+  python scripts/import_eldenring_music.py --game-dir "C:\Program Files (x86)\Steam\steamapps\common\ELDEN RING\Game" --keys-dir "<BinderKeys>\EldenRing_PC\Key"
+
+All twenty ambience tracks and eight boss themes have been imported locally into
+build-eldenring-assets/music/eldenring, with source IDs, durations and SHA256
+hashes in manifest.json. Generated music is ignored by Git. The copy helpers
+include it in local-assets/music/eldenring in the Windows checkout. The build
+helper validates and installs it under resources/vfs/music/eldenring and
+includes it in the local runtime ZIP. -MusicSource selects another imported
+music/eldenring directory. An existing compatible runtime can receive tracks
+with scripts/install_eldenring_music.py --source <music/eldenring> --package
+<package>; replacing older imported music retains a backup outside the package.
+Adding the toggle and Lua binding requires rebuilding the engine and launcher.
+
+Character-specific boss music
+
+Dagoth Ur uses Mohg, Lord of Blood: a ritualistic, oppressive theme for the
+Sixth House's corrupted divinity. It plays in Akulakhan's Chamber (the Heart
+Chamber) while the enabled final Dagoth Ur actor is alive there, including
+dialogue and pauses in combat. It stops when he dies or the player leaves.
+His earlier Facility Cavern encounter only receives it during combat.
+
+Other selected opponents use these themes only while directly in combat with
+the player; proximity, conversation and unrelated NPC fights do not trigger them:
+
+  Umbra / legendary warriors         Fallen Knights
+  Almalexia / Vivec / Imperfect       The Final Battle (Radagon)
+  Hircine's aspects / Hunt rivals     Godfrey (Hoarah Loux phase)
+  Ash vampires / Dagoth Gares         Godskin Apostles
+  Gedna Relvel / liches / vampires    Lichdragon Fortissax
+  Gothren / Divayth Fyr / Trebonius   Rennala (phase 2)
+  Dandras Vules / scheming rulers     Black Knives
+
+The curated list includes Karstaag, Gaenor's armored encounter, Karrod, Salas
+Valor, Bolvyn Venim, Ulfgar, named Daedra and the Tribunal goblin chiefs. Exact
+record mappings are in scripts/omw/music/eldenring_bosses.lua. Neutral copies,
+ended duels, dead/disabled actors and actors outside the active area cannot
+hold a combat theme. Multiple bosses select a stable priority, rather than
+restarting music as actor iteration order changes. Adjacent exterior cells
+remain one space for fights across cell boundaries.
+
+Boss themes honor both the Elden Ring music option and the existing Combat
+Music setting. Missing boss recordings fall back to ordinary battle music;
+the chamber without combat falls back to its regional ambience. Existing
+saves need no migration. The asset manifest is now v3; v1/v2 remain readable.
+
+To copy these changes/assets and rebuild the existing Windows package in one
+step, close the game and launcher, then run in Windows PowerShell:
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu\home\<linux-user>\openMW-eldenring\openmw\CI\eldenring-update-windows.ps1"
+
+The update uses Documents\openmw and its already unpacked
+OpenMW-EldenCombat-Windows-x64 directory when present. Optional
+-DestinationDirectory and -PackageDirectory select other locations. It creates
+an updated ZIP as well. This helper must run on native Windows; this WSL session
+cannot start Windows executables (UtilBindVsockAnyPort socket error).
+
+The Windows build writes eldenring-build-Release.log and
+eldenring-build-Release-errors.log in its build directory (other configurations
+use their own name). On failure, the script prints the first errors and both
+log paths. A successful openmw.exe link does not mean every parallel target
+has succeeded; the error log identifies the failed target.
+
+A save-location mismatch was confirmed in the existing Windows package: its
+current Documents\My Games\OpenMW directory was empty, while character saves
+were still in OneDrive\Documents\My Games\OpenMW\saves. The profile generator
+now reuses a sole populated previous Documents location when the default is
+empty, preserving custom paths and populated current/portable save locations.
+It changes only user-data and backs up an existing profile configuration. It
+never moves or overwrites saves, settings or input bindings. Multiple populated
+old locations require an explicit --save-data selection.
+
+To repair an unpacked package without compiling anything:
+
+  py -3 scripts\configure_eldenring_profile.py --package "<unpacked package>" --target windows --repair-saves-only
+
+--save-data selects the existing OpenMW directory containing saves, not the
+saves directory itself. For the confirmed layout, the equivalent profile entry
+in <unpacked package>\elden-profile\openmw.cfg is:
+
+  user-data="C:/Users/YourName/OneDrive/Documents/My Games/OpenMW"
+
+OpenMW lists .omwsave files inside character subdirectories; a loose file at
+the saves root is not discovered. Saves retain their required mod lists and
+engine-version requirements. Some existing slots reference Rich Creeper.ESP;
+enable the original required plugins in the launcher if they are available.
+OneDrive files must be downloaded locally for the engine to read them.
+
+Spear power-attack orientation
+
+Imported spear poses now drive the native Weapon Bone from the clip's R_Weapon
+axes. Both the native spear mesh and imported weapon point toward local +Y;
+deriving the weapon direction from the hand left the spear standing vertically
+during a forward heavy thrust. Spear finger grips are anchored to the animated
+wrist so the shaft can slide without stretching the hand's inferred frame.
+The attachment preserves native translation/scale, blends in model space, and
+returns control to native animations when imported spear posing ends. The
+change applies to equipped native spear types, including NPC guards.
+
+Sprint jumps, weapon damage, and crowd hits
+
+Accepted jumps retain the horizontal launch speed, including the sprint bonus,
+while native physics continues to handle gravity, collisions, and airborne
+inertia. The jump animation's movement lock no longer cancels the launch.
+Waiting for physics does not queue another jump or charge stamina twice;
+teleporting and resetting the actor clear a pending launch.
+
+Touchdown now releases the ordinary jump animation's movement lock as soon as
+physics has observed takeoff and landing, so held run/sprint resumes immediately.
+Jump attacks now switch from their airborne clip to the imported landing clip
+on touchdown, with a separate recovery clock. A completed swing uses the short
+landing recovery; an unfinished swing carries its hit through the full landing.
+Landing neither charges stamina again nor repeats an airborne hit. This avoids
+holding the final airborne pose through the ground recovery. Regenerate the
+timing header with scripts/import_eldenring_timings.py and rebuild the engine;
+the existing animation bank already contains the required landing clips.
+Jump attacks retain their own recovery. Landing carries collision-resolved
+horizontal velocity into ground movement, blending to the requested speed and
+direction over 0.20 seconds. Smooth Movement still controls the requested ground
+direction. Releasing movement brakes within that interval; walls remove blocked
+velocity, and slopes cannot turn falling speed into a horizontal boost. A new
+jump, teleport, scripted relocation, swimming, flying, disabling combat, or an
+interrupting combat action clears the temporary landing carry. Threaded physics
+reads landing velocity and ground contact from the same completed simulation.
+
+Rolls and crouch rolls now play the source player's Play_c000008000 dodge cue,
+traced through the a00 TAE animation events and cs_main Wwise bank. Backsteps
+use the source soft/leather movement cue with its nine recording variants.
+The sounds play once per accepted action and follow the effects volume setting.
+Blocks now play a native shield/weapon impact together with one of four imported
+Elden Ring guard-reaction recordings. Guard counters play the source counter
+chime at attack start. These actor-attached sounds work for NPCs and the player
+and respect effects volume and distance. The installed source bank contains
+the guard-reaction and counter recordings but not the separate physical shield
+impact media, so the impact uses OpenMW's armor sounds instead of an unrelated
+Elden Ring recording. Blocks still have an impact sound without imported assets.
+Re-import and install the version-2 sound library for the guard-reaction and
+counter cues; older dodge-only libraries remain accepted with an upgrade warning.
+Attack swings and misses retain Morrowind's Weapon Swish sound and the native
+werewolf swing override. Imported combat cues do not replace these sound records.
+Both Windows and WSL copy helpers include the locally extracted sound library
+under local-assets/sound/eldenring/dodge, and the build installs it into the
+package. Earlier WSL copies omitted these recordings; copy again before
+rebuilding to restore them. A build without the library now reports a warning.
+Game-derived recordings remain outside source control.
+
+Reloading after death no longer initializes a fresh player inventory while
+clearing combat input. World cleanup has already reset the player at that point;
+input cleanup now only cancels existing actor state. Ambient sound updates also
+wait until the player has a cell, while ordinary sound and music keep updating.
+This addresses the observed "class does not have services" load failure and
+the subsequent crash in region sound processing.
+
+Elden melee attacks use the equipped weapon's strongest native chop/slash/thrust
+range and its relevant modified Morrowind skill. Base damage interpolates from
+the range's midpoint at skill 0 to its maximum at skill 100:
+
+  min + (max - min) * (0.5 + clamp(skill, 0, 100) / 200)
+
+Imported per-hit damage multipliers distinguish light, heavy, charged, and
+multi-hit attacks and are applied once. Combo directions no longer force spears
+or other specialized weapons to use their weak damage ranges. Offhand hits use
+that hand's weapon and skill. Ranged weapons and ammunition use the same skill
+interpolation on their native damage ranges while retaining draw-charge scaling.
+Native Strength, weapon condition, armor, resistances, difficulty, enchantments,
+and skill advancement still apply. Disabling Elden combat restores native damage.
+
+After a damaging, unblocked physical hit, the player receives 0.20 seconds of
+protection from further melee/projectile contacts, including additional stagger.
+Blocked, resisted-to-zero, and ignored hits do not start or refresh it. This
+window advances through hit-stop, pauses with the game, and does not grant new
+protection to NPCs or cover spells/environmental damage.
+The full Windows build includes the eldenspear regression test; gameplay and
+visual confirmation still require running the rebuilt package.
+
+Status and fidelity
+
+This is an engine integration under development, not a tested, complete replica
+of Elden Ring. The engine now loads the locally baked player_anims.bin and
+retargets its sampled poses to standard Morrowind NPC skeletons. Attacks use
+their imported clip identifiers and source frames, synchronized to weapon
+speed and hit-stop. Dodges, reactions, death, weapon stances, guard arm layers
+and directional locomotion also use the baked player clips when available.
+Stationary third-person spellcasts use the seal gestures described above.
+The original native tracks still provide movement/text-key bookkeeping.
+Elden Ring parrying, weapon skills and stat
+scaling are also absent from the supplied recreation.
+
+Code and asset audit, 2026-10-14
+
+The local timing header is regenerated from extracted.rs: 1,080
+mapped action definitions covering 25 extracted weapon classes. The Windows
+project must be rebuilt with the new header, including clip/stance metadata.
+Native equipment currently selects only 11 of those classes, including shield
+and torch; native weapon types do not identify every Elden Ring moveset.
+
+All 1,479 original clips and the six added incantation phases are present in the
+local player_anims.bin (1,485 clips, 92,413 frames). Binary structure, clip
+references and all 13,030,233 pose values pass validation. This covers the selected
+player clips, not every player/enemy animation in Elden Ring. The ERAN loader
+shares one immutable bank across actors. The retargeter preserves native bone
+lengths/scales and applies sampled poses after native keyframes, before skinning.
+Native two-joint fingers use their own bind directions, including the terminal
+knuckle bend; the native index finger now follows the imported finger curl too.
+This removes the outward curl caused by calibrating missing finger tips against
+a point behind the knuckle. Third-person two-handed-sword ready poses also close
+the supporting palm onto the equipped handle using native arm lengths. Handle
+geometry limits hand spacing on short hilts and follows offset shafts. This
+correction applies to the standing ready clip, with the normal pose fade;
+attacks, guards and other weapon types retain their existing arm poses.
+The local asset audit covers all 17 two-handed-sword meshes used by 47 effective
+Morrowind, Tribunal and Bloodmoon weapon records, including Magebane's glass
+claymore, Adamantium's short handle and Daedric Crescent's offset handle.
+Recheck local asset coverage with:
+
+  python3 CI/eldenring-audit-animations.py ../ELDEN-RING-Combat-Rewrite
+
+The audit fixes startup access before player creation; unavailable imported
+attack selection and initial grip selection; overlapping physical input and
+wheel bindings; melee modifiers suppressing bow attacks; double jump stamina
+costs and lost buffered jumps; duplicate native random stagger; creature attack
+damage-type selection; and lost animation/root motion when hit-stop ends partway
+through a frame. The source tests cover these controller/input contracts, but
+the engine changes still require Windows gameplay validation after rebuilding.
+
+Remaining fidelity gaps include animated blade contact, ordinary jump/fall
+landing variants, authored directional dodge/reaction selection (front rolls are
+turned toward the dodge direction), and stop/crouch/grip-transition states.
+The baked format has positions for only 38 joints and full orientation for
+three; retargeted limb twist/fingers and weapon attachment angles are approximate.
+Custom and beast skeletons, first-person framing and equipment proportions need
+visual validation. Unsupported rigs and missing clips use native poses. Critical
+attacks have no clip in the supplied recreation and retain native poses.
+Jump-over-low-sweep immunity is
+implemented in the controller but the engine does not supply the hit geometry
+needed to activate it. Native spells retain OpenMW behavior; weapon damage uses
+the Morrowind stats/skill scaling described above.
+
+The supplied Elden Ring Steam installation has now been selectively read to
+generate extracted.rs and player_anims.bin locally. The imported timing table
+contains 1,080 supported actions. Baked skeletal assets are kept local and must
+be staged in resources/vfs/animations/eldencombat/player_anims.bin in the package.
+The Windows build and sync helpers stage the bank as well as the engine changes.
+Manual installation, after rebuilding the engine and regenerating timings:
+
+  python scripts/install_eldenring_animations.py --source ../ELDEN-RING-Combat-Rewrite/assets/player_anims.bin --package build-eldenring-package-x64
+
+Imported data replaces supported timings, cancel windows,
+invincibility, costs, motion values and sampled horizontal root motion.
+Fallbacks remain for integration additions and unavailable actions. Importing
+does not replace the native mesh/skeleton or contact geometry. Jump attacks use
+separate aerial/landing phases. Critical attacks after stance/guard
+breaks are additions to the supplied recreation.
+
+Behavior implemented in source
+
+Player and AI melee use the same action controller: input buffering/cancel
+windows, light chains, charged and chained heavies, contextual running/roll/
+backstep/crouch/jump attacks, held guard, guard counters, guard breaks, stance
+breaks, load-dependent rolls/backsteps, invincibility, stamina and hit-stop.
+Each multi-hit window has its own stamina payment and damage metadata. Native
+collision/reach/line-of-sight checks decide contact during the hit window.
+Physical melee and projectile contacts bypass random weapon-skill misses and
+random blocks whenever Elden combat is enabled, including hits on actors whose
+controller is temporarily inactive. Held guard and dodge immunity are resolved
+before damage. Unarmed attacks damage health directly instead of first draining
+the target's fatigue. Weapon damage uses native stats and skills as described
+above; native armor and enchantments remain.
+
+Magic projectiles also respect the active controller's invincibility windows
+for players and NPCs. A dodged bolt is consumed before its direct or area
+effects apply and plays Morrowind's "miss" sound at the dodging actor. Bolts
+from spells and enchanted items share this behavior. Hits outside those
+windows, impacts on scenery and their splash effects, and touch/self spells
+keep their native behavior. Physical post-hit protection does not block magic.
+
+NPCs retain Morrowind targets, pathfinding, pursuit, fleeing, spell selection
+and ranged behavior. Melee decisions include finite combos, heavy attacks,
+charging when an opening permits it, counters, critical opportunities and
+defense with reaction delays, probability and cooldowns. Bipedal enemies check
+for walls and missing ground before dodging. Non-bipedal creatures use attack
+and stamina rules without humanoid shield/roll maneuvers.
+
+Tune NPC pacing in the launcher under Settings > Gameplay > Elden combat AI.
+The defaults below can also be overridden in elden-profile/settings.cfg:
+
+  [Game]
+  elden ring ai attack delay = 1.2
+  elden ring ai max combo attacks = 3
+  elden ring ai block chance = 0.65
+  elden ring ai dodge chance = 0.35
+  elden ring ai reaction time = 0.25
+
+Attack delay is the minimum pause after a chain finishes, in seconds (0-10).
+Each chain adds up to 40% random variation, so the default pause is 1.2-1.68s.
+Increase it to 2.0 for a slower pace. Attack animation speed is unchanged.
+Combos contain up to the configured number of attacks (1-6); 1 disables chains.
+Enemies choose light, heavy, off-hand or paired chains when equipped for them,
+and may finish a light chain with a heavy attack. Stamina, reach and interruption
+can shorten a chain. Charging and releasing one heavy counts as one attack.
+The full pause survives knockdowns; defensive reactions do not consume it.
+
+Block and dodge chances are fractions from 0 to 1, shown as percentages in the
+launcher. Blocking is tried first when a shield or two-handed weapon can guard.
+If no block is chosen or available, the dodge chance applies to a safe roll or
+backstep. Setting either chance to zero disables that deliberate defense.
+Reaction time (0.1-2s) is measured from observing the opponent's attack, with one
+defensive choice per swing rather than repeated probability rolls every frame.
+Enemies may defend while resting between chains. Dodges retain their checked
+direction and facing so navigation cannot redirect them toward walls or gaps.
+Guard counters can start during block recoil when the attack pause has elapsed.
+These controls apply to NPCs using Elden combat; player controls are unchanged.
+
+Fatigue is the stamina display. Costs and regeneration scale to the actor's
+fatigue maximum. Worn-item weight, divided by carrying capacity, selects light
+(under 30%), medium (under 70%) or heavy equipment load; unequipped loot does
+not affect this tier. Existing Morrowind encumbrance still affects locomotion.
+Spellcasting, swimming, flight, scripted animations and disabled player control
+retain the engine's appropriate existing behavior. Combat input and action
+state are transient across load, death, resurrection and teleportation.
+Opening a menu cancels buffered/current attacks and heavy charging without
+resetting stamina, stance, critical vulnerability or defensive reactions.
+
+Controls
+
+While locked on, a small white dot with a dark edge follows the target's chest.
+It hides with menus/the HUD and when the lock or projected target is invalid.
+
+New profiles default to the supplied recreation's Elden Ring layout. Existing
+custom profiles are preserved; use Reset to Defaults in Controls to apply it.
+Combat actions and the heavy modifier are rebindable:
+
+  WASD / mouse: move / look; Left Alt: hold to walk
+  Space: tap/release to roll; no direction gives a backstep; hold to sprint
+  F: jump; X: toggle crouch
+  Left mouse: light attack (with a melee weapon drawn)
+  Shift + left mouse: heavy attack; hold to charge; after a block, guard counter
+  Right mouse: guard with a shield/two-handed grip; otherwise off-hand attack
+  E + left / right mouse: toggle two-handed grip of the right / left armament
+  Right / left arrow: next right-hand weapon / next off-hand armament
+  Q or middle mouse: acquire/release lock-on; acquiring switches to third person
+  E: interact on release; a grip chord consumes the interaction
+  Tab: inventory; Escape: menu; R: draw/sheathe weapon; C: ready magic
+  V: first/third person; J: journal; T: rest
+  B: critical attack when a reachable target has a stance/guard break opening
+  G / H: optional direct heavy-attack / right-grip bindings
+
+Tab toggles the player inventory and closes an open container inventory with
+one press. The configured inventory key takes priority over focus cycling in
+those windows; holding it does not repeatedly open and close the inventory.
+
+The default gamepad layout uses B for dodge/sprint, A for jump, L3 for crouch,
+RB for light attack, RT for charged heavy/counter, LB for guard/off-hand attack,
+R3 for lock-on and D-pad right/left for right/off-hand cycling. Y + RB/LB selects
+the right/left grip. Y alone interacts on release; Back opens inventory, Start
+opens the menu, X draws/sheathes, D-pad up readies magic and D-pad down opens the
+journal. Menu navigation retains the native A/B and D-pad controls.
+
+An attack that starts with Shift stays heavy until the attack button is released,
+even if Shift is released first. Releasing E/Y after a grip chord neither
+interacts nor starts an attack with the still-held mouse/shoulder button.
+
+The lock-on camera turns the player toward a visible target, maintains strafing
+and clears invalid/dead/distant targets. Target-facing turns are calculated in
+the character update after Lua controls and deferred camera rotation have been
+applied. Sending these corrections through the input-to-Lua handoff delayed
+them by one frame and could sustain alternating turns even while standing still.
+While sprinting, the forward sprint
+pose turns toward actual movement, including sideways and away from the target;
+the camera keeps tracking the target. This uses movement after smoothing, so
+the body follows travel rather than immediately snapping to raw input. Releasing
+sprint restores target-facing directional movement. Slow walking and crouch toggling default
+on in a fresh Elden profile. Existing Lua movement preferences remain saved and
+can be changed under the movement settings.
+
+One-handed melee weapons may occupy the left equipment slot. Normal inventory
+use still chooses the primary weapon; off-hand selection is explicit through
+Left arrow / D-pad left or Lua's equipment API. Matching weapon classes enable paired attack chains.
+Either armament can be selected for a two-handed grip. Left shields use the
+source's real shield action timings and poses, with native hand-to-hand health
+damage because Morrowind armor records have no weapon damage. Off-hand mesh
+placement uses the existing Morrowind attachment bones and needs visual checking
+for each weapon/shield model, especially when two-handing the left armament. Stock
+Morrowind lights have no weapon damage record, so torch attacks currently use
+the native hand-to-hand damage/skill path with a torch action profile. Stock
+Morrowind contains no roll clip; without a valid animation bank, an adapted
+jump pose remains the visual fallback without upward movement. Animation mods
+may also provide eldenroll and eldenbackstep groups.
+
+Set this in settings.cfg to restore the original combat path:
+
+  [Game]
+  elden ring combat = false
+
+Import locally generated timing data
+
+From the OpenMW source directory:
+
+  python3 scripts/import_eldenring_timings.py ../ELDEN-RING-Combat-Rewrite/src/sim/extracted.rs
+
+Or provide the actual path of extracted.rs. The script never evaluates Rust
+code and rejects malformed data or actions exceeding the supported hit count.
+Its output components/eldencombat/imported_timings.hpp is ignored by Git and
+must remain local because it is derived from the game. Reconfigure CMake after
+import. The original recreation's README explains how to unpack one's game
+and run tools/setup.py to produce extracted.rs and baked animations.
+CI/eldenring-assets.txt contains the reproducible Linux/WSL selective extraction
+commands used with this installation. It works without Wine or Windows interop
+by loading the installation's Oodle DLL through the local native reader.
+
+Validation
+
+The dependency-free C++ tests exercise combat transitions, stamina, load tiers,
+invincibility, blocking/counters, multi-hit windows, charging, contextual
+attacks, hit-stop, critical consumption and root-motion interpolation. They
+can be configured independently of the engine:
+
+  cmake -S . -B build-eldencombat -G Ninja -DBUILD_ELDENCOMBAT_ONLY=ON
+  cmake --build build-eldencombat
+  ctest --test-dir build-eldencombat --output-on-failure
+  python3 scripts/import_eldenring_timings.py --self-test
+
+Twelve standalone CMake/CTest suites pass, covering controller behavior, damage,
+jump/landing transitions, locomotion, spellcasting, physical input and chord
+routing, obstacle escape directions, the ERAN parser/sampler, the actual imported
+game table, and AI timing with both fallback and imported data. The imported
+controller checks
+definition routing, per-hit data, action completion and equip-load rolls across
+4,698 weapon/grip/speed variants and 150 simulated light attacks. The input
+router preserves short taps and charge
+ownership when a modifier is released before the attack button. Parser fixtures
+include shield and airborne timing import and source-clip identifiers. Passing
+the local bank path to eldencombat-imported-tests additionally checks that every
+imported action and idle/guard stance resolves to a baked clip, including all
+244 jump-attack landing clips and their recovery lengths. Jump regressions cover
+early/late touchdown, hit-stop, buffered attacks, pending takeoff, completed hits,
+three render rates and weapon speeds, and returning to idle or held sprint.
+Engine checks
+compile affected units to native Clang 18 C++20 objects; they do not link or run
+the complete Windows engine.
+The AI suites cover finite light/heavy/off-hand/paired chains, a charged heavy
+follow-up, light/light/heavy combinations, post-chain pauses, interrupted chains,
+reaction delays, and fast attacks at low frame rates. Controller regressions
+also cover checked dodge directions surviving hit-stop and buffered input.
+Navigation regressions cover repeated obstructions, forward-only creatures and
+all supported-direction masks. Locomotion regressions cover diagonal steering
+noise, intentional reversals, gait changes, brief ground-contact gaps and
+stationary lock-on facing through the Lua control handoff. The
+retarget checks exercise limb-plane continuity with synthetic swings and the
+actual imported combat clips, including repeated idle and greatsword gait loops,
+alongside the neutral foot and pose-heading checks. Arm-reach checks preserve
+native segment lengths, handle unreachable targets and retain the elbow plane.
+The eldengrip suite checks handle sections, short and offset grips, gaps and
+unusable geometry. The full-engine eldenspear harness also covers native
+two-joint finger curl and the two-handed-sword ready correction through actual
+bone callbacks, including weapon changes and transitions. It is compiled here;
+running that OSG-linked harness and visually confirming the grip require the
+Windows rebuild. The build helper includes all three renderer suites.
+The new launcher settings pass UI generation and native settings-page compilation;
+their Windows execution and the feel of the new AI still need a gameplay check.
+The actual Lua controls script chain also passes 24 assertions with mocked
+engine APIs in the local official Lua interpreter; CI/eldenring-test-input.lua
+preserves that check. This is script-level validation, not LuaJIT or gameplay.
+
+The latest audit also adds input ownership/wheel regressions, imported opener
+and paired-move routing, first-frame grip changes, partial hit-stop and buffered
+jump launch events. CI/eldenring-test-combat.lua checks seven assertions against
+the actual native Lua combat handler with engine stubs, confirming that disabling
+duplicate stagger retains armor, difficulty and damage callbacks.
+
+The save/launcher audit also fixes the Windows helper omitting the settings
+launcher, package-local saves being selected by default, rebuilds replacing
+launcher content/fallback configuration, a hotkey moving an off-hand weapon
+into both hands at once, and animation installation accepting bank layouts the
+engine cannot load. CI/eldenring-test-profile.py covers standard/portable save
+paths, preservation of existing saves and launcher changes, and entry points;
+CI/eldenring-test-animation-install.py checks installation and rejection of
+invalid banks without replacing installed assets.
+The animation suite also checks sprint pose facing in cardinal, diagonal and
+intermediate directions, speed-independent headings, return to target-facing
+movement on sprint release, and preservation of directional walk/crouch clips.
+
+These checks do not establish gameplay correctness. An existing Windows package
+was found with the engine and INI importer but no launcher; its CMake cache has
+BUILD_LAUNCHER and BUILD_WIZARD disabled. This session cannot write the Windows
+mount or invoke Windows executables. Source fixes must be copied and rebuilt.
+Use copy-to-documents.sh from WSL for the fresh copy. The older
+CI/eldenring-sync-audit-windows.ps1 requires an existing configured Windows
+build and matching manifest hashes; it updates the engine, defaults and an
+already configured/packaged launcher. Use the full
+build helper below to add the launcher to an existing game-only package.
+Before release, test the complete engine with Morrowind data, including new
+and loaded games, player/enemy melee, every native weapon type, blocking,
+off-hand equipment, spells, arrows, creature attacks, GUI/control switches,
+death, teleportation and camera loss of targets.
+
+NVIDIA recording and Instant Replay (Windows)
+
+OpenMW renders with OpenGL. NVIDIA supports OpenGL recording through Desktop
+capture in windowed or borderless mode; no NVIDIA SDK integration is needed for
+ordinary overlay recording. The generated profile uses Windowed (window mode = 2).
+For screen-filling capture, select Windowed Fullscreen in the launcher's Graphics
+tab (window mode = 1 in the [Video] section of elden-profile/settings.cfg).
+
+In NVIDIA App Settings, enable NVIDIA overlay. Press Alt+Z, open its Settings
+cog, select Video capture, and enable Desktop capture. Then use these default
+shortcuts, or the alternatives shown in the overlay's Shortcuts settings:
+
+  Alt+F9: start/stop recording
+  Alt+Shift+F10: enable/disable Instant Replay
+  Alt+F10: save the recent Instant Replay clip
+
+Set the replay length and recording quality in Video capture. NVIDIA App and
+its overlay are installed on this Windows host, but recording has not been
+tested from this session because native Windows execution/GPU access is
+unavailable. These are NVIDIA App settings; rebuilding OpenMW is not required
+to enable capture.
+
+Official compatibility and setup references:
+  https://nvidia.custhelp.com/app/answers/detail/a_id/3324
+  https://www.nvidia.com/en-us/geforce/news/gfecnt/20246/nvidia-app-beta-update-av1-performance-tuning/
+
+Windows x64 build
+
+To copy this local workspace from the WSL terminal, run from the OpenMW root:
+
+  ./copy-to-documents.sh /mnt/c/Users/YourName/Documents/openmw
+
+Supply your Windows destination directory explicitly; --dry-run previews the copy.
+The shell helper uses WSL's rsync directly and does not need Windows interop.
+
+Alternatively, run in Windows PowerShell (assuming the Ubuntu WSL distribution):
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu\home\<linux-user>\openMW-eldenring\openmw\CI\eldenring-copy-to-documents.ps1"
+
+The copy excludes Git metadata, existing builds, dependency downloads and local
+toolchains. It includes the generated timing header and copies the validated
+animation bank to local-assets/player_anims.bin and available imported music to
+local-assets/music/eldenring, plus dodge, block and counter recordings to
+local-assets/sound/eldenring/dodge for the Windows build helper. Both copy paths
+validate the full animation inventory before writing: the current 1,485-clip
+bank includes all six seal/incantation phases and 244 jump-attack landing clips.
+An older bank with only the ERAN
+header and melee clips is rejected before changing destination files. Imported
+audio currently includes 15 combat recordings and 28 music recordings; their
+manifests and every recording's SHA256 are checked before and after copying.
+Both copy helpers and the Windows build prefer a complete combat sound library
+over a legacy dodge-only copy, so older local-assets cannot hide newly imported
+block/counter cues. Explicit Windows -SoundsSource selections remain respected.
+Windows sound selection transfers paths as ASCII-escaped JSON, so differing
+Python and PowerShell code pages cannot corrupt Cyrillic profile/folder names.
+This fixes the copy-test "missing or oversized sound manifest" error when the
+selected library exists but its path was decoded incorrectly. Recopy the source
+after updating so both the Python selector and Windows helpers are refreshed.
+Both copy paths
+finish with an independent SHA256 comparison of source/build inputs, runtime
+resource sources, and the selected animation/music/sound libraries. Missing or
+stale copied inputs fail verification. Root resources/ is regenerated by CMake
+from files/; local dependency downloads and build outputs are not copy inputs.
+It does not delete existing destination builds, profiles or saves. After copying,
+run CI/eldenring-build-windows.ps1 from the copied folder in Windows PowerShell.
+CI/eldenring-test-copy.py checks missing/new/stale inputs, all three asset
+libraries, incomplete spell/landing banks, missing block/counter sounds, legacy
+sound-library upgrades, dry runs and preservation of
+existing state. It exercises the WSL
+copier on Linux and the native PowerShell copier when run on Windows.
+
+CI/eldenring-build-windows.ps1 builds a native x64 Release using Visual Studio
+2026 C++ Build Tools (or Community with the C++ workload), Windows SDK,
+CMake 4.2+, Python 3.10+ and 7-Zip. It obtains
+the upstream pinned,
+SHA512-verified dependency bundle and includes the standard Qt settings launcher,
+installation wizard and launcher navmesh-generation tool by default. The editor
+remains disabled.
+Use -WithoutLauncher for a game-only build; -WithLauncher is still accepted.
+The script imports local timing
+data when supplied, runs combat tests, installs assets and runtime DLLs,
+checks the PE AMD64 architecture, required launcher/Qt runtime files and settings
+defaults, runs openmw.exe --version, and creates a ZIP
+plus SHA256 checksum. It imports the sibling generated extracted.rs
+automatically and configures the supplied Morrowind installation without a
+launcher wizard. A script is not a compiled Windows executable.
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File CI\eldenring-build-windows.ps1
+
+Run that command in native Windows PowerShell from the OpenMW source directory.
+The default selects Visual Studio 18 2026 and its v145 toolset. Pass
+-VisualStudioVersion 2022 to select Visual Studio 17 2022 (CMake 3.22+).
+The default build directories include the selected year, so the new generator
+does not conflict with an earlier Visual Studio build cache. The helper pins
+the discovered Visual Studio instance and the x64-windows dependency triplet.
+It selects a compatible CMake from PATH, Visual Studio's bundled tools or the
+standalone installation. The existing VS2022 dependency bundle is also used
+by upstream OpenMW's VS2026 builds; LTO stays disabled and the selected compiler's
+current runtime DLLs are packaged.
+Qt installation handles Windows user names containing Cyrillic or other
+non-ASCII characters. The pinned aqt installer incorrectly decodes qmake's
+Windows ANSI output as UTF-8, so automatic Qt downloads use
+Common Documents\OpenMW-BuildDependencies\Qt when the normal dependency path
+contains non-ASCII characters. This is normally
+C:\Users\Public\Documents\OpenMW-BuildDependencies\Qt. A completion marker is
+written only after the installer and SDK file checks succeed; a partially
+extracted Qt6Config.cmake alone does not count as a successful installation.
+An explicit -QtRoot selects an existing complete SDK. If the common cache is
+unwritable, -DependencyDirectory can select a writable ASCII-only path instead.
+
+The helper passes Qt's translations directory directly to CMake. Other builds
+use Qt's CMake path metadata, with an ANSI-decoded qmake query as fallback.
+This fixes paths such as a Cyrillic user name being misread as box-drawing
+characters and the resulting false "Qt translations for 'bg' locale" error.
+QT_TRANSLATIONS_DIR is also available as an explicit CMake PATH override.
+CI/eldenring-test-qt-translations.py checks Unicode paths, override precedence,
+metadata and query failures without requiring a Qt SDK. After updating these
+sources, rerun the full helper in the existing build directory; it refreshes
+the cached Qt package paths when selecting the SDK.
+Pass -MorrowindDirectory if the installation is elsewhere. The default is
+C:\Program Files (x86)\Steam\steamapps\common\Morrowind.
+The package's local openmw.cfg selects the isolated elden-profile directory,
+so openmw.exe can be launched directly from any working directory. Keep the
+package's resources and runtime DLLs together when moving the package.
+Start-EldenCombat.cmd also selects this profile with relative arguments.
+If the menu or game is silent, run Start-EldenCombat-Audio-Diagnostic.cmd and
+quit after checking the main menu. It retains OpenMW/OpenAL logs, configuration
+snapshots and binary hashes under Documents\OpenMW-Audio-Diagnostics, outside
+the package. It uses the existing audio settings; no settings reset or rebuild
+is needed. For an existing package without this entry point, run the source
+helper in native Windows PowerShell:
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File "\\wsl.localhost\Ubuntu\home\<linux-user>\openMW-eldenring\openmw\CI\eldenring-diagnose-audio-windows.ps1"
+
+Pass -PackageDirectory "<folder containing openmw.exe>" to select another
+package. Menu music comes from Morrowind's Music\Special\morrowind title.mp3;
+the Elden Ring regional music setting does not select the menu track.
+Open openmw-launcher.exe or Start-EldenCombat-Launcher.cmd to change graphics,
+data files and the standard launcher settings, then select Play. The launcher
+and engine read the same profile. Elden combat's enable/disable setting is in
+elden-profile/settings.cfg; it has no added checkbox in the standard launcher.
+The new AI pacing and defense controls are in Settings > Gameplay > Elden combat AI.
+After an older build completes, copy the updated sources and rerun the helper
+to include the new AI and launcher controls; existing profile overrides remain.
+The Windows executable manifests request UTF-8 process encoding so paths with
+non-ASCII names work on Windows 10 version 1903 and newer. The build helper
+captures the compiler environment as Unicode and checks profile-path argument
+parsing and Start-EldenCombat.cmd engine invocation before packaging. The Qt
+launcher GUI still requires a manual Windows smoke test after rebuilding.
+Settings and input bindings remain separate from the normal OpenMW installation,
+so existing OpenMW input bindings and Lua movement settings do not override
+the new defaults. It includes Morrowind, Tribunal and Bloodmoon when available;
+the INI importer supplies the installation's fallbacks on first setup. Existing
+content order, mods, fallbacks, settings and bindings survive rebuilding.
+
+New profiles normally use user-data="?userdata?", OpenMW's standard save-data token.
+On Windows, saved games are in Documents\My Games\OpenMW\saves, using the actual
+Windows Documents folder (including redirection such as OneDrive). This is the
+same location as standard OpenMW; screenshots use its screenshots subdirectory.
+When that location is empty, a sole populated previous Documents/OneDrive save
+location is selected explicitly instead; see the save-repair instructions above.
+The normal OpenMW save format is unchanged by these combat additions, whose
+action/input state is reset when loading. Save-version and required-content
+compatibility still follow the engine version and each saved game's mod list.
+
+Pass -PortableSaves (or --portable-saves to the Python profile generator) for a
+new package-local save directory at elden-profile/user-data/saves. Rebuilding
+upgrades the old generated portable path to the standard path only if there
+are no portable saves. Existing populated portable profiles and custom save
+paths are preserved. To migrate those saved games, copy their character folders
+to the standard saves directory without overwriting existing saves, then change
+elden-profile/openmw.cfg to user-data="?userdata?". The generator reports the
+active user-data setting and never moves or deletes saved games.
+
+scripts/configure_eldenring_profile.py can also prepare this configuration
+independently. A configuration-only preview has been staged in
+build-eldenring-package-x64; it explicitly reports that openmw.exe is absent.
+The build helper installs the engine and its runtime into that directory before
+it produces OpenMW-EldenCombat-Windows-x64.zip.
+
+Morrowind game data is required to play. It is not bundled in the package.
+The component retains the recreation's MIT copyright notice and license in
+components/eldencombat/LICENSE-MIT.txt; the combined OpenMW engine remains GPLv3.

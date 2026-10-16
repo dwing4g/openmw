@@ -4,6 +4,7 @@
 #include "../mwbase/inputmanager.hpp"
 #include "../mwbase/world.hpp"
 #include "../mwworld/player.hpp"
+#include "../mwrender/camera.hpp"
 
 #include <components/settings/values.hpp>
 
@@ -48,6 +49,13 @@ namespace MWInput
 
         if (gyroH == 0.f && gyroV == 0.f)
             return;
+
+        if (auto* camera = MWBase::Environment::get().getWorld()->getCamera())
+        {
+            if (!camera->getCombatLockOnTarget().isEmpty())
+                return;
+            camera->cancelCombatRecenter();
+        }
 
         const float rot[3] = {
             -gyroV * dt * Settings::input().mGyroVerticalSensitivity,

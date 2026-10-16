@@ -297,6 +297,158 @@
         </layout>
        </item>
        <item>
+        <widget class="QCheckBox" name="eldenRingMusicCheckBox">
+         <property name="toolTip">
+          <string>Play imported Elden Ring music for regions, interiors and unique enemy fights. Dagoth Ur's theme plays throughout his final chamber while he is alive. Boss themes respect Combat Music; missing tracks use Morrowind music.</string>
+         </property>
+         <property name="text">
+          <string>Elden Ring regional and boss music</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="eldenCombatAiGroupBox">
+         <property name="toolTip">
+          <string>Applies to characters using Elden combat. Requires Elden combat to be enabled.</string>
+         </property>
+         <property name="title">
+          <string>Elden combat AI</string>
+         </property>
+         <layout class="QGridLayout" name="eldenCombatAiLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="eldenAiAttackDelayLabel">
+            <property name="text">
+             <string>Pause between chains</string>
+            </property>
+            <property name="buddy">
+             <cstring>eldenAiAttackDelaySpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="eldenAiAttackDelaySpinBox">
+            <property name="toolTip">
+             <string>Minimum pause after an attack chain ends. Increase this to give yourself more time between enemy attacks.</string>
+            </property>
+            <property name="suffix">
+             <string> s</string>
+            </property>
+            <property name="maximum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="eldenAiMaxComboAttacksLabel">
+            <property name="text">
+             <string>Max attacks per combo</string>
+            </property>
+            <property name="buddy">
+             <cstring>eldenAiMaxComboAttacksSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QSpinBox" name="eldenAiMaxComboAttacksSpinBox">
+            <property name="toolTip">
+             <string>Maximum number of attacks before an enemy pauses. Set to 1 to disable attack combinations.</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>6</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="eldenAiBlockChanceLabel">
+            <property name="text">
+             <string>Block chance</string>
+            </property>
+            <property name="buddy">
+             <cstring>eldenAiBlockChanceSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="eldenAiBlockChanceSpinBox">
+            <property name="toolTip">
+             <string>Chance to block an incoming attack when the character can guard. Set to 0 to disable deliberate AI blocking.</string>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>5.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="eldenAiDodgeChanceLabel">
+            <property name="text">
+             <string>Roll / backstep chance</string>
+            </property>
+            <property name="buddy">
+             <cstring>eldenAiDodgeChanceSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QDoubleSpinBox" name="eldenAiDodgeChanceSpinBox">
+            <property name="toolTip">
+             <string>Chance to roll or backstep away from an incoming attack when not blocking and a safe route exists. Set to 0 to disable AI dodges.</string>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>5.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="eldenAiReactionTimeLabel">
+            <property name="text">
+             <string>Reaction delay</string>
+            </property>
+            <property name="buddy">
+             <cstring>eldenAiReactionTimeSpinBox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="eldenAiReactionTimeSpinBox">
+            <property name="toolTip">
+             <string>Delay before responding to an incoming attack. Increase this to make enemies react more slowly.</string>
+            </property>
+            <property name="suffix">
+             <string> s</string>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>2.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacerGameMechanics">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

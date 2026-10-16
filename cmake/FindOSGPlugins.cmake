@@ -46,6 +46,7 @@ foreach(_library ${OSGPlugins_FIND_COMPONENTS})
     # On some systems, notably Debian and Ubuntu, the OSG plugins do not have
     # the usual "lib" prefix. We temporarily add the empty string to the list
     # of prefixes CMake searches for (via osg_find_library) to support these systems.
+    # Keep empty prefixes: Windows import libraries such as zlib.lib have no "lib" prefix.
     set(_saved_lib_prefix "${CMAKE_FIND_LIBRARY_PREFIXES}") # save CMAKE_FIND_LIBRARY_PREFIXES
     list(APPEND CMAKE_FIND_LIBRARY_PREFIXES "") # search libraries with no prefix
     set(_saved_lib_suffix "${CMAKE_FIND_LIBRARY_SUFFIXES}")

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <mutex>
 
 #include <osg/BlendFunc>
 #include <osg/Matrix>
@@ -16,6 +17,7 @@
 #include <osgAnimation/UpdateBone>
 
 #include <components/debug/debuglog.hpp>
+#include <components/eldencombat/animations.hpp>
 
 #include <components/resource/animblendrulesmanager.hpp>
 #include <components/resource/keyframemanager.hpp>
@@ -60,12 +62,43 @@
 #include "../mwmechanics/weapontype.hpp"
 
 #include "actorutil.hpp"
+#include "eldenanimation.hpp"
 #include "rotatecontroller.hpp"
 #include "util.hpp"
 #include "vismask.hpp"
 
 namespace
 {
+    std::shared_ptr<const EldenCombat::AnimationBank> getEldenAnimationBank(const VFS::Manager* vfs)
+    {
+        // The bank is immutable and shared by every actor. Cache failed loads as
+        // well: a missing optional asset must not emit a warning for each NPC.
+        static std::mutex mutex;
+        static std::map<const VFS::Manager*, std::shared_ptr<const EldenCombat::AnimationBank>> banks;
+        const std::lock_guard lock(mutex);
+        const auto [it, inserted] = banks.try_emplace(vfs);
+        if (!inserted)
+            return it->second;
+        constexpr VFS::Path::NormalizedView path("animations/eldencombat/player_anims.bin");
+        try
+        {
+            const auto stream = vfs->find(path);
+            if (!stream)
+            {
+                Log(Debug::Warning) << "Elden combat animations missing: " << path
+                    << ". Stage player_anims.bin with scripts/install_eldenring_animations.py; using native poses.";
+                return {};
+            }
+            it->second = std::make_shared<EldenCombat::AnimationBank>(*stream);
+            Log(Debug::Info) << "Loaded " << it->second->size() << " Elden combat animation clips";
+        }
+        catch (const std::exception& error)
+        {
+            Log(Debug::Error) << "Cannot load Elden combat animations: " << error.what() << "; using native poses";
+        }
+        return it->second;
+    }
+
     /// Removes all particle systems and related nodes in a subgraph.
     class RemoveParticlesVisitor : public osg::NodeVisitor
     {
@@ -1117,6 +1150,18 @@ namespace MWRender
 
         mActiveControllers.clear();
 
+        // Remove the previous spear attachment override before native keyframes
+        // evaluate, including tracks that animate only translation or scale.
+        if (mEldenAnimation)
+            for (const auto& [node, callback] : mEldenAnimation->beforeNativeControllers())
+            {
+                // base_anim and replacement NIFs can have embedded controllers
+                // as well as the external KF tracks installed below.
+                callback->setNestedCallback(node->getUpdateCallback());
+                node->setUpdateCallback(callback.get());
+                mActiveControllers.emplace_back(node, callback);
+            }
+
         mAccumCtrl = nullptr;
 
         for (size_t blendMask = 0; blendMask < sNumBlendMasks; blendMask++)
@@ -1188,6 +1233,16 @@ namespace MWRender
         }
 
         addControllers();
+
+        // Native groups can change several times within one simulation update.
+        // Always put the sampled pose after those controllers, before skinning.
+        if (mEldenAnimation)
+            for (const auto& [node, callback] : mEldenAnimation->controllers())
+            {
+                node->addUpdateCallback(callback);
+                mActiveControllers.emplace_back(node, callback);
+            }
+        addPostPoseControllers();
     }
 
     void Animation::adjustSpeedMult(const std::string& groupname, float speedmult)
@@ -1541,6 +1596,8 @@ namespace MWRender
 
     void Animation::setObjectRoot(const std::string& model, bool forceskeleton, bool baseonly, bool isCreature)
     {
+        mEldenAnimation.reset();
+        mEldenAnimationBank.reset();
         osg::ref_ptr<osg::StateSet> previousStateset;
         if (mObjectRoot)
         {
@@ -1650,6 +1707,49 @@ namespace MWRender
         mObjectRoot->addCullCallback(mLightListCallback);
         if (mTransparencyUpdater)
             mObjectRoot->addCullCallback(mTransparencyUpdater);
+
+        // Capture the model's bind transforms before any native keyframes run.
+        // Creature and osgAnimation rigs retain their own animation sources.
+        if (Settings::game().mEldenRingCombat && mPtr.getClass().isNpc() && !mRequiresBoneMap)
+        {
+            mEldenAnimationBank = getEldenAnimationBank(mResourceSystem->getVFS());
+            if (mEldenAnimationBank)
+            {
+                mEldenAnimation = std::make_unique<EldenAnimation>(getNodeMap(), *mObjectRoot, mEldenAnimationBank);
+                if (!mEldenAnimation->valid())
+                    mEldenAnimation.reset();
+            }
+        }
+    }
+
+    bool Animation::playEldenAnimation(std::string_view clip, float frame, bool loop, float duration, float yaw,
+        std::string_view leftArm, std::string_view rightArm, std::string_view grip)
+    {
+        if (mEldenAnimation)
+        {
+            ESM::RefId weaponType;
+            if (!grip.empty())
+                MWMechanics::getActiveWeapon(mPtr, &weaponType);
+            if (mEldenAnimation->play(clip, frame, loop, duration, yaw, leftArm, rightArm, grip,
+                    weaponType == ESM::WeaponType::SpearTwoWide, weaponType == ESM::WeaponType::LongBladeTwoHand))
+                return true;
+        }
+        clearEldenAnimation();
+        return false;
+    }
+
+    void Animation::clearEldenAnimation()
+    {
+        if (mEldenAnimation)
+            mEldenAnimation->clear();
+    }
+
+    float Animation::getEldenAnimationLength(std::string_view clip) const
+    {
+        if (mEldenAnimation && mEldenAnimationBank)
+            if (const auto* animation = mEldenAnimationBank->find(clip))
+                return static_cast<float>(animation->mFrames - 1);
+        return 0.f;
     }
 
     osg::Group* Animation::getObjectRoot()

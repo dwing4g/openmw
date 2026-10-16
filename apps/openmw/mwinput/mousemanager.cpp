@@ -19,6 +19,8 @@
 
 #include "../mwworld/player.hpp"
 
+#include "../mwrender/camera.hpp"
+
 #include "actions.hpp"
 #include "bindingsmanager.hpp"
 
@@ -94,6 +96,13 @@ namespace MWInput
         if (mMouseLookEnabled && !input->controlsDisabled())
         {
             MWBase::World* world = MWBase::Environment::get().getWorld();
+            if (auto* camera = world->getCamera())
+            {
+                if (!camera->getCombatLockOnTarget().isEmpty())
+                    return;
+                if (arg.xrel != 0 || arg.yrel != 0)
+                    camera->cancelCombatRecenter();
+            }
 
             const float cameraSensitivity = Settings::input().mCameraSensitivity;
             float x = arg.xrel * cameraSensitivity * (Settings::input().mInvertXAxis ? -1 : 1) / 256.f;
@@ -230,6 +239,13 @@ namespace MWInput
         float yAxis = mBindingsManager->getActionValue(A_LookUpDown) * 2.0f - 1.0f;
         if (xAxis == 0 && yAxis == 0)
             return;
+
+        if (auto* camera = MWBase::Environment::get().getWorld()->getCamera())
+        {
+            if (!camera->getCombatLockOnTarget().isEmpty())
+                return;
+            camera->cancelCombatRecenter();
+        }
 
         const float cameraSensitivity = Settings::input().mCameraSensitivity;
         const float rot[3] = {

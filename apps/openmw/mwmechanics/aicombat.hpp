@@ -8,7 +8,10 @@
 
 #include "../mwworld/cellstore.hpp" // for Doors
 
+#include <components/eldencombat/aitactics.hpp>
 #include <components/esm3/loadpgrd.hpp>
+
+#include <cstdint>
 
 namespace ESM
 {
@@ -58,6 +61,21 @@ namespace MWMechanics
         bool mUseCustomDestination;
         osg::Vec3f mCustomDestination;
 
+        float mEldenDecisionTimer = 0.f;
+        float mEldenDefenseCooldown = 0.f;
+        float mEldenHeavyHold = 0.f;
+        float mEldenGuardHold = 0.f;
+        EldenCombat::AiTactics mEldenTactics;
+        EldenCombat::AiAttackButton mEldenComboButton = EldenCombat::AiAttackButton::Light;
+        float mEldenAttackDelayScale = 1.f;
+        std::uint64_t mEldenAttackRequestSequence = 0;
+        std::uint64_t mEldenDodgeRequestSequence = 0;
+        int mEldenComboLimit = 1;
+        bool mEldenAttackQueued = false;
+        bool mEldenDodgeQueued = false;
+        bool mEldenHeavyFinisher = false;
+        bool mEldenActive = false;
+
         AiCombatStorage();
 
         void startCombatMove(bool isDistantCombat, float distToTarget, float rangeAttack, const MWWorld::Ptr& actor,
@@ -66,6 +84,9 @@ namespace MWMechanics
         void stopCombatMove();
         void updateAttack(const MWWorld::Ptr& actor, CharacterController& characterController,
             const ESM::Weapon* weapon, bool distantCombat, float duration);
+        bool updateEldenAttack(const MWWorld::Ptr& actor, const MWWorld::Ptr& target,
+            CharacterController& characterController, bool distantCombat, float duration);
+        void stopEldenAttack(const MWWorld::Ptr& actor, bool resetTactics = true);
         void stopAttack();
 
         void startFleeing();

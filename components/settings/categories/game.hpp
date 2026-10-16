@@ -24,6 +24,18 @@ namespace Settings
         SettingValue<bool> mShowMeleeInfo{ mIndex, "Game", "show melee info" };
         SettingValue<bool> mShowEnchantChance{ mIndex, "Game", "show enchant chance" };
         SettingValue<bool> mBestAttack{ mIndex, "Game", "best attack" };
+        SettingValue<bool> mEldenRingCombat{ mIndex, "Game", "elden ring combat" };
+        SettingValue<bool> mEldenRingMusic{ mIndex, "Game", "elden ring music" };
+        SettingValue<float> mEldenRingAiAttackDelay{ mIndex, "Game", "elden ring ai attack delay",
+            makeClampSanitizerFloat(0, 10) };
+        SettingValue<int> mEldenRingAiMaxComboAttacks{ mIndex, "Game", "elden ring ai max combo attacks",
+            makeClampSanitizerInt(1, 6) };
+        SettingValue<float> mEldenRingAiBlockChance{ mIndex, "Game", "elden ring ai block chance",
+            makeClampSanitizerFloat(0, 1) };
+        SettingValue<float> mEldenRingAiDodgeChance{ mIndex, "Game", "elden ring ai dodge chance",
+            makeClampSanitizerFloat(0, 1) };
+        SettingValue<float> mEldenRingAiReactionTime{ mIndex, "Game", "elden ring ai reaction time",
+            makeClampSanitizerFloat(0.1f, 2.f) };
         SettingValue<int> mDifficulty{ mIndex, "Game", "difficulty", makeClampSanitizerInt(-500, 500) };
         // We have to cap it since using high values (larger than 7168) will make some quests harder or impossible to
         // complete (bug #1876)

@@ -1,8 +1,5 @@
 #include "obstacle.hpp"
 
-#include <array>
-#include <span>
-
 #include <components/detournavigator/agentbounds.hpp>
 #include <components/esm3/loaddoor.hpp>
 #include <components/sceneutil/positionattitudetransform.hpp>
@@ -22,23 +19,6 @@ namespace MWMechanics
         constexpr float distanceSameSpot = 0.5f;
         constexpr float durationSameSpot = 1.5f;
         constexpr float durationToEvade = 1;
-
-        struct EvadeDirection
-        {
-            float mMovementX;
-            float mMovementY;
-            MWWorld::MovementDirectionFlag mRequiredAnimation;
-        };
-
-        constexpr EvadeDirection evadeDirections[] = {
-            { 1.0f, 1.0f, MWWorld::MovementDirectionFlag_Forward }, // move to right and forward
-            { 1.0f, 0.0f, MWWorld::MovementDirectionFlag_Right }, // move to right
-            { 1.0f, -1.0f, MWWorld::MovementDirectionFlag_Back }, // move to right and backwards
-            { 0.0f, -1.0f, MWWorld::MovementDirectionFlag_Back }, // move backwards
-            { -1.0f, -1.0f, MWWorld::MovementDirectionFlag_Back }, // move to left and backwards
-            { -1.0f, 0.0f, MWWorld::MovementDirectionFlag_Left }, // move to left
-            { -1.0f, 1.0f, MWWorld::MovementDirectionFlag_Forward }, // move to left and forward
-        };
     }
 
     bool proximityToDoor(const MWWorld::Ptr& actor, float minDist)
@@ -106,10 +86,7 @@ namespace MWMechanics
         return visitor.mResult;
     }
 
-    ObstacleCheck::ObstacleCheck()
-        : mEvadeDirectionIndex(std::size(evadeDirections) - 1)
-    {
-    }
+    ObstacleCheck::ObstacleCheck() = default;
 
     void ObstacleCheck::clear()
     {
@@ -191,17 +168,8 @@ namespace MWMechanics
                 return;
             }
 
-            mWalkState = WalkState::Evade;
+            mWalkState = mEvadeDirection.advance(supportedMovementDirection) ? WalkState::Evade : WalkState::Norm;
             mStateDuration = 0;
-            std::size_t newEvadeDirectionIndex = mEvadeDirectionIndex;
-            do
-            {
-                ++newEvadeDirectionIndex;
-                if (newEvadeDirectionIndex == std::size(evadeDirections))
-                    newEvadeDirectionIndex = 0;
-                if ((evadeDirections[newEvadeDirectionIndex].mRequiredAnimation & supportedMovementDirection) != 0)
-                    break;
-            } while (mEvadeDirectionIndex != newEvadeDirectionIndex);
             return;
         }
 
@@ -217,7 +185,7 @@ namespace MWMechanics
 
     void ObstacleCheck::takeEvasiveAction(MWMechanics::Movement& actorMovement) const
     {
-        actorMovement.mPosition[0] = evadeDirections[mEvadeDirectionIndex].mMovementX;
-        actorMovement.mPosition[1] = evadeDirections[mEvadeDirectionIndex].mMovementY;
+        actorMovement.mPosition[0] = mEvadeDirection.get().mX;
+        actorMovement.mPosition[1] = mEvadeDirection.get().mY;
     }
 }

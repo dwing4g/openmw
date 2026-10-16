@@ -1,0 +1,2 @@
+# Unified patches represent empty context lines with a single space.
+scripts/eldenring_reference.patch whitespace=-blank-at-eol

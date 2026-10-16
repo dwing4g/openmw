@@ -8,6 +8,8 @@
 #include "class.hpp"
 #include "inventorystore.hpp"
 
+#include <components/esm3/loadweap.hpp>
+
 namespace MWWorld
 {
     ActionEquip::ActionEquip(const MWWorld::Ptr& object, bool force)
@@ -47,6 +49,11 @@ namespace MWWorld
 
         // slots that this item can be equipped in
         std::pair<std::vector<int>, bool> slots = getTarget().getClass().getEquipmentSlots(getTarget());
+        // Inventory use continues to select the primary weapon. Off-hand selection
+        // is explicit through the combat binding or Lua's equipment-slot API.
+        const bool primaryWeapon = object.getType() == ESM::Weapon::sRecordId && slots.first.size() > 1;
+        if (primaryWeapon)
+            slots.first.resize(1);
         if (slots.first.empty())
             return;
 
@@ -62,6 +69,19 @@ namespace MWWorld
 
         if (it == invStore.end())
             throw std::runtime_error("ActionEquip can't find item " + object.getCellRef().getRefId().toDebugString());
+
+        if (primaryWeapon && invStore.getSlot(InventoryStore::Slot_CarriedLeft) == it)
+        {
+            // Weapon hotkeys and AI may select the current off-hand item as the
+            // primary weapon. Move it rather than sharing one instance between
+            // both hands, and retain the iterator returned after restacking.
+            const bool selected = invStore.getSelectedEnchantItem() == it;
+            it = invStore.unequipSlot(InventoryStore::Slot_CarriedLeft, false);
+            invStore.equip(InventoryStore::Slot_CarriedRight, it);
+            if (selected)
+                invStore.setSelectedEnchantItem(it);
+            return;
+        }
 
         // equip the item in the first free slot
         std::vector<int>::const_iterator slot = slots.first.begin();

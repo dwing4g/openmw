@@ -33,8 +33,8 @@ I.Settings.registerGroup({
     name = 'MovementSettings',
     permanentStorage = true,
     settings = {
-        boolSetting('alwaysRun', false),
-        boolSetting('toggleSneak', false), -- TODO: consider removing this setting when we have the advanced binding UI
+        boolSetting('alwaysRun', input._isEldenCombatEnabled()),
+        boolSetting('toggleSneak', input._isEldenCombatEnabled()), -- TODO: consider removing this setting when we have the advanced binding UI
         boolSetting('smoothControllerMovement', true),
     },
 })

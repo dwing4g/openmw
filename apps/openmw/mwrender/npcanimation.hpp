@@ -106,6 +106,7 @@ namespace MWRender
 
     protected:
         void addControllers() override;
+        void addPostPoseControllers() override;
         bool isArrowAttached() const override;
         std::string getSheathedShieldMesh(const MWWorld::ConstPtr& shield) const override;
 

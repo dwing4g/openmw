@@ -1,5 +1,7 @@
 local ambient = require('openmw.ambient')
 local core = require('openmw.core')
+local debug = require('openmw.debug')
+local nearby = require('openmw.nearby')
 local self = require('openmw.self')
 local storage = require('openmw.storage')
 local types = require('openmw.types')
@@ -7,6 +9,8 @@ local types = require('openmw.types')
 local musicSettings = storage.playerSection('SettingsOMWMusic')
 
 local helpers = require('scripts.omw.music.helpers')
+local eldenMusic = require('scripts.omw.music.eldenring')
+local eldenBossMusic = require('scripts.omw.music.eldenring_bosses')
 
 local registeredPlaylists = {}
 local playlistsTracksOrder = helpers.getStoredTracksOrder()
@@ -18,6 +22,33 @@ local skippedOneFrame = false
 
 local battlePriority = 10
 local explorePriority = 100
+local eldenRegionPriority = 50
+local eldenBossPriority = 5
+
+local eldenPlaylists = {}
+local eldenBossPlaylists = {}
+local availableBossProfiles = {}
+
+local function updateEldenRegion()
+    local region = nil
+    if ambient._isEldenRingMusicEnabled() then
+        region = eldenMusic.select(self.cell)
+    end
+    for id, playlist in pairs(eldenPlaylists) do
+        playlist.active = id == region
+    end
+end
+
+local function updateEldenBoss()
+    local profile = nil
+    if ambient._isEldenRingMusicEnabled() and musicSettings:get('CombatMusicEnabled') and debug.isAIEnabled()
+        and not types.Actor.isDead(self) then
+        profile = eldenBossMusic.select(self, nearby.actors, fightingActors, availableBossProfiles)
+    end
+    for id, playlist in pairs(eldenBossPlaylists) do
+        playlist.active = id == profile
+    end
+end
 
 local function registerPlaylist(playlist)
     helpers.initMissingPlaylistFields(playlist)
@@ -56,7 +87,7 @@ local function onCombatTargetsChanged(eventData)
     if eventData.actor == nil then return end
 
     if next(eventData.targets) ~= nil then
-        fightingActors[eventData.actor.id] = true
+        fightingActors[eventData.actor.id] = { actor = eventData.actor, targets = eventData.targets }
     else
         fightingActors[eventData.actor.id] = nil
     end
@@ -121,6 +152,8 @@ local function onFrame(dt)
 
     local combatMusicEnabled = musicSettings:get("CombatMusicEnabled") and helpers.isInCombat(fightingActors)
     setPlaylistActive("battle", combatMusicEnabled)
+    updateEldenRegion()
+    updateEldenBoss()
 
     local newPlaylist = helpers.getActivePlaylistByPriority(registeredPlaylists)
 
@@ -148,6 +181,33 @@ end
 
 registerPlaylist({ id = "battle", priority = battlePriority, randomize = true })
 registerPlaylist({ id = "explore", priority = explorePriority, randomize = true, active = true })
+
+local function registerEldenProfiles(profiles, playlists, priority)
+    for _, region in ipairs(profiles) do
+        local tracks = {}
+        for _, path in ipairs(helpers.getTracksFromDirectory('music/eldenring/' .. region .. '/')) do
+            -- Ignore manifests and notes beside the imported audio.
+            local extension = path:lower():match('%.([^%.]+)$')
+            if extension == 'ogg' or extension == 'mp3' or extension == 'wav' or extension == 'flac' then
+                tracks[#tracks + 1] = path
+            end
+        end
+        local playlist = {
+            id = 'eldenring/' .. region,
+            priority = priority,
+            randomize = true,
+            tracks = tracks,
+        }
+        registerPlaylist(playlist)
+        playlists[region] = playlist
+    end
+end
+
+registerEldenProfiles(eldenMusic.profiles, eldenPlaylists, eldenRegionPriority)
+registerEldenProfiles(eldenBossMusic.profiles, eldenBossPlaylists, eldenBossPriority)
+for id, playlist in pairs(eldenBossPlaylists) do
+    availableBossProfiles[id] = #playlist.tracks > 0
+end
 
 return {
     engineHandlers = {

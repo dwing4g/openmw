@@ -920,6 +920,12 @@ namespace MWRender
         mFirstPersonNeckController = nullptr;
         WeaponAnimation::deleteControllers();
 
+        if (mViewMode == VM_Normal)
+            WeaponAnimation::addControllers(mNodeMap, mActiveControllers, mObjectRoot.get());
+    }
+
+    void NpcAnimation::addPostPoseControllers()
+    {
         if (mViewMode == VM_FirstPerson)
         {
             // If there is no active animation, then the bip01 neck node will not be updated each frame, and the
@@ -935,10 +941,6 @@ namespace MWRender
                     mActiveControllers.emplace_back(node, mFirstPersonNeckController);
                 }
             }
-        }
-        else if (mViewMode == VM_Normal)
-        {
-            WeaponAnimation::addControllers(mNodeMap, mActiveControllers, mObjectRoot.get());
         }
     }
 

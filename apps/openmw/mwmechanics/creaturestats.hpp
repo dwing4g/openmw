@@ -17,6 +17,7 @@
 #include <components/esm/attr.hpp>
 #include <components/esm/refid.hpp>
 #include <components/esm3/magiceffects.hpp>
+#include <components/eldencombat/combat.hpp>
 
 namespace ESM
 {
@@ -59,6 +60,11 @@ namespace MWMechanics
         bool mKnockdownOverOneFrame = false;
         bool mHitRecovery = false;
         bool mBlock = false;
+        // Combat actions and input are transient. Saves retain the normal health/fatigue stats,
+        // but never resume a dodge or a buffered attack in the middle of an animation.
+        EldenCombat::Controller mEldenCombat;
+        EldenCombat::Input mEldenCombatInput;
+        bool mEldenCombatActive = false;
         unsigned int mMovementFlags = 0;
 
         float mFallHeight = 0.f;
@@ -100,6 +106,13 @@ namespace MWMechanics
 
     public:
         CreatureStats();
+
+        EldenCombat::Controller& getEldenCombat() { return mEldenCombat; }
+        const EldenCombat::Controller& getEldenCombat() const { return mEldenCombat; }
+        EldenCombat::Input& getEldenCombatInput() { return mEldenCombatInput; }
+        const EldenCombat::Input& getEldenCombatInput() const { return mEldenCombatInput; }
+        bool isEldenCombatActive() const { return mEldenCombatActive; }
+        void setEldenCombatActive(bool active) { mEldenCombatActive = active; }
 
         DrawState getDrawState() const;
         void setDrawState(DrawState state);

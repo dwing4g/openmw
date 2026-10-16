@@ -321,6 +321,11 @@ Game Settings
 
    If enabled then the character turns lower body to the direction of movement. Upper body is turned partially. Head is always pointed to the direction of view. In combat mode it works only for diagonal movement. In non-combat mode it changes straight right and straight left movement as well. Also turns the whole body up or down when swimming according to the movement direction.
 
+   With Elden Ring combat and imported animations, unlocked third-person walking,
+   running and crouching instead turn the full pose towards movement. Lock-on
+   retains target-facing directional movement. Sprinting uses a forward sprint
+   pose turned towards travel in either mode.
+
 .. omw-setting::
    :title: smooth movement
    :type: boolean
@@ -329,6 +334,12 @@ Game Settings
    :location: :bdg-success:`Launcher > Settings > Visuals > Animations`
 
    Makes NPCs and player movement more smooth.
+
+   With Elden Ring combat active, third-person movement smooths acceleration and
+   heading separately, keeping running speed equal in every direction even
+   while turning. Disabling this setting makes travel respond immediately.
+   Player stopping and first-person controls remain immediate. The imported
+   animation follows the resulting movement direction and speed.
 
    Recommended to use with "turn to movement direction" enabled.
 

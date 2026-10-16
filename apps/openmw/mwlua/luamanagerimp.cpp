@@ -29,10 +29,14 @@
 #include "../mwbase/windowmanager.hpp"
 #include "../mwbase/world.hpp"
 
+#include "../mwmechanics/creaturestats.hpp"
+#include "../mwmechanics/eldencombat.hpp"
+
 #include "../mwrender/bonegroup.hpp"
 #include "../mwrender/postprocessor.hpp"
 
 #include "../mwworld/datetimemanager.hpp"
+#include "../mwworld/class.hpp"
 #include "../mwworld/esmstore.hpp"
 #include "../mwworld/player.hpp"
 #include "../mwworld/ptr.hpp"
@@ -727,6 +731,13 @@ namespace MWLua
             data["damage"] = damageTable;
             data["hitPos"] = hitPos;
             data["successful"] = successful;
+            // Physical Elden hits already resolved stance and their timed hit
+            // reaction. The default Lua handler must not add a random knockdown.
+            if ((sourceType == MWMechanics::DamageSourceType::Melee
+                    || sourceType == MWMechanics::DamageSourceType::Ranged)
+                && MWMechanics::useEldenCombat(victim)
+                && victim.getClass().getCreatureStats(victim).isEldenCombatActive())
+                data["ignoreStagger"] = true;
             switch (sourceType)
             {
                 case MWMechanics::DamageSourceType::Unspecified:

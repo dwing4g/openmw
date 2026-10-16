@@ -1,5 +1,6 @@
 #include "actionmanager.hpp"
 
+#include <algorithm>
 #include <MyGUI_InputManager.h>
 
 #include <SDL_keyboard.h>
@@ -19,7 +20,13 @@
 #include "../mwworld/player.hpp"
 
 #include "../mwmechanics/actorutil.hpp"
+#include "../mwmechanics/creaturestats.hpp"
+#include "../mwmechanics/drawstate.hpp"
+#include "../mwmechanics/eldencombat.hpp"
+#include "../mwmechanics/movement.hpp"
 #include "../mwmechanics/npcstats.hpp"
+
+#include "../mwrender/camera.hpp"
 
 #include "actions.hpp"
 #include "bindingsmanager.hpp"
@@ -36,6 +43,7 @@ namespace MWInput
 
     void ActionManager::update(float dt)
     {
+        updateCombatInput();
         if (mBindingsManager->actionIsActive(A_MoveForward) || mBindingsManager->actionIsActive(A_MoveBackward)
             || mBindingsManager->actionIsActive(A_MoveLeft) || mBindingsManager->actionIsActive(A_MoveRight)
             || mBindingsManager->actionIsActive(A_Jump) || mBindingsManager->actionIsActive(A_Sneak)
@@ -46,6 +54,106 @@ namespace MWInput
         }
         else
             mTimeIdle += dt;
+    }
+
+    void ActionManager::clearCombatInput()
+    {
+        mBindingsManager->clearActionButtons();
+        const auto& environment = MWBase::Environment::get();
+        // Loading screens pump input before the world has a player or camera.
+        // Always clear physical buttons, but only touch actors once a game exists.
+        if (environment.getStateManager()->getState() == MWBase::StateManager::State_NoGame)
+            return;
+        const auto world = environment.getWorld();
+        const MWWorld::Ptr player = world->getPlayerPtr();
+        // World teardown resets the player before input is cleared. Cancelling
+        // input must not lazily recreate its stats and inventory in that state.
+        if (!player.isEmpty() && player.getRefData().getCustomData())
+        {
+            auto& stats = player.getClass().getCreatureStats(player);
+            stats.getEldenCombat().cancelInputActions();
+            auto& input = stats.getEldenCombatInput();
+            const bool twoHanded = input.mTwoHanded;
+            const bool twoHandedLeft = input.mTwoHandedLeft;
+            input = {};
+            input.mTwoHanded = twoHanded;
+            input.mTwoHandedLeft = twoHandedLeft;
+        }
+        if (auto* camera = world->getCamera())
+            camera->clearCombatLockOn();
+    }
+
+    void ActionManager::updateCombatInput()
+    {
+        const auto& environment = MWBase::Environment::get();
+        if (environment.getStateManager()->getState() != MWBase::StateManager::State_Running)
+        {
+            mBindingsManager->clearActionButtons();
+            return;
+        }
+        const auto manager = environment.getInputManager();
+        const MWWorld::Ptr player = environment.getWorld()->getPlayerPtr();
+        if (!Settings::game().mEldenRingCombat || player.isEmpty() || manager->controlsDisabled()
+            || !manager->getControlSwitch("playercontrols") || environment.getWindowManager()->isGuiMode()
+            || manager->getCursorMode() != MWBase::CursorMode::Locked)
+        {
+            clearCombatInput();
+            return;
+        }
+
+        auto& stats = player.getClass().getCreatureStats(player);
+        if (stats.isDead() || stats.isParalyzed())
+        {
+            clearCombatInput();
+            return;
+        }
+        if (mBindingsManager->consumeActionButton(A_Activate).mPressed)
+        {
+            executeAction(A_Activate);
+            return; // Activation may teleport the player or open a menu.
+        }
+        auto& input = stats.getEldenCombatInput();
+        auto gather = [&](EldenCombat::Button& destination, int action, bool enabled) {
+            const EldenCombat::Button button = mBindingsManager->consumeActionButton(action);
+            destination.mHeld = enabled && button.mHeld;
+            destination.mPressed |= enabled && button.mPressed;
+            destination.mReleased |= button.mReleased;
+            if (!enabled)
+                destination.mPressed = false;
+        };
+        const bool fighting = manager->getControlSwitch("playerfighting");
+        input.mInCombat = stats.getDrawState() == MWMechanics::DrawState::Weapon && fighting;
+        gather(input.mLight, A_Use, input.mInCombat);
+        gather(input.mHeavy, A_HeavyAttack, input.mInCombat);
+        gather(input.mGuard, A_Block, input.mInCombat);
+        gather(input.mCritical, A_CriticalAttack, input.mInCombat);
+        gather(input.mDodge, A_Dodge, fighting);
+        gather(input.mJump, A_Jump, manager->getControlSwitch("playerjumping"));
+        input.mMoveX = std::clamp(mBindingsManager->getActionValue(A_MoveRight)
+                - mBindingsManager->getActionValue(A_MoveLeft)
+                + mBindingsManager->getActionValue(A_MoveLeftRight) * 2.f - 1.f,
+            -1.f, 1.f);
+        input.mMoveY = std::clamp(mBindingsManager->getActionValue(A_MoveForward)
+                - mBindingsManager->getActionValue(A_MoveBackward)
+                - (mBindingsManager->getActionValue(A_MoveForwardBackward) * 2.f - 1.f),
+            -1.f, 1.f);
+        // Sprint belongs to the held dodge button. Alt is the walking modifier.
+        input.mSprint = false;
+        input.mCrouching = isSneaking();
+        input.mGrounded = environment.getWorld()->isOnGround(player);
+        if (mBindingsManager->consumeActionButton(A_TwoHand).mPressed && input.mInCombat)
+            MWMechanics::toggleEldenGrip(player, false);
+        if (mBindingsManager->consumeActionButton(A_TwoHandLeft).mPressed && input.mInCombat)
+            MWMechanics::toggleEldenGrip(player, true);
+        if (auto* camera = environment.getWorld()->getCamera())
+        {
+            if (stats.wasTeleported())
+                camera->clearCombatLockOn();
+            if (mBindingsManager->consumeActionButton(A_LockOn).mPressed)
+                camera->toggleCombatLockOn();
+            const MWWorld::Ptr target = camera->getCombatLockOnTarget();
+            input.mLockedOn = !target.isEmpty();
+        }
     }
 
     void ActionManager::resetIdleTime()
@@ -73,6 +181,21 @@ namespace MWInput
             case A_Activate:
                 inputManager->resetIdleTime();
                 activate();
+                break;
+            case A_CycleOffhand:
+                if (Settings::game().mEldenRingCombat && !inputManager->controlsDisabled()
+                    && inputManager->getControlSwitch("playercontrols")
+                    && inputManager->getControlSwitch("playerfighting") && !windowManager->isGuiMode()
+                    && inputManager->getCursorMode() == MWBase::CursorMode::Locked
+                    && MWBase::Environment::get().getStateManager()->getState() == MWBase::StateManager::State_Running
+                    && checkAllowedToUseItems())
+                {
+                    const MWWorld::Ptr player = MWMechanics::getPlayer();
+                    const auto& stats = player.getClass().getCreatureStats(player);
+                    if (stats.getDrawState() == MWMechanics::DrawState::Weapon && !stats.isDead()
+                        && !stats.isParalyzed())
+                        MWMechanics::cycleEldenOffhand(player);
+                }
                 break;
             case A_MoveLeft:
             case A_MoveRight:

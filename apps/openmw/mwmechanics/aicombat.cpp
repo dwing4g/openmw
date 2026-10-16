@@ -1,5 +1,8 @@
 #include "aicombat.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 #include <components/detournavigator/navigatorutils.hpp>
 #include <components/esm3/aisequence.hpp>
 #include <components/misc/coordinateconverter.hpp>
@@ -7,6 +10,7 @@
 #include <components/misc/pathgridutils.hpp>
 #include <components/misc/rng.hpp>
 #include <components/sceneutil/positionattitudetransform.hpp>
+#include <components/settings/values.hpp>
 
 #include "../mwphysics/raycasting.hpp"
 
@@ -23,6 +27,7 @@
 #include "character.hpp"
 #include "combat.hpp"
 #include "creaturestats.hpp"
+#include "eldencombat.hpp"
 #include "movement.hpp"
 #include "pathgrid.hpp"
 #include "steering.hpp"
@@ -39,6 +44,35 @@ namespace
         ESM::RefNum hitNum = actor.getClass().getCreatureStats(actor).getHitAttemptActor();
         return hitNum.isSet() && target.getCellRef().getRefNum() == hitNum;
     }
+
+    bool safeEldenDodge(const MWWorld::Ptr& actor, const osg::Vec3f& localDirection, float meters)
+    {
+        const auto world = MWBase::Environment::get().getWorld();
+        if (!world->isOnGround(actor) || world->isSwimming(actor) || world->isFlying(actor)
+            || !actor.getRefData().getBaseNode())
+            return false;
+        const osg::Vec3f halfExtents = world->getHalfExtents(actor);
+        const osg::Vec3f actorPosition = actor.getRefData().getPosition().asVec3();
+        const osg::Vec3f direction = actor.getRefData().getBaseNode()->getAttitude() * localDirection;
+        const osg::Vec3f source = actorPosition + osg::Vec3f(0.f, 0.f, 0.75f * halfExtents.z());
+        const float distance = meters * 70.f + std::max(halfExtents.x(), halfExtents.y());
+        const int mask = MWPhysics::CollisionType_World | MWPhysics::CollisionType_HeightMap
+            | MWPhysics::CollisionType_Door;
+        const auto* rayCasting = world->getRayCasting();
+        if (rayCasting->castRay(source, source + direction * distance, mask).mHit)
+            return false;
+        // Sample the whole route, so a roll cannot cross a gap whose far side has ground.
+        for (int sample = 1; sample <= 4; ++sample)
+        {
+            const osg::Vec3f at = source + direction * (distance * sample / 4.f);
+            const osg::Vec3f below = at - osg::Vec3f(0.f, 0.f, 0.75f * halfExtents.z() + 48.f);
+            if (!rayCasting->castRay(at, below, mask).mHit)
+                return false;
+        }
+        return true;
+    }
+
+
 }
 
 namespace MWMechanics
@@ -124,27 +158,46 @@ namespace MWMechanics
 
         // No combat for dead creatures
         if (actorStats.isDead())
+        {
+            storage.stopEldenAttack(actor);
             return true;
+        }
 
         const MWWorld::Ptr target = getTarget(); // The target to follow
 
         // Stop if the target doesn't exist
         if (target.isEmpty() || !target.getCellRef().getCount() || !target.getRefData().isEnabled()
             || target.getClass().getCreatureStats(target).isDead() || !target.getRefData().getBaseNode())
+        {
+            storage.stopEldenAttack(actor);
             return true;
+        }
 
         if (actor == target) // This should never happen.
+        {
+            storage.stopEldenAttack(actor);
             return true;
+        }
 
         // No actions for totally static creatures
         if (!actorClass.isMobile(actor))
         {
+            storage.stopEldenAttack(actor);
             storage.mFleeState = AiCombatStorage::FleeState_Idle;
             return false;
         }
 
         if (actorStats.isParalyzed() || actorStats.getKnockedDown())
+        {
+            // Knockdown also represents Elden guard/stance breaks. Preserve the
+            // interrupted chain's pause instead of restarting offense on standing.
+            const bool preserveTactics = useEldenCombat(actor);
+            if (preserveTactics)
+                storage.mEldenTactics.update(actorStats.getEldenCombat(), 0.f,
+                    Settings::game().mEldenRingAiAttackDelay * storage.mEldenAttackDelayScale);
+            storage.stopEldenAttack(actor, !preserveTactics);
             return false;
+        }
 
         if (!storage.isFleeing())
         {
@@ -155,18 +208,32 @@ namespace MWMechanics
             {
                 // Update every frame. UpdateLOS uses a timer, so the LOS check does not happen every frame.
                 updateLOS(actor, target, duration, storage);
-                const float targetReachedTolerance
-                    = storage.mLOS && !storage.mUseCustomDestination ? storage.mAttackRange : 0.0f;
-                const osg::Vec3f destination = storage.mUseCustomDestination
-                    ? storage.mCustomDestination
-                    : target.getRefData().getPosition().asVec3();
-                const bool isTargetReached = pathTo(actor, destination, duration,
-                    characterController.getSupportedMovementDirections(), targetReachedTolerance);
-                if (isTargetReached)
-                    storage.mReadyToAttack = true;
-
                 weapon = storage.mCurrentAction->getWeapon();
                 storage.mCurrentAction->getCombatRange(isRangedCombat);
+                // Recheck reach before choosing steering, even between tactical
+                // reaction ticks. Reaching a projected path endpoint is not the
+                // same as reaching the target (especially above a slope/ledge).
+                storage.mReadyToAttack = storage.mCurrentAction->isAttackingOrSpell() && storage.mLOS
+                    && (isRangedCombat ? getDistanceToBounds(actor, target) <= storage.mAttackRange
+                                       : isInMeleeReach(actor, target, storage.mAttackRange));
+                if (!storage.mReadyToAttack)
+                {
+                    storage.mShouldApproach = true;
+                    storage.stopCombatMove();
+                    const float targetReachedTolerance
+                        = storage.mLOS && !storage.mUseCustomDestination ? storage.mAttackRange : 0.0f;
+                    const osg::Vec3f destination = storage.mUseCustomDestination
+                        ? storage.mCustomDestination
+                        : target.getRefData().getPosition().asVec3();
+                    pathTo(actor, destination, duration,
+                        characterController.getSupportedMovementDirections(), targetReachedTolerance);
+                }
+                else
+                {
+                    // Attack recovery is an intentional stop, not a failed
+                    // attempt to walk to the next path point.
+                    mObstacleCheck.clear();
+                }
 
                 if (!isRangedCombat && storage.mShouldApproach && storage.mReadyToAttack)
                 {
@@ -190,19 +257,25 @@ namespace MWMechanics
                 MWBase::World* world = MWBase::Environment::get().getWorld();
                 const osg::Vec3f actorPos(actor.getRefData().getPosition().asVec3());
                 const osg::Vec3f targetPos(target.getRefData().getPosition().asVec3());
-                const osg::Vec3f targetRelativePos = world->aimToTarget(actor, target, isRangedCombat);
+                const osg::Vec3f targetRelativePos = isRangedCombat
+                    ? world->aimToTarget(actor, target, true)
+                    : targetPos - actorPos + osg::Vec3f(0.f, 0.f,
+                        world->getHalfExtents(target).z() - world->getHalfExtents(actor).z());
                 storage.mMovement.mRotation[0] = getXAngleToDir(targetRelativePos);
                 // using targetRelativePos results in spastic movements since the head is animated
                 storage.mMovement.mRotation[2] = getZAngleToDir(targetPos - actorPos);
                 updateActorsMovement(actor, duration, storage);
-                if (storage.mRotateMove)
-                    return false;
             }
 
-            storage.updateAttack(actor, characterController, weapon, isRangedCombat, duration);
+            // Turning must not freeze reaction/path replanning timers or charge
+            // releases. Only starting a native attack waits for the turn.
+            if (!storage.updateEldenAttack(actor, target, characterController, isRangedCombat, duration)
+                && !storage.mRotateMove)
+                storage.updateAttack(actor, characterController, weapon, isRangedCombat, duration);
         }
         else
         {
+            storage.stopEldenAttack(actor);
             updateFleeing(actor, target, duration, characterController.getSupportedMovementDirections(), storage);
         }
         storage.mActionCooldown -= duration;
@@ -229,6 +302,7 @@ namespace MWMechanics
         bool forceFlee = false;
         if (!canFight(actor, target))
         {
+            storage.stopEldenAttack(actor);
             storage.stopAttack();
             stats.setAttackingOrSpell(false);
             storage.mActionCooldown = 0.f;
@@ -273,6 +347,7 @@ namespace MWMechanics
         {
             if (currentAction->isFleeing())
             {
+                storage.stopEldenAttack(actor);
                 storage.startFleeing();
                 MWBase::Environment::get().getDialogueManager()->say(actor, ESM::RefId::stringRefId("flee"));
                 return false;
@@ -291,7 +366,8 @@ namespace MWMechanics
 
         float distToTarget = getDistanceToBounds(actor, target);
 
-        storage.mReadyToAttack = (currentAction->isAttackingOrSpell() && distToTarget <= rangeAttack && storage.mLOS);
+        storage.mReadyToAttack = currentAction->isAttackingOrSpell() && storage.mLOS
+            && (isRangedCombat ? distToTarget <= rangeAttack : isInMeleeReach(actor, target, rangeAttack));
 
         if (storage.mReadyToAttack)
         {
@@ -491,6 +567,7 @@ namespace MWMechanics
         actorMovementSettings.mPosition[1] = movement.y();
         actorMovementSettings.mPosition[2] = storage.mMovement.mPosition[2];
 
+        storage.mRotateMove = false;
         rotateActorOnAxis(actor, 2, actorMovementSettings, storage);
         rotateActorOnAxis(actor, 0, actorMovementSettings, storage);
     }
@@ -503,7 +580,7 @@ namespace MWMechanics
         storage.mCurrentAction->getCombatRange(isRangedCombat);
         float eps = isRangedCombat ? osg::DegreesToRadians(0.5f) : osg::DegreesToRadians(3.f);
         float targetAngleRadians = storage.mMovement.mRotation[axis];
-        storage.mRotateMove = !smoothTurn(actor, targetAngleRadians, axis, eps);
+        storage.mRotateMove |= !smoothTurn(actor, targetAngleRadians, axis, eps);
     }
 
     void AiCombat::writeState(ESM::AiSequence::AiSequence& sequence) const
@@ -545,6 +622,15 @@ namespace MWMechanics
     void AiCombatStorage::startCombatMove(bool isDistantCombat, float distToTarget, float rangeAttack,
         const MWWorld::Ptr& actor, const MWWorld::Ptr& target)
     {
+        if (!isDistantCombat && useEldenMelee(actor))
+        {
+            // Elden tactics provide collision-checked defensive steps/rolls.
+            // Native random sidesteps otherwise keep restarting locomotion and
+            // fighting against their committed attack and dodge movement.
+            stopCombatMove();
+            mMovement.mPosition[1] = 0.f;
+            return;
+        }
         auto& prng = MWBase::Environment::get().getWorld()->getPrng();
 
         // get the range of the target's weapon
@@ -652,6 +738,326 @@ namespace MWMechanics
         mTimerCombatMove = 0;
         mMovement.mPosition[0] = 0;
         mCombatMove = false;
+    }
+
+    void AiCombatStorage::stopEldenAttack(const MWWorld::Ptr& actor, bool resetTactics)
+    {
+        if (mEldenActive)
+        {
+            auto& stats = actor.getClass().getCreatureStats(actor);
+            stats.getEldenCombatInput() = {};
+            stats.getEldenCombat().clearRequests();
+            stats.setAttackingOrSpell(false);
+            mAttack = false;
+            mEldenActive = false;
+            mEldenHeavyHold = 0.f;
+            mEldenGuardHold = 0.f;
+            mEldenDefenseCooldown = 0.f;
+            mEldenDecisionTimer = 0.f;
+            mEldenComboButton = EldenCombat::AiAttackButton::Light;
+            mEldenAttackRequestSequence = 0;
+            mEldenDodgeRequestSequence = 0;
+            mEldenComboLimit = 1;
+            mEldenAttackQueued = false;
+            mEldenDodgeQueued = false;
+            mEldenHeavyFinisher = false;
+        }
+        if (resetTactics)
+        {
+            mEldenTactics.reset();
+            mEldenAttackDelayScale = 1.f;
+        }
+    }
+
+    bool AiCombatStorage::updateEldenAttack(const MWWorld::Ptr& actor, const MWWorld::Ptr& target,
+        CharacterController& characterController, bool distantCombat, float duration)
+    {
+        const auto world = MWBase::Environment::get().getWorld();
+        if (!useEldenMelee(actor) || distantCombat || !mCurrentAction || !mCurrentAction->getSpell().empty()
+            || !mCurrentAction->isAttackingOrSpell() || world->isSwimming(actor) || world->isFlying(actor)
+            || !world->isActorCollisionEnabled(actor))
+        {
+            stopEldenAttack(actor);
+            return false;
+        }
+
+        using EldenAction = EldenCombat::Action;
+        using AttackButton = EldenCombat::AiAttackButton;
+        const auto& actorClass = actor.getClass();
+        auto& stats = actorClass.getCreatureStats(actor);
+        auto& combat = stats.getEldenCombat();
+        auto& input = stats.getEldenCombatInput();
+        if (!stats.isEldenCombatActive())
+        {
+            // Character updates this flag after AI. A temporary suspension may
+            // therefore remain visible for one frame after paralysis/animation ends.
+            mEldenTactics.update(combat, 0.f, Settings::game().mEldenRingAiAttackDelay * mEldenAttackDelayScale);
+            stopEldenAttack(actor, false);
+            return true;
+        }
+        const auto config = eldenCombatConfig(actor);
+        const auto& settings = Settings::game();
+        auto& prng = world->getPrng();
+        input.mTwoHanded = false;
+        input.mTwoHandedLeft = false;
+        if (actorClass.hasInventoryStore(actor))
+        {
+            ESM::RefId type;
+            getActiveWeapon(actor, &type);
+            input.mTwoHanded = isWeaponType(type) && (getWeaponType(type)->mFlags & ESM::WeaponType::TwoHanded);
+        }
+        const auto action = combat.action();
+        const auto& definition = combat.definition();
+        const float stamina = std::max(0.f, stats.getFatigue().getCurrent())
+            / std::max(1.f, stats.getFatigue().getModified());
+        const bool biped = actorClass.isBipedal(actor);
+        const bool canGuard = biped && (config.mHasShield || input.mTwoHanded);
+        const float distance = getDistanceToBounds(actor, target);
+        const bool inReach = mReadyToAttack && !mRotateMove && mLOS
+            && distance <= std::max(64.f, mAttackRange * 1.1f);
+
+        mEldenActive = true;
+        input.mAIControlled = true;
+        input.mLockedOn = biped;
+        input.mSprint = distance > std::max(300.f, mAttackRange * 3.f) && stamina > 0.55f;
+        input.mLight.mHeld = false;
+        input.mCritical.mHeld = false;
+        input.mDodge.mHeld = false;
+        mEldenHeavyHold = std::max(0.f, mEldenHeavyHold - duration);
+        mEldenGuardHold = std::max(0.f, mEldenGuardHold - duration);
+        const bool heavyHeld = mEldenHeavyHold > 0.f;
+        input.mHeavy.mReleased |= input.mHeavy.mHeld && !heavyHeld;
+        input.mHeavy.mHeld = heavyHeld;
+        input.mGuard.mHeld = canGuard && mEldenGuardHold > 0.f && stamina > 0.1f;
+        mEldenDefenseCooldown = std::max(0.f, mEldenDefenseCooldown - duration);
+        mEldenDecisionTimer = std::max(0.f, mEldenDecisionTimer - duration);
+        mEldenTactics.update(combat, duration, settings.mEldenRingAiAttackDelay * mEldenAttackDelayScale);
+        if (mEldenAttackQueued && mEldenAttackRequestSequence != combat.sequence())
+            mEldenAttackQueued = false;
+        if (mEldenDodgeQueued && mEldenDodgeRequestSequence != combat.sequence())
+            mEldenDodgeQueued = false;
+        else if (mEldenDodgeQueued && mEldenDefenseCooldown <= 0.f)
+        {
+            // Discard a dodge that could not execute (for example after losing
+            // stamina/grounding), rather than keeping its route indefinitely.
+            combat.clearRequests();
+            mEldenDodgeQueued = false;
+        }
+        if (mEldenDodgeQueued || action == EldenAction::Roll || action == EldenAction::CrouchRoll
+            || action == EldenAction::Backstep)
+            actorClass.getMovementSettings(actor).mRotation[2] = 0.f;
+
+        // Observe the telegraph, not the damage callback. Recovery and attacks
+        // facing elsewhere are not threats. One swing gets one defensive choice.
+        const auto& opponent = target.getClass().getCreatureStats(target).getEldenCombat();
+        mEldenTactics.observeThreat(opponent, duration);
+        bool threatened = false;
+        float threatRemaining = 0.f;
+        if (mLOS && useEldenMelee(target) && EldenCombat::Controller::isAttack(opponent.action())
+            && distance <= getMaxAttackDistance(target) * 1.15f + 32.f)
+        {
+            osg::Vec3f towardActor = actor.getRefData().getPosition().asVec3()
+                - target.getRefData().getPosition().asVec3();
+            towardActor.z() = 0.f;
+            towardActor.normalize();
+            const float yaw = target.getRefData().getPosition().rot[2];
+            const bool facing = (osg::Vec3f(std::sin(yaw), std::cos(yaw), 0.f) * towardActor) > 0.5f;
+            for (std::size_t hit = 0; facing && hit < opponent.definition().mHitCount; ++hit)
+            {
+                const auto& window = opponent.definition().mHits[hit];
+                const float untilHit = (window.mFrom - opponent.frame()) / EldenCombat::AnimationFps;
+                if (opponent.frame() < window.mTo && untilHit <= 0.65f)
+                {
+                    threatened = true;
+                    threatRemaining = std::max(threatRemaining,
+                        (window.mTo - opponent.frame()) / EldenCombat::AnimationFps);
+                }
+            }
+        }
+
+        mAttack = EldenCombat::Controller::isAttack(action);
+        stats.setAttackingOrSpell(mAttack);
+        const bool idle = action == EldenAction::Idle;
+        const bool canRequest = idle || combat.frame() >= definition.mInputFrom;
+        const bool canBlockNow = canGuard && stamina >= 0.35f
+            && (idle || combat.frame() >= definition.mCancelGuard);
+        const bool canDodgeNow = biped && stamina >= 0.18f && world->isOnGround(actor)
+            && (idle || combat.frame() >= std::max(definition.mDodgeInputFrom, definition.mCancelDodge));
+
+        auto abandonChain = [&] {
+            // A buffered continuation otherwise wins over a held guard in the
+            // controller. Stop charging and remove it before committing to defense.
+            combat.clearRequests();
+            mEldenAttackQueued = false;
+            mEldenComboLimit = mEldenTactics.comboCount();
+            mEldenHeavyHold = 0.f;
+            input.mHeavy = {};
+            input.mLight = {};
+            input.mCritical = {};
+            input.mGuard = {};
+        };
+
+        // Defense remains available during the post-chain pause and is evaluated
+        // every frame, independently of the slower opener decision timer.
+        if (biped && threatened && combat.hitStopRemaining() <= 0.f && mEldenDefenseCooldown <= 0.f
+            && (canBlockNow || canDodgeNow) && mEldenTactics.consumeReaction(settings.mEldenRingAiReactionTime))
+        {
+            if (canBlockNow && Misc::Rng::rollProbability(prng) < settings.mEldenRingAiBlockChance)
+            {
+                abandonChain();
+                mEldenGuardHold = std::clamp(threatRemaining + 0.15f, 0.35f, 1.f);
+                input.mGuard.mHeld = true;
+                mEldenDefenseCooldown = 0.45f + 0.25f * Misc::Rng::rollProbability(prng);
+                return true;
+            }
+            if (canDodgeNow && Misc::Rng::rollProbability(prng) < settings.mEldenRingAiDodgeChance)
+            {
+                const auto directions = characterController.getSupportedMovementDirections();
+                const float rollDistance = EldenCombat::Controller::actionDefinition(
+                    EldenAction::Roll, config).mDistance;
+                const float backstepDistance = EldenCombat::Controller::actionDefinition(
+                    EldenAction::Backstep, config).mDistance;
+                const bool tryBackstep = Misc::Rng::rollProbability(prng) < 0.2f;
+                osg::Vec3f direction(0.f, -1.f, 0.f);
+                const bool backstep = tryBackstep && (directions & MWWorld::MovementDirectionFlag_Back)
+                    && safeEldenDodge(actor, direction, backstepDistance);
+                bool safe = backstep;
+                const float side = Misc::Rng::rollProbability(prng) < 0.5f ? -1.f : 1.f;
+                // Try the other side or a backwards roll if the first route is blocked.
+                for (const osg::Vec3f candidate : { osg::Vec3f(side, 0.f, 0.f),
+                         osg::Vec3f(-side, 0.f, 0.f), osg::Vec3f(0.f, -1.f, 0.f) })
+                {
+                    if (safe)
+                        break;
+                    const auto supported = candidate.y() < 0.f ? MWWorld::MovementDirectionFlag_Back
+                        : (candidate.x() < 0.f ? MWWorld::MovementDirectionFlag_Left
+                                              : MWWorld::MovementDirectionFlag_Right);
+                    if ((directions & supported) && safeEldenDodge(actor, candidate, rollDistance))
+                    {
+                        direction = candidate;
+                        safe = true;
+                    }
+                }
+                if (safe)
+                {
+                    abandonChain();
+                    // Snapshot the route we checked. Pathfinding and avoidance may
+                    // change ordinary movement before the controller accepts this.
+                    input.mDodgeDirection = std::array<float, 2>{ backstep ? 0.f : direction.x(),
+                        backstep ? 0.f : direction.y() };
+                    input.mDodge = { false, true, true };
+                    actorClass.getMovementSettings(actor).mRotation[2] = 0.f;
+                    mEldenDodgeQueued = true;
+                    mEldenDodgeRequestSequence = combat.sequence();
+                    mEldenGuardHold = 0.f;
+                    mEldenDefenseCooldown = 0.8f + 0.5f * Misc::Rng::rollProbability(prng);
+                    return true;
+                }
+            }
+        }
+
+        if (mEldenDodgeQueued)
+            return true;
+        // Guard recoil can outlast the counter window. Queue the counter during
+        // recoil, but never use it to bypass an outstanding post-chain pause.
+        if (inReach && canRequest && (idle || action == EldenAction::GuardHit)
+            && combat.guardCounterReady() && stamina >= 0.22f && mEldenTactics.attackReady()
+            && !mEldenAttackQueued && combat.hitStopRemaining() <= 0.f)
+        {
+            mEldenGuardHold = 0.f;
+            input.mGuard = {};
+            input.mHeavy = { true, true, false };
+            mEldenHeavyHold = 0.1f;
+            mEldenComboButton = AttackButton::Heavy;
+            mEldenComboLimit = 1;
+            mEldenHeavyFinisher = false;
+            mEldenAttackDelayScale = 1.f + 0.4f * Misc::Rng::rollProbability(prng);
+            mEldenAttackQueued = true;
+            mEldenAttackRequestSequence = combat.sequence();
+            mAttack = true;
+            stats.setAttackingOrSpell(true);
+            return true;
+        }
+
+        // Do not leave an old follow-up buffered after losing the target or
+        // exhausting stamina. Defensive requests have their own lifetime.
+        if (!inReach || stamina < 0.2f || input.mGuard.mHeld)
+        {
+            if (mEldenAttackQueued)
+                abandonChain();
+            return true;
+        }
+        if (!canRequest || combat.hitStopRemaining() > 0.f)
+            return true;
+
+        const int comboLimit = std::min(mEldenComboLimit, settings.mEldenRingAiMaxComboAttacks.get());
+        auto pressAttack = [&](AttackButton button, bool charge) {
+            if (button == AttackButton::Heavy)
+            {
+                const auto heavyDefinition = EldenCombat::Controller::actionDefinition(
+                    EldenAction::Heavy1Charge, config, input.mTwoHanded);
+                mEldenHeavyHold = charge ? heavyDefinition.mChargeTo / EldenCombat::AnimationFps + 0.2f : 0.1f;
+                input.mHeavy = { true, true, false };
+            }
+            else if (button == AttackButton::Left)
+                input.mGuard = { false, true, true };
+            else
+                input.mLight = { false, true, true };
+            mEldenAttackQueued = true;
+            mEldenAttackRequestSequence = combat.sequence();
+        };
+
+        // Follow the weapon's input/cancel windows each frame. Planning the limit
+        // and finisher once avoids rerolling until a continuation becomes inevitable.
+        if (mAttack)
+        {
+            if ((action == EldenAction::Heavy1Charge || action == EldenAction::Heavy2Charge)
+                && combat.frame() < definition.mChargeTo)
+                return true;
+            const bool heavyFinisher = mEldenHeavyFinisher && mEldenTactics.comboCount() == comboLimit - 1;
+            const AttackButton next = heavyFinisher ? AttackButton::Heavy : mEldenComboButton;
+            const float requiredStamina = next == AttackButton::Heavy ? 0.4f : 0.28f;
+            if (stamina >= requiredStamina && mEldenTactics.canCombo(combat, next, comboLimit))
+            {
+                pressAttack(next, false);
+                mEldenTactics.markComboRequested(combat);
+            }
+            return true;
+        }
+        if (!idle || !mEldenTactics.attackReady() || mEldenDecisionTimer > 0.f
+            || !characterController.readyToStartAttack())
+            return true;
+
+        mEldenDecisionTimer = 0.18f + 0.12f * Misc::Rng::rollProbability(prng);
+        mEldenAttackDelayScale = 1.f + 0.4f * Misc::Rng::rollProbability(prng);
+        mEldenComboLimit = 1 + Misc::Rng::rollDice(settings.mEldenRingAiMaxComboAttacks.get(), prng);
+        mEldenHeavyFinisher = false;
+        if (biped && opponent.criticalReady())
+        {
+            input.mCritical = { false, true, true };
+            input.mCriticalAvailable = true;
+            mEldenComboLimit = 1;
+            mEldenAttackQueued = true;
+            mEldenAttackRequestSequence = combat.sequence();
+        }
+        else
+        {
+            const bool counter = combat.guardCounterReady() && stamina >= 0.22f;
+            const bool heavy = counter || (stamina >= 0.4f && Misc::Rng::rollProbability(prng) < 0.3f);
+            const bool useLeft = !heavy && config.mHasLeftWeapon && !config.mHasShield && !input.mTwoHanded
+                && Misc::Rng::rollProbability(prng) < (config.mPairedWeapons ? 0.55f : 0.35f);
+            mEldenComboButton = heavy ? AttackButton::Heavy : (useLeft ? AttackButton::Left : AttackButton::Light);
+            if (heavy)
+                mEldenComboLimit = std::min(mEldenComboLimit, 2);
+            else if (!useLeft)
+                mEldenHeavyFinisher = stamina >= 0.45f && Misc::Rng::rollProbability(prng) < 0.3f;
+            const bool charge = heavy && !counter && stamina >= 0.65f && !threatened
+                && Misc::Rng::rollProbability(prng) < 0.55f;
+            pressAttack(mEldenComboButton, charge);
+        }
+        mAttack = true;
+        stats.setAttackingOrSpell(true);
+        return true;
     }
 
     void AiCombatStorage::updateAttack(const MWWorld::Ptr& actor, CharacterController& characterController,

@@ -1,5 +1,6 @@
 #include "actor.hpp"
 
+#include <components/eldencombat/locomotion.hpp>
 #include <components/esm3/loadmgef.hpp>
 
 #include "../mwbase/environment.hpp"
@@ -70,10 +71,10 @@ namespace MWClass
     float Actor::getCurrentSpeed(const MWWorld::Ptr& ptr) const
     {
         const MWMechanics::Movement& movementSettings = ptr.getClass().getMovementSettings(ptr);
-        float moveSpeed = this->getMaxSpeed(ptr) * movementSettings.mSpeedFactor;
-        if (movementSettings.mIsStrafing)
-            moveSpeed *= 0.75f;
-        return moveSpeed;
+        // Elden locomotion keeps one speed in every direction. Retain the
+        // strafe classification for choosing native directional animations.
+        return EldenCombat::movementSpeed(this->getMaxSpeed(ptr), movementSettings.mSpeedFactor,
+            movementSettings.mIsStrafing, getCreatureStats(ptr).isEldenCombatActive());
     }
 
     bool Actor::consume(const MWWorld::Ptr& consumable, const MWWorld::Ptr& actor) const

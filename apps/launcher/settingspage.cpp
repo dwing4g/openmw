@@ -242,6 +242,13 @@ bool Launcher::SettingsPage::loadSettings()
         loadSettingBool(
             Settings::game().mAllowActorsToFollowOverWaterSurface, *allowNPCToFollowOverWaterSurfaceCheckBox);
         loadSettingInt(Settings::game().mActorCollisionShapeType, *actorCollisonShapeTypeComboBox);
+        eldenCombatAiGroupBox->setEnabled(Settings::game().mEldenRingCombat);
+        loadSettingBool(Settings::game().mEldenRingMusic, *eldenRingMusicCheckBox);
+        eldenAiAttackDelaySpinBox->setValue(Settings::game().mEldenRingAiAttackDelay);
+        loadSettingInt(Settings::game().mEldenRingAiMaxComboAttacks, *eldenAiMaxComboAttacksSpinBox);
+        eldenAiBlockChanceSpinBox->setValue(Settings::game().mEldenRingAiBlockChance * 100.0);
+        eldenAiDodgeChanceSpinBox->setValue(Settings::game().mEldenRingAiDodgeChance * 100.0);
+        eldenAiReactionTimeSpinBox->setValue(Settings::game().mEldenRingAiReactionTime);
     }
 
     // Visuals
@@ -530,6 +537,12 @@ void Launcher::SettingsPage::saveSettings()
         saveSettingBool(
             *allowNPCToFollowOverWaterSurfaceCheckBox, Settings::game().mAllowActorsToFollowOverWaterSurface);
         saveSettingInt(*actorCollisonShapeTypeComboBox, Settings::game().mActorCollisionShapeType);
+        Settings::game().mEldenRingAiAttackDelay.set(eldenAiAttackDelaySpinBox->value());
+        saveSettingBool(*eldenRingMusicCheckBox, Settings::game().mEldenRingMusic);
+        saveSettingInt(*eldenAiMaxComboAttacksSpinBox, Settings::game().mEldenRingAiMaxComboAttacks);
+        Settings::game().mEldenRingAiBlockChance.set(eldenAiBlockChanceSpinBox->value() / 100.0);
+        Settings::game().mEldenRingAiDodgeChance.set(eldenAiDodgeChanceSpinBox->value() / 100.0);
+        Settings::game().mEldenRingAiReactionTime.set(eldenAiReactionTimeSpinBox->value());
     }
 
     // Visuals

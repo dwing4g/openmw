@@ -196,6 +196,8 @@ namespace MWLua
 
         api["isMusicPlaying"] = []() { return MWBase::Environment::get().getSoundManager()->isMusicPlaying(); };
 
+        api["_isEldenRingMusicEnabled"] = []() { return Settings::game().mEldenRingMusic.get(); };
+
         api["stopMusic"] = []() {
             MWBase::SoundManager* sndMgr = MWBase::Environment::get().getSoundManager();
             if (sndMgr->getMusicType() == MWSound::MusicType::MWScript)

@@ -51,6 +51,7 @@ namespace MWInput
     {
         // Enable all controls
         mControlSwitch->clear();
+        mActionManager->clearCombatInput();
     }
 
     InputManager::~InputManager() {}
@@ -64,6 +65,7 @@ namespace MWInput
 
         if (disableControls)
         {
+            mActionManager->clearCombatInput();
             mMouseManager->updateCursorMode();
             return;
         }
@@ -107,7 +109,10 @@ namespace MWInput
     void InputManager::changeInputMode(bool guiMode)
     {
         if (guiMode)
+        {
+            mActionManager->clearCombatInput();
             MWBase::Environment::get().getWindowManager()->showCrosshair(false);
+        }
 
         bool isCursorVisible
             = guiMode && (!mControllerManager->joystickLastUsed() || mControllerManager->gamepadGuiCursorEnabled());

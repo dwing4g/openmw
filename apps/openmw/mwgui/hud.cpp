@@ -1,8 +1,12 @@
 #include "hud.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 #include <MyGUI_Button.h>
 #include <MyGUI_ImageBox.h>
 #include <MyGUI_InputManager.h>
+#include <MyGUI_ITexture.h>
 #include <MyGUI_ProgressBar.h>
 #include <MyGUI_RenderManager.h>
 #include <MyGUI_ScrollView.h>
@@ -11,10 +15,12 @@
 #include <components/esm3/loadmgef.hpp>
 #include <components/misc/resourcehelpers.hpp>
 #include <components/resource/resourcesystem.hpp>
+#include <components/sceneutil/depth.hpp>
 #include <components/settings/values.hpp>
 
 #include "../mwbase/environment.hpp"
 #include "../mwbase/inputmanager.hpp"
+#include "../mwbase/statemanager.hpp"
 #include "../mwbase/windowmanager.hpp"
 #include "../mwbase/world.hpp"
 
@@ -24,6 +30,9 @@
 
 #include "../mwmechanics/actorutil.hpp"
 #include "../mwmechanics/npcstats.hpp"
+
+#include "../mwrender/animation.hpp"
+#include "../mwrender/camera.hpp"
 
 #include "draganddrop.hpp"
 #include "inventorywindow.hpp"
@@ -94,6 +103,31 @@ namespace MWGui
 
         getWidget(mCrosshair, "Crosshair");
         getWidget(mMouseEmulationCursor, "MouseEmulationCursor");
+
+        // Keep this generated texture with the renderer's other GUI textures. No additional data files are needed.
+        constexpr int textureSize = 32;
+        MyGUI::ITexture* lockOnTexture
+            = MyGUI::RenderManager::getInstance().createTexture("openmw_combat_lock_on_marker");
+        lockOnTexture->createManual(
+            textureSize, textureSize, MyGUI::TextureUsage::Write, MyGUI::PixelFormat::R8G8B8A8);
+        auto* pixels = static_cast<unsigned char*>(lockOnTexture->lock(MyGUI::TextureUsage::Write));
+        for (int y = 0; y < textureSize; ++y)
+            for (int x = 0; x < textureSize; ++x)
+            {
+                const float radius = std::hypot(x + 0.5f - textureSize / 2.f, y + 0.5f - textureSize / 2.f);
+                const auto colour = static_cast<unsigned char>(32.f + 223.f * std::clamp(12.f - radius, 0.f, 1.f));
+                *pixels++ = colour;
+                *pixels++ = colour;
+                *pixels++ = colour;
+                *pixels++ = static_cast<unsigned char>(255.f * std::clamp(15.f - radius, 0.f, 1.f));
+            }
+        lockOnTexture->unlock();
+        mCombatLockOnMarker = mMainWidget->createWidget<MyGUI::ImageBox>(
+            "ImageBox", MyGUI::IntCoord(0, 0, 10, 10), MyGUI::Align::Default);
+        mCombatLockOnMarker->setImageTexture(lockOnTexture->getName());
+        mCombatLockOnMarker->setNeedMouseFocus(false);
+        mCombatLockOnMarker->setNeedKeyFocus(false);
+        mCombatLockOnMarker->setVisible(false);
 
         mLocalMapZoom = 0.5f;
 
@@ -297,6 +331,7 @@ namespace MWGui
     void HUD::onFrame(float dt)
     {
         LocalMapBase::onFrame(dt);
+        updateCombatLockOnMarker();
 
         mCellNameTimer -= dt;
         mWeaponSpellTimer -= dt;
@@ -331,6 +366,49 @@ namespace MWGui
 
             mDrowningFlash->setAlpha(intensity);
         }
+    }
+
+    void HUD::updateCombatLockOnMarker()
+    {
+        mCombatLockOnMarker->setVisible(false);
+        const auto& environment = MWBase::Environment::get();
+        if (!mMainWidget->getVisible() || !Settings::game().mEldenRingCombat
+            || environment.getWindowManager()->isGuiMode()
+            || environment.getStateManager()->getState() != MWBase::StateManager::State_Running)
+            return;
+
+        MWBase::World* world = environment.getWorld();
+        const MWRender::Camera* camera = world->getCamera();
+        const MWWorld::Ptr target = camera->getCombatLockOnTarget();
+        if (target.isEmpty())
+            return;
+
+        osg::Vec3f position = target.getRefData().getPosition().asVec3();
+        position.z() += world->getHalfExtents(target).z();
+        if (const MWRender::Animation* animation = world->getAnimation(target))
+        {
+            // Follow the animated chest while crouching, attacking or reacting to a hit.
+            if (const osg::Node* chest = animation->getNode("Bip01 Spine2"))
+            {
+                const osg::NodePathList paths = chest->getParentalNodePaths();
+                if (!paths.empty())
+                    position = osg::computeLocalToWorld(paths.front()).getTrans();
+            }
+        }
+
+        const osg::Vec4f clip = osg::Vec4f(position, 1.f) * camera->getViewMatrix() * camera->getProjectionMatrix();
+        const float minDepth = SceneUtil::AutoDepth::isReversed() ? 0.f : -clip.w();
+        if (!std::isfinite(clip.x()) || !std::isfinite(clip.y()) || !std::isfinite(clip.z())
+            || !std::isfinite(clip.w()) || clip.w() <= 0.f || std::abs(clip.x()) > clip.w()
+            || std::abs(clip.y()) > clip.w() || clip.z() < minDepth || clip.z() > clip.w())
+            return;
+
+        // MyGUI uses logical pixels, so the marker follows both viewport resizing and UI scaling.
+        const int x = static_cast<int>(std::lround((clip.x() / clip.w() * 0.5f + 0.5f) * mMainWidget->getWidth()));
+        const int y = static_cast<int>(std::lround((0.5f - clip.y() / clip.w() * 0.5f) * mMainWidget->getHeight()));
+        mCombatLockOnMarker->setPosition(
+            x - mCombatLockOnMarker->getWidth() / 2, y - mCombatLockOnMarker->getHeight() / 2);
+        mCombatLockOnMarker->setVisible(true);
     }
 
     void HUD::setSelectedSpell(const ESM::RefId& spellId, int successChancePercent)
@@ -601,6 +679,7 @@ namespace MWGui
 
     void HUD::clear()
     {
+        mCombatLockOnMarker->setVisible(false);
         mEnemyActor = {};
         mEnemyHealthTimer = -1;
 

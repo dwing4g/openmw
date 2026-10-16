@@ -70,8 +70,10 @@ namespace
             MWBase::Environment::get().getWorld()->getPlayer().setJumping(true);
         }
 
-        // Decrease fatigue
-        if (!isPlayer || !MWBase::Environment::get().getWorld()->getGodModeState())
+        // Active Elden jumps have already paid their cost when the controller
+        // accepted the action. Keep the native charge for other movement modes.
+        if (!ptr.getClass().getCreatureStats(ptr).isEldenCombatActive()
+            && (!isPlayer || !MWBase::Environment::get().getWorld()->getGodModeState()))
         {
             const MWWorld::Store<ESM::GameSetting>& gmst
                 = MWBase::Environment::get().getESMStore()->get<ESM::GameSetting>();
@@ -635,6 +637,7 @@ namespace MWPhysics
         {
             actor->setVelocity(osg::Vec3f());
             actor->setInertialForce(osg::Vec3f());
+            actor->clearLandingMovement();
         }
     }
 
@@ -675,8 +678,13 @@ namespace MWPhysics
             const bool inert = stats.isDead()
                 || (!godmode && stats.getMagicEffects().getOrDefault(ESM::MagicEffect::Paralyze).getModifier() > 0);
 
-            simulations.emplace_back(ActorSimulation{
-                physicActor, ActorFrameData{ *physicActor, inert, waterCollision, slowFall, waterlevel, isPlayer } });
+            const auto& combat = stats.getEldenCombat();
+            const bool preserveLandingMomentum = stats.isEldenCombatActive() && !inert && !stats.getKnockedDown()
+                && combat.hitStopRemaining() <= 0.f
+                && (combat.action() == EldenCombat::Action::Idle || combat.action() == EldenCombat::Action::Jump);
+            simulations.emplace_back(ActorSimulation{ physicActor,
+                ActorFrameData{ *physicActor, inert, waterCollision, slowFall, waterlevel, isPlayer,
+                    preserveLandingMomentum } });
 
             // if the simulation will run, a jump request will be fulfilled. Update mechanics accordingly.
             if (willSimulate)
@@ -875,7 +883,8 @@ namespace MWPhysics
     }
 
     ActorFrameData::ActorFrameData(
-        Actor& actor, bool inert, bool waterCollision, float slowFall, float waterlevel, bool isPlayer)
+        Actor& actor, bool inert, bool waterCollision, float slowFall, float waterlevel, bool isPlayer,
+        bool preserveLandingMomentum)
         : mPosition()
         , mStandingOn(nullptr)
         , mIsOnGround(actor.getOnGround())
@@ -903,6 +912,7 @@ namespace MWPhysics
         , mWaterCollision(waterCollision)
         , mSkipCollisionDetection(!actor.getCollisionMode())
         , mIsPlayer(isPlayer)
+        , mPreserveLandingMomentum(preserveLandingMomentum)
     {
     }
 

@@ -3,6 +3,7 @@
 
 #include <array>
 
+#include <components/eldencombat/weapondamage.hpp>
 #include <components/misc/rng.hpp>
 #include <components/settings/values.hpp>
 
@@ -26,6 +27,7 @@
 #include "../mwworld/inventorystore.hpp"
 
 #include "actorutil.hpp"
+#include "eldencombat.hpp"
 #include "difficultyscaling.hpp"
 #include "movement.hpp"
 #include "npcstats.hpp"
@@ -71,6 +73,8 @@ namespace MWMechanics
     bool blockMeleeAttack(const MWWorld::Ptr& attacker, const MWWorld::Ptr& blocker, const MWWorld::Ptr& weapon,
         float damage, float attackStrength)
     {
+        if (useEldenCombat(blocker))
+            return false; // resolveEldenHit handles held guard, its arc, and stamina.
         if (!blocker.getClass().hasInventoryStore(blocker))
             return false;
 
@@ -241,7 +245,8 @@ namespace MWMechanics
 
             int skillValue = static_cast<int>(attacker.getClass().getSkill(attacker, weaponSkill));
 
-            if (Misc::Rng::roll0to99(world->getPrng()) >= getHitChance(attacker, victim, skillValue))
+            if (!useEldenCombat(attacker)
+                && Misc::Rng::roll0to99(world->getPrng()) >= getHitChance(attacker, victim, skillValue))
             {
                 MWBase::Environment::get().getLuaManager()->onHit(attacker, victim, weapon, projectile, 0,
                     attackStrength, attackWindUp, damage, false, hitPosition, false,
@@ -250,27 +255,60 @@ namespace MWMechanics
                 return;
             }
 
+            // Accurate Elden projectiles no longer roll a skill-based miss.
+            // Use that same equipment skill for damage, while draw charge
+            // remains a separate ranged modifier (and ammo keeps its range).
+            const float modifiedSkill = attacker.getClass().getSkill(attacker, weaponSkill);
+            const auto rangedDamage = [&](const EldenCombat::WeaponDamageRange& attack) {
+                return useEldenCombat(attacker)
+                    ? EldenCombat::skillScaledDamageRange(attack, modifiedSkill, attackStrength)
+                    : attack[0] + (attack[1] - attack[0]) * attackStrength;
+            };
             {
                 const auto& attack = weapon.get<ESM::Weapon>()->mBase->mData.mChop;
-                damage = attack[0] + ((attack[1] - attack[0]) * attackStrength); // Bow/crossbow damage
+                damage = rangedDamage(attack); // Bow/crossbow damage
             }
             {
                 // Arrow/bolt damage
                 // NB in case of thrown weapons, we are applying the damage twice since projectile == weapon
                 const auto& attack = projectile.get<ESM::Weapon>()->mBase->mData.mChop;
-                damage += attack[0] + ((attack[1] - attack[0]) * attackStrength);
+                damage += rangedDamage(attack);
             }
             adjustWeaponDamage(damage, weapon, attacker);
+        }
+
+        // Defense needs the damage that can actually reach this target. In
+        // particular, a resisted projectile must not grant post-hit
+        // protection. Keep vanilla's condition/resistance order when
+        // Elden combat is disabled.
+        const bool eldenDefense = validVictim && useEldenCombat(victim);
+        if (eldenDefense)
+        {
+            if (weapon == projectile || Settings::game().mOnlyAppropriateAmmunitionBypassesResistance
+                || isNormalWeapon(weapon))
+                resistNormalWeapon(victim, attacker, projectile, damage);
+            applyWerewolfDamageMult(victim, projectile, damage);
+        }
+
+        if (validVictim && !resolveEldenHit(attacker, victim, damage, true))
+        {
+            MWBase::Environment::get().getLuaManager()->onHit(attacker, victim, weapon, projectile, 0,
+                attackStrength, attackWindUp, 0.f, false, hitPosition, false,
+                MWMechanics::DamageSourceType::Ranged);
+            return;
         }
 
         reduceWeaponCondition(damage, validVictim, weapon, attacker);
 
         if (validVictim)
         {
-            if (weapon == projectile || Settings::game().mOnlyAppropriateAmmunitionBypassesResistance
-                || isNormalWeapon(weapon))
-                resistNormalWeapon(victim, attacker, projectile, damage);
-            applyWerewolfDamageMult(victim, projectile, damage);
+            if (!eldenDefense)
+            {
+                if (weapon == projectile || Settings::game().mOnlyAppropriateAmmunitionBypassesResistance
+                    || isNormalWeapon(weapon))
+                    resistNormalWeapon(victim, attacker, projectile, damage);
+                applyWerewolfDamageMult(victim, projectile, damage);
+            }
 
             if (attacker == getPlayer())
                 attacker.getClass().skillUsageSucceeded(attacker, weaponSkill, ESM::Skill::Weapon_SuccessfulHit);
@@ -315,6 +353,8 @@ namespace MWMechanics
 
     float getHitChance(const MWWorld::Ptr& attacker, const MWWorld::Ptr& victim, int skillValue)
     {
+        if (useEldenCombat(attacker) && useEldenCombat(victim))
+            return 100.f; // Physical contact and timed defenses decide whether a hit lands.
         MWMechanics::CreatureStats& stats = attacker.getClass().getCreatureStats(attacker);
         const MWMechanics::MagicEffects& mageffects = stats.getMagicEffects();
 
@@ -449,6 +489,28 @@ namespace MWMechanics
         }
     }
 
+    float getMeleeWeaponDamage(
+        const MWWorld::Ptr& weapon, const MWWorld::Ptr& attacker, int attackType, float attackStrength)
+    {
+        if (weapon.isEmpty() || weapon.getType() != ESM::Weapon::sRecordId)
+            return 0.f;
+        const auto& data = weapon.get<ESM::Weapon>()->mBase->mData;
+        if (useEldenMelee(attacker) && attacker.getClass().getCreatureStats(attacker).isEldenCombatActive())
+        {
+            const auto skill = weapon.getClass().getEquipmentSkill(weapon);
+            return EldenCombat::skillScaledWeaponDamage(
+                data.mChop, data.mSlash, data.mThrust, attacker.getClass().getSkill(attacker, skill));
+        }
+        const unsigned char* range = nullptr;
+        if (attackType == ESM::Weapon::AT_Chop)
+            range = data.mChop.data();
+        else if (attackType == ESM::Weapon::AT_Slash)
+            range = data.mSlash.data();
+        else if (attackType == ESM::Weapon::AT_Thrust)
+            range = data.mThrust.data();
+        return range ? range[0] + (range[1] - range[0]) * attackStrength : 0.f;
+    }
+
     void adjustWeaponDamage(float& damage, const MWWorld::Ptr& weapon, const MWWorld::Ptr& attacker)
     {
         if (weapon.isEmpty())
@@ -485,7 +547,7 @@ namespace MWMechanics
         damage *= minstrike + ((maxstrike - minstrike) * attackStrength);
 
         MWMechanics::CreatureStats& otherstats = victim.getClass().getCreatureStats(victim);
-        healthdmg = otherstats.isParalyzed() || otherstats.getKnockedDown();
+        healthdmg = useEldenMelee(attacker) || otherstats.isParalyzed() || otherstats.getKnockedDown();
         bool isWerewolf = (attacker.getClass().isNpc() && attacker.getClass().getNpcStats(attacker).isWerewolf());
 
         // Options in the launcher's combo box: unarmedFactorsStrengthComboBox
@@ -531,6 +593,8 @@ namespace MWMechanics
 
     void applyFatigueLoss(const MWWorld::Ptr& attacker, const MWWorld::Ptr& weapon, float attackStrength)
     {
+        if (useEldenMelee(attacker) && attacker.getClass().getCreatureStats(attacker).isEldenCombatActive())
+            return; // The controller charges stamina per hit window.
         // somewhat of a guess, but using the weapon weight makes sense
         const MWWorld::Store<ESM::GameSetting>& store
             = MWBase::Environment::get().getESMStore()->get<ESM::GameSetting>();

@@ -80,12 +80,19 @@ input.bindAction('Run', async:callback(function(_, value)
         input.getAxisValue(input.CONTROLLER_AXIS.MoveForwardBackward),
         input.getAxisValue(input.CONTROLLER_AXIS.MoveLeftRight)
     ):length2()
+    if input._isEldenCombatEnabled() then
+        -- Elden defaults run normally; Alt and a lightly tilted stick walk.
+        return value or (controllerInput > 0 and controllerInput <= 0.25)
+    end
     return value or controllerInput > 0.25
 end), {})
 
 input.bindAction('Use', async:callback(function()
     -- The value "0.6" shouldn't exceed the triggering threshold in BindingsManager::actionValueChanged.
     -- TODO: Move more logic from BindingsManager to Lua and consider to make this threshold configurable.
+    if input._isEldenCombatEnabled() then
+        return input.isActionPressed(input.ACTION.Use)
+    end
     return input.isActionPressed(input.ACTION.Use) or input.getAxisValue(input.CONTROLLER_AXIS.TriggerRight) >= 0.6
 end), {})
 

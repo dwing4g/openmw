@@ -188,6 +188,16 @@ namespace
                 const auto rotation = actor->getPtr().getRefData().getPosition().asRotationVec3();
                 frameData.mRotation = osg::Vec2f(rotation.x(), rotation.z());
                 frameData.mInertia = actor->getInertialForce();
+                actor->getLandingMovement(frameData.mLandingMovement, frameData.mLandingMovementGeneration);
+                if (frameData.mPreserveLandingMomentum)
+                {
+                    // The constructor runs before the preceding async batch
+                    // is synced. Grounding must come from the same result as
+                    // inertia and landing velocity, or touchdown is lost here.
+                    frameData.mIsOnGround = actor->getOnGround();
+                    frameData.mIsOnSlope = actor->getOnSlope();
+                    frameData.mWasOnGround = frameData.mIsOnGround;
+                }
                 frameData.mStuckFrames = actor->getStuckFrames();
                 frameData.mLastStuckPosition = actor->getLastStuckPosition();
             }
@@ -213,7 +223,10 @@ namespace
                 auto& frameData = frameDataRef.get();
                 if (actor->setPosition(frameData.mPosition))
                 {
-                    frameData.mPosition = actor->getPosition(); // account for potential position change made by script
+                    const auto position = actor->getPosition();
+                    if (position != frameData.mPosition)
+                        frameData.mLandingMovement.reset();
+                    frameData.mPosition = position; // account for potential position change made by script
                     actor->updateCollisionObjectPosition();
                     mCollisionWorld->updateSingleAabb(actor->getCollisionObject());
                 }
@@ -289,6 +302,7 @@ namespace
                     actor->setOnSlope(frameData.mIsOnSlope);
                     actor->setWalkingOnWater(frameData.mWalkingOnWater);
                     actor->setInertialForce(frameData.mInertia);
+                    actor->setLandingMovement(frameData.mLandingMovement, frameData.mLandingMovementGeneration);
                 }
             }
             void operator()(MWPhysics::ProjectileSimulation& sim) const

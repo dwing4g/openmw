@@ -2,11 +2,17 @@
 
 #include <osg/Camera>
 
+#include <cmath>
+#include <limits>
+#include <vector>
+
 #include <components/misc/mathutil.hpp>
 #include <components/sceneutil/nodecallback.hpp>
 #include <components/sceneutil/positionattitudetransform.hpp>
+#include <components/settings/values.hpp>
 
 #include "../mwbase/environment.hpp"
+#include "../mwbase/mechanicsmanager.hpp"
 #include "../mwbase/windowmanager.hpp"
 #include "../mwbase/world.hpp"
 
@@ -14,6 +20,7 @@
 #include "../mwworld/ptr.hpp"
 #include "../mwworld/refdata.hpp"
 
+#include "../mwmechanics/creaturestats.hpp"
 #include "../mwmechanics/movement.hpp"
 
 #include "../mwphysics/raycasting.hpp"
@@ -22,6 +29,17 @@
 
 namespace
 {
+
+    // The reference simulation uses metres. Morrowind uses roughly 70 units/metre.
+    constexpr float sCombatLockOnRange = 15.f * 70.f;
+    constexpr float sCombatLockBreakRange = 22.f * 70.f;
+
+    bool isCombatLockTarget(const MWWorld::Ptr& actor)
+    {
+        return !actor.isEmpty() && actor.isInCell() && actor.getClass().isActor() && !actor.getBase()->isDeleted()
+            && actor.getRefData().isEnabled() && actor.getRefData().getBaseNode()
+            && !actor.getClass().getCreatureStats(actor).isDead();
+    }
 
     class UpdateRenderCameraCallback : public SceneUtil::NodeCallback<UpdateRenderCameraCallback, osg::Camera*>
     {
@@ -142,8 +160,126 @@ namespace MWRender
         wm->showCrosshair(!wm->isGuiMode() && mShowCrosshair);
 
         if (!paused)
+        {
+            updateCombatLockOn(duration);
             updateFocalPointOffset(duration);
+        }
         updatePosition();
+    }
+
+    MWWorld::Ptr Camera::getCombatLockOnTarget() const
+    {
+        if (!Settings::game().mEldenRingCombat || mTrackingPtr.isEmpty()
+            || mTrackingPtr != MWBase::Environment::get().getWorld()->getPlayerPtr()
+            || mTrackingPtr.getClass().getCreatureStats(mTrackingPtr).isDead())
+            return {};
+        const MWWorld::Ptr target = mCombatLockOnTarget.ptrOrEmpty();
+        if (!isCombatLockTarget(target))
+            return {};
+        const osg::Vec3f delta
+            = target.getRefData().getPosition().asVec3() - mTrackingPtr.getRefData().getPosition().asVec3();
+        return delta.length2() <= sCombatLockBreakRange * sCombatLockBreakRange ? target : MWWorld::Ptr{};
+    }
+
+    void Camera::clearCombatLockOn()
+    {
+        mCombatLockOnTarget = MWWorld::SafePtr{};
+        mCombatRecenterYaw.reset();
+        mCombatTargetOccludedTime = 0.f;
+    }
+
+    void Camera::toggleCombatLockOn()
+    {
+        if (!Settings::game().mEldenRingCombat || mTrackingPtr.isEmpty()
+            || mTrackingPtr != MWBase::Environment::get().getWorld()->getPlayerPtr()
+            || mTrackingPtr.getClass().getCreatureStats(mTrackingPtr).isDead()
+            || (mMode != Mode::FirstPerson && mMode != Mode::ThirdPerson))
+            return;
+        if (!getCombatLockOnTarget().isEmpty())
+        {
+            clearCombatLockOn();
+            return;
+        }
+
+        clearCombatLockOn();
+        const auto world = MWBase::Environment::get().getWorld();
+        const osg::Vec3f position = mTrackingPtr.getRefData().getPosition().asVec3();
+        std::vector<MWWorld::Ptr> actors;
+        MWBase::Environment::get().getMechanicsManager()->getActorsInRange(position, sCombatLockOnRange, actors);
+        const osg::Vec3f forward = getOrient() * osg::Vec3f(0, 1, 0);
+        float bestScore = std::numeric_limits<float>::max();
+        MWWorld::Ptr best;
+        for (const MWWorld::Ptr& actor : actors)
+        {
+            if (actor == mTrackingPtr || !isCombatLockTarget(actor)
+                || !world->getRayCasting()->getLineOfSight(mTrackingPtr, actor))
+                continue;
+            osg::Vec3f direction = actor.getRefData().getPosition().asVec3() - position;
+            direction.z() = 0.f;
+            const float distance = direction.normalize();
+            const float facing = direction * forward;
+            if (distance < 1.f || facing < 0.35f)
+                continue;
+            const float score = (1.f - facing) * 4.f + distance / sCombatLockOnRange;
+            if (score < bestScore)
+            {
+                bestScore = score;
+                best = actor;
+            }
+        }
+        if (!best.isEmpty())
+        {
+            mCombatLockOnTarget = MWWorld::SafePtr(best);
+            setMode(Mode::ThirdPerson, false);
+        }
+        else
+            mCombatRecenterYaw = -mTrackingPtr.getRefData().getPosition().rot[2];
+    }
+
+    void Camera::updateCombatLockOn(float duration)
+    {
+        if (!Settings::game().mEldenRingCombat)
+        {
+            clearCombatLockOn();
+            return;
+        }
+        const MWWorld::Ptr target = getCombatLockOnTarget();
+        if (!target.isEmpty())
+        {
+            const auto world = MWBase::Environment::get().getWorld();
+            if (world->getRayCasting()->getLineOfSight(mTrackingPtr, target))
+                mCombatTargetOccludedTime = 0.f;
+            else
+                mCombatTargetOccludedTime += duration;
+            if (mCombatTargetOccludedTime > 0.75f)
+            {
+                clearCombatLockOn();
+                return;
+            }
+            osg::Vec3f direction = target.getRefData().getPosition().asVec3()
+                - mTrackingPtr.getRefData().getPosition().asVec3();
+            direction.z() += world->getHalfExtents(target).z() - mHeight * mHeightScale;
+            const float horizontal = std::hypot(direction.x(), direction.y());
+            if (horizontal < 1.f)
+                return;
+            const float desiredYaw = -std::atan2(direction.x(), direction.y());
+            const float desiredPitch = std::clamp(std::atan2(direction.z(), horizontal), -1.2f, 0.7f);
+            const float ease = 1.f - std::exp(-8.f * std::max(duration, 0.f));
+            setYaw(mYaw + static_cast<float>(Misc::normalizeAngle(desiredYaw - mYaw)) * ease, true);
+            setPitch(mPitch + (desiredPitch - mPitch) * ease, true);
+            return;
+        }
+        mCombatLockOnTarget = MWWorld::SafePtr{};
+        mCombatTargetOccludedTime = 0.f;
+        if (mCombatRecenterYaw && mMode != Mode::Static && !mTrackingPtr.isEmpty())
+        {
+            const float difference = static_cast<float>(Misc::normalizeAngle(*mCombatRecenterYaw - mYaw));
+            const float ease = 1.f - std::exp(-12.f * std::max(duration, 0.f));
+            setYaw(mYaw + difference * ease);
+            setPitch(mPitch + (-0.24f - mPitch) * ease);
+            if (std::abs(difference) < 0.01f)
+                mCombatRecenterYaw.reset();
+        }
     }
 
     osg::Vec3d Camera::calculateFirstPersonPosition(const osg::Vec3d& trackedPosition) const
@@ -219,6 +355,8 @@ namespace MWRender
         if (mMode == newMode)
         {
             mQueuedMode = std::nullopt;
+            if (newMode != Mode::ThirdPerson)
+                clearCombatLockOn();
             return;
         }
         Mode oldMode = mMode;
@@ -231,6 +369,8 @@ namespace MWRender
             return;
         }
         mMode = newMode;
+        if (newMode != Mode::ThirdPerson)
+            clearCombatLockOn();
         mQueuedMode = std::nullopt;
         if (newMode == Mode::FirstPerson)
             mFirstPersonView = true;
@@ -339,6 +479,8 @@ namespace MWRender
 
     void Camera::attachTo(const MWWorld::Ptr& ptr)
     {
+        if (mTrackingPtr != ptr)
+            clearCombatLockOn();
         mTrackingPtr = ptr;
         if (mMode == Mode::Static || ptr.isEmpty())
             return;

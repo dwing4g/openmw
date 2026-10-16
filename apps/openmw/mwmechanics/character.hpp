@@ -4,6 +4,10 @@
 #include <deque>
 
 #include <components/esm3/loadweap.hpp>
+#include <components/eldencombat/animations.hpp>
+#include <components/eldencombat/combat.hpp>
+#include <components/eldencombat/jumpmovement.hpp>
+#include <components/eldencombat/locomotion.hpp>
 
 #include "../mwworld/ptr.hpp"
 
@@ -179,6 +183,24 @@ namespace MWMechanics
         osg::Vec3f mAttackHitPos;
         bool mAttackSuccess{ false };
 
+        bool mEldenCombatActive{ false };
+        bool mEldenMeleeActive{ false };
+        bool mEldenAiAttackHeld{ false };
+        bool mEldenGuardAnimation{ false };
+        bool mEldenCriticalPending{ false };
+        MWWorld::Ptr mEldenOffhand;
+        std::uint64_t mEldenAnimationSequence{ 0 };
+        EldenCombat::Action mEldenAnimationAction{ EldenCombat::Action::Idle };
+        EldenCombat::Update mEldenUpdate;
+        EldenCombat::JumpMovement mEldenJumpMovement;
+        std::string mEldenDodgeAnimation;
+        float mEldenPoseTime{ 0.f };
+        float mEldenStridePhase{ 0.f };
+        EldenCombat::LocomotionAnimationState mEldenLocomotion;
+        EldenCombat::GroundContactGrace mEldenGroundContact;
+        EldenCombat::IdleFacing mEldenIdleFacing;
+        bool mEldenPoseDead{ false };
+
         bool mSkipAnim{ false };
 
         // counted for skill increase
@@ -217,6 +239,10 @@ namespace MWMechanics
         void refreshIdleAnims(CharacterState idle, bool force = false);
 
         bool updateWeaponState();
+        void updateEldenCombat(float duration);
+        void updateEldenCombatAnimations();
+        void updateEldenPose(float duration, const osg::Vec3f& movement);
+        void hitEldenCombat();
         void updateIdleStormState(bool inwater) const;
 
         std::string chooseRandomAttackAnimation() const;

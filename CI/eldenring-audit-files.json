@@ -1,0 +1,275 @@
+{
+  "formatVersion": 1,
+  "files": [
+    {
+      "path": "CI/eldenring-audit-animations.py",
+      "beforeSha256": "1f5a012a08162ea2217c4963978b864f69291f34b5aa0b191b6bfd7700a8cd40",
+      "afterSha256": "a7326a18b73f54583ee10f576556da1f371bce16066962be0e17ef6621655b2d"
+    },
+    {
+      "path": "CI/eldenring-build-windows.ps1",
+      "beforeSha256": "1d388ec18e85766eb57d305f1535233958765ff21b599db0add8daefe2c9fecc",
+      "afterSha256": "8c67cef4510ca311932bf52179ec19589c5caf8f24d11d280f6f6cd6fe04441e"
+    },
+    {
+      "path": "CI/eldenring-compile-objects.py",
+      "beforeSha256": null,
+      "afterSha256": "05953068b958eac4b0fb9868bad66dde06a8a938433ce59c75ab6fc87d173878"
+    },
+    {
+      "path": "CI/eldenring-copy-to-documents.ps1",
+      "beforeSha256": "9871fff7b11eb2cb874eec58bad870fc0bad1fbbe34ab0d855071c8edabf19b2",
+      "afterSha256": "2b99a1949cb29b06e1d71ee510720aafa2d3133366170ab7a495eb844d8d0510"
+    },
+    {
+      "path": "CI/eldenring-sync-audit-windows.ps1",
+      "beforeSha256": "fa535313c5375678a9199d86714f7c78acfe2e5183d29c37e3ba76cc324f71fe",
+      "afterSha256": "8bf66141aa90caabbd82bd158ba963cfd2dc636a9c55363c58d56e8ced14f5db"
+    },
+    {
+      "path": "CI/eldenring-test-animation-install.py",
+      "beforeSha256": "bfddf72e3662b94a91bbddabbeff950f821aca501c61fa4ae758e767c501147f",
+      "afterSha256": "c1572893412bf5d3c06440950313a1db87ec1db913644f0c82adb9eced09ce49"
+    },
+    {
+      "path": "CI/eldenring-test-combat.lua",
+      "beforeSha256": null,
+      "afterSha256": "6dd2154fb459fefec523499da104909891522b6e6933dc757e25b5bec6e18e6a"
+    },
+    {
+      "path": "CI/eldenring-test-profile.py",
+      "beforeSha256": null,
+      "afterSha256": "4e995f0bb34e2b3da3f68920a02d46a3c8f532f9527d6635d1dc38287c2bde47"
+    },
+    {
+      "path": "CI/eldenring-test-qt-translations.py",
+      "beforeSha256": null,
+      "afterSha256": "46e55cf3bd707f8687937a338f39d864f5bfdcbf722b0f9b5750cee1466002bb"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "beforeSha256": "56e02b7858e30c35b4f3c6e86686d4d89a47c07cc006c1ac69326d5bbfa0bab0",
+      "afterSha256": "88c4f3ec7b29a9cab139da931b4cce95f0863107ed3726ba8e9cb7820569f3b8"
+    },
+    {
+      "path": "ELDEN-COMBAT.txt",
+      "beforeSha256": "d24e4cec341d4c5c950bc52f1d6a899b8b198bd52d2f8ac61279da6759fd3961",
+      "afterSha256": "de598bc173035b8e20caa192e1159213a6edfdd0df8490cbc0d3f1c5c45c25f1"
+    },
+    {
+      "path": "apps/launcher/settingspage.cpp",
+      "beforeSha256": "07f0299f596e34d7c8fd945bdcc390bce5901958b4af73cf343d85aa0fcd9492",
+      "afterSha256": "6b32544e4c7c4e5cc489e20b2aed1a9cb4f73c6f4b24992a7a7cc113fd0b3403"
+    },
+    {
+      "path": "apps/launcher/ui/settingspage.ui",
+      "beforeSha256": "66eee14efc244751052c426d3a45fcc9381a4b324590d42d9b733e75c1cfb86c",
+      "afterSha256": "2cea7a381a3ac9514603c499938674f22c4561515cd5671ecf74d36a55cab851"
+    },
+    {
+      "path": "apps/openmw/CMakeLists.txt",
+      "beforeSha256": "94cdf24da19ff7fec8e1a44d8d9b321d46905432f87878b9efb62be27b85ced4",
+      "afterSha256": "07a9024933889a166e2488c96d788cd256ef81c09601312e37c45647f4408e8f"
+    },
+    {
+      "path": "apps/openmw/mwgui/hud.cpp",
+      "beforeSha256": "284aa126c02ca7d04440d77c388149dc80d6e87cabc8d26e0bf806f34a6a8042",
+      "afterSha256": "ea3aed1aa36b341a98b93376557b6c617321207c9cd8e9ea5e18e901ceb64691"
+    },
+    {
+      "path": "apps/openmw/mwgui/hud.hpp",
+      "beforeSha256": "97314981bae0f35d51a8029d04a488ff926904809b863262fa6d9f45bf6156ed",
+      "afterSha256": "63174fc94d56d05a154cd9f1da76f7280f99f2a52d662d8cd6600822049405c3"
+    },
+    {
+      "path": "apps/openmw/mwinput/actionmanager.cpp",
+      "beforeSha256": "10949dcc4824f12983e7e3dcf44dd47f86f803d8b9f2d28bdcf7f0c0d1603ed1",
+      "afterSha256": "10949dcc4824f12983e7e3dcf44dd47f86f803d8b9f2d28bdcf7f0c0d1603ed1"
+    },
+    {
+      "path": "apps/openmw/mwinput/bindingsmanager.cpp",
+      "beforeSha256": "995d4058eb8490631de9c554026b3f51e2ec2ed8d10c316b8f4083bec92624ad",
+      "afterSha256": "cf46a942bf9461eaceaeca89802d576045857bcb08adb97434e16bb92ab4c5e5"
+    },
+    {
+      "path": "apps/openmw/mwinput/bindingsmanager.hpp",
+      "beforeSha256": "62c9d64c73d034331475bd28964ee073084c5abe6a2875f5b824412a93be7fcd",
+      "afterSha256": "6af732566e46427721fde89eb72775c31e99e20f9fa076701a29a81421ffe5b5"
+    },
+    {
+      "path": "apps/openmw/mwinput/eldeninput.hpp",
+      "beforeSha256": "2809e3bb852ef135af399fd7c430c32861b5c595aa5828345dec52b765c0ea56",
+      "afterSha256": "6c30e0005fdb61d9012e372cfc91e4a89cda6c09b7b4106c854e492e212d5504"
+    },
+    {
+      "path": "apps/openmw/mwlua/luamanagerimp.cpp",
+      "beforeSha256": "bf40ba0ca936ae7bd7fa06d982808ba43c2ec2b8efdda967a2c9fc3538254f3f",
+      "afterSha256": "b4ebca35df91c5661cdc714f0d971cb9678cb10d78b749763c48c87d97866b05"
+    },
+    {
+      "path": "apps/openmw/mwmechanics/aicombat.cpp",
+      "beforeSha256": "618fbcb7c6706940e5e90de0c85a4142444fe6d7b67f83d1158730ecadbc92b5",
+      "afterSha256": "2373de51f0cb9b5960b14aadb45827cab3a939695a783c1c9f1ea2dec42cd138"
+    },
+    {
+      "path": "apps/openmw/mwmechanics/aicombat.hpp",
+      "beforeSha256": "1db676f2658617d17e5cc900f2839eb4686809b5f69b8b32e7a763cf5cde29fb",
+      "afterSha256": "c376a6145796e921cb8a74bbfcc15cf0dcf26ad0a41cb0d60609e501ba6534db"
+    },
+    {
+      "path": "apps/openmw/mwmechanics/character.cpp",
+      "beforeSha256": "69d5540b5976f33f338aa672788106776b2a2d1560e32701c9bfb586a8d7386b",
+      "afterSha256": "9c311efd85e5fbd765655e3f7bafaadf77659931ac926b9703e513952469f42f"
+    },
+    {
+      "path": "apps/openmw/mwmechanics/character.hpp",
+      "beforeSha256": "1e63f3c97b3590e075ee68b2abcf2c55b7a843ac1cca5e7804470d6f922d5019",
+      "afterSha256": "311695903498eae16239c1e89fee510f552c6e69edccfc1566f2bc52557d1ba5"
+    },
+    {
+      "path": "apps/openmw/mwphysics/physicssystem.cpp",
+      "beforeSha256": "0993f5447636860bcfeb65fa473e84e904e91cd91d6b01588594c59f9af529a5",
+      "afterSha256": "27a1e1e498d49635ce21c35215be59de25ad3918967e28c33c734d9821432000"
+    },
+    {
+      "path": "apps/openmw/mwrender/animation.cpp",
+      "beforeSha256": "821d10482de5b82d3de7f9e257a619cc35d653490009927aa52ef22c868653d8",
+      "afterSha256": "fd72d4a3f32155953bb7ed73e6d11957c86abddd2967f2655147bab51fff3c53"
+    },
+    {
+      "path": "apps/openmw/mwrender/animation.hpp",
+      "beforeSha256": "81897d7be96581f00a6bc35ebc72981daff9b7fac090bc6abe96d27f8a42a0c2",
+      "afterSha256": "dbb0672c95cf74fffe3c7b92b2c828aa397e49612bd50f78c2e4c96705d4d50b"
+    },
+    {
+      "path": "apps/openmw/mwrender/eldenanimation.cpp",
+      "beforeSha256": null,
+      "afterSha256": "55d35e0d9f9ea8671749145d686b44e2b577720cd0f961161c9628ab8ba53550"
+    },
+    {
+      "path": "apps/openmw/mwrender/eldenanimation.hpp",
+      "beforeSha256": null,
+      "afterSha256": "5a9e721abe4a08e19f321cf115161485ca10255d861896a65a0294748c57e878"
+    },
+    {
+      "path": "apps/openmw/mwrender/npcanimation.cpp",
+      "beforeSha256": "ee5d28fe636bbcc32fb1d558b7b8cd6a3eb5a4836463c9d3829cc75e30ec6abc",
+      "afterSha256": "3fd0280346ee4aff19a1453d9143946224d2f8a626b546521aebf2d2137bd40a"
+    },
+    {
+      "path": "apps/openmw/mwrender/npcanimation.hpp",
+      "beforeSha256": "0d37303b62b9263bf7a8dd7959aa44bdc818a4404b698fc0b15f1a35a5b0183d",
+      "afterSha256": "46ef5e73ea3e424843b7fbd4e78ecd385f32b9fb9c9562161603352e7a6177e4"
+    },
+    {
+      "path": "apps/openmw/mwworld/actionequip.cpp",
+      "beforeSha256": "3b7e3fb6ccd89e00770ba9a08b3c25bd0a37abb3eacabb063b3d9e3a4bbe9c9d",
+      "afterSha256": "6d758e7e2dc2710282d2f6cb77d8ea4e73388d4a2dab0275fc5e755dd813d808"
+    },
+    {
+      "path": "cmake/QtTranslations.cmake",
+      "beforeSha256": null,
+      "afterSha256": "56a5761201cb7c372e72d3f72e6a9b5b6bbaa0197f4b70a62623271b7ee6a40c"
+    },
+    {
+      "path": "components/CMakeLists.txt",
+      "beforeSha256": "d19d9abc1b799d46ade246c442f513d78adbfde4911503f6df2f1d9cebbd5290",
+      "afterSha256": "d679c4a6f0067203389ae644e190021fabe4fed1985568ce59759b5a3afedb4f"
+    },
+    {
+      "path": "components/eldencombat/README.txt",
+      "beforeSha256": "7a986a49aa491aa4ac7bb48a238022fe7d7ab48be6e19c01cf840529411a93ed",
+      "afterSha256": "b68edb47a1eb5b86bffd35fe9944ba48e18c9099660cb0ff580fbe5836c73179"
+    },
+    {
+      "path": "components/eldencombat/aitactics.cpp",
+      "beforeSha256": null,
+      "afterSha256": "8c13fe30a3bfb20e6be99aa3112070cb51cdf541ceb27cc669d00136888d8988"
+    },
+    {
+      "path": "components/eldencombat/aitactics.hpp",
+      "beforeSha256": null,
+      "afterSha256": "a8fb73911d0fe31fda3c1b8eef3d6fa21e83de895fbdf6e8f799aa63d1ad8ea0"
+    },
+    {
+      "path": "components/eldencombat/aitests.cpp",
+      "beforeSha256": null,
+      "afterSha256": "dbd1a0056fdbc4ac1c526914238ec0756fff8931a997a1bf10a0d3ba352acb13"
+    },
+    {
+      "path": "components/eldencombat/animations.cpp",
+      "beforeSha256": "cfeeb42b1f299090ce7998527d1c1d96dba0195d4eb9bf70bce7aeb2aa0740d8",
+      "afterSha256": "9228e3c94ea922dfe9d83605b270938b5ae88448059a1a388d425dedc0d0f89c"
+    },
+    {
+      "path": "components/eldencombat/animations.hpp",
+      "beforeSha256": "be086e95ac2fe0035fd2e17830e23a53d469bd76ba3e10c95285d902644c2e5f",
+      "afterSha256": "9297c48df50fc54f8cca9c5ff7350d8267af5e18701c85ab9e4a20971e208116"
+    },
+    {
+      "path": "components/eldencombat/animationtests.cpp",
+      "beforeSha256": "64b34aa17483410a5151762c16106dc4e48eb85acfff0a767b0ec0bdb8113301",
+      "afterSha256": "216d9b5ed68a5443e02b67b08030aef46253e84b4f446657dafb3dea3cabf46e"
+    },
+    {
+      "path": "components/eldencombat/combat.cpp",
+      "beforeSha256": "dfd3918aac2baaeb3bbade42f664dfecbf0d1da1b1727217df1fb21df490f5fd",
+      "afterSha256": "a892db14a92c61ef4840816c1f80d782c164a66ffab9d0d6fa4fa1b8f747e5a0"
+    },
+    {
+      "path": "components/eldencombat/combat.hpp",
+      "beforeSha256": "22ab8cc99c6ecf9590dfb754c9fed94d5334b9278132944fbfb46894cb67e87b",
+      "afterSha256": "34f66e83b50a1d5d62c9e540aa8113126478791c6c2e887097e09a9cd696d39a"
+    },
+    {
+      "path": "components/eldencombat/imported_timings.hpp",
+      "beforeSha256": null,
+      "afterSha256": "6a3be81d224fe3658d66b95c05f5bf04035ce909d856dd1785e572732e85a9ee"
+    },
+    {
+      "path": "components/eldencombat/importedtests.cpp",
+      "beforeSha256": "9e688829468018c060418518d862a23cb4cd504fcec00b67deb566f668e71f0d",
+      "afterSha256": "a992c92dc630364955b1ebd3f8c53bdfe656d8814363d503f22e21752ae817c4"
+    },
+    {
+      "path": "components/eldencombat/inputtests.cpp",
+      "beforeSha256": "f0614a24a6e687070f616cdb548eb24b6ad8619bdc424b883438691d62a93b7b",
+      "afterSha256": "1779736a249a569be08a4366065d2d6d72f4048c1ecd6f4a2627cfff4c04d5b3"
+    },
+    {
+      "path": "components/eldencombat/tests.cpp",
+      "beforeSha256": "f278fac84831b377413dfda7c0092441a053419484d2d96025592a18e723ab00",
+      "afterSha256": "a8c6591e2add051537fba097161f8e4dfeb3a70dbdcb1cfe14e0795b2f3b4ca4"
+    },
+    {
+      "path": "components/settings/categories/game.hpp",
+      "beforeSha256": "2dfb97d72026afc3604aca573ad0b0fdd467dfb00d0ee71b235ff4a8c988d993",
+      "afterSha256": "5be2e3d4e6b958223ed51ce8b3f3756cf6a3cde209aca4d89725fec44ef4268b"
+    },
+    {
+      "path": "copy-to-documents.sh",
+      "beforeSha256": null,
+      "afterSha256": "7e650e8cda7d71a39e070b1386fd7f145fdc2486afe8f91e9142ea88d351b0fc"
+    },
+    {
+      "path": "files/settings-default.cfg",
+      "beforeSha256": "deceee4215c559a7e26eeee4f8b7d74509517e0da1a1a3060802757acf3a2c66",
+      "afterSha256": "1920d2c3f1d709af90448a546c982b154de6a8b325692aacfc07102bc4cebad4"
+    },
+    {
+      "path": "scripts/configure_eldenring_profile.py",
+      "beforeSha256": "e7ed17b0f32711db699bc2a5960b9101bdb76199e2b7e3a513009dd331205536",
+      "afterSha256": "ab317fb22b1c64e128848db4b19f2bb29d6cf21dd47ed80f62762e678fd8bf8e"
+    },
+    {
+      "path": "scripts/import_eldenring_timings.py",
+      "beforeSha256": null,
+      "afterSha256": "1a967f210b37efc3ec05b11406ef3e66b10e0c2bf2af8fca4ab1bc420c1af000"
+    },
+    {
+      "path": "scripts/install_eldenring_animations.py",
+      "beforeSha256": null,
+      "afterSha256": "7f647ed2725974e010aa53c32dfaf3dd6e1d4c2698585a7b02b70bc4026767e4"
+    }
+  ]
+}

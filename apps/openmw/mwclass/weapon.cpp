@@ -100,7 +100,12 @@ namespace MWClass
             stack = true;
         }
         else
+        {
             slots.push_back(int(MWWorld::InventoryStore::Slot_CarriedRight));
+            if (Settings::game().mEldenRingCombat && weapClass == ESM::WeaponType::Melee
+                && !(MWMechanics::getWeaponType(ref->mBase->mData.mType)->mFlags & ESM::WeaponType::TwoHanded))
+                slots.push_back(int(MWWorld::InventoryStore::Slot_CarriedLeft));
+        }
 
         return std::make_pair(slots, stack);
     }

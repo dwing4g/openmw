@@ -12,6 +12,57 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# The engine-independent combat tests can run without graphics/audio dependencies.
+option(BUILD_ELDENCOMBAT_ONLY "Configure only the standalone Elden combat tests" OFF)
+option(BUILD_ELDENCOMBAT_TESTS "Build standalone Elden combat tests" OFF)
+if(BUILD_ELDENCOMBAT_ONLY OR BUILD_ELDENCOMBAT_TESTS)
+    enable_testing()
+    add_executable(eldencombat-tests components/eldencombat/combat.cpp components/eldencombat/tests.cpp)
+    add_test(NAME eldencombat COMMAND eldencombat-tests)
+    add_executable(eldendamage-tests components/eldencombat/combat.cpp components/eldencombat/damagetests.cpp)
+    add_test(NAME eldendamage COMMAND eldendamage-tests)
+    add_executable(eldenjump-tests components/eldencombat/combat.cpp CI/eldenring-test-jump.cpp)
+    target_include_directories(eldenjump-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME eldenjump COMMAND eldenjump-tests)
+    add_executable(eldenanimation-tests components/eldencombat/animations.cpp components/eldencombat/animationtests.cpp)
+    add_test(NAME eldenanimation COMMAND eldenanimation-tests)
+    add_executable(eldenlocomotion-tests components/eldencombat/animations.cpp CI/eldenring-test-locomotion.cpp)
+    target_include_directories(eldenlocomotion-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME eldenlocomotion COMMAND eldenlocomotion-tests)
+    add_executable(eldenspellcasting-tests components/eldencombat/animations.cpp CI/eldenring-test-spellcasting.cpp)
+    target_include_directories(eldenspellcasting-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME eldenspellcasting COMMAND eldenspellcasting-tests)
+    add_executable(eldeninput-tests components/eldencombat/inputtests.cpp)
+    target_include_directories(eldeninput-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME eldeninput COMMAND eldeninput-tests)
+    add_executable(eldenai-tests components/eldencombat/combat.cpp
+        components/eldencombat/aitactics.cpp components/eldencombat/aitests.cpp)
+    add_test(NAME eldenai COMMAND eldenai-tests)
+    add_executable(eldennavigation-tests CI/eldenring-test-navigation.cpp)
+    target_include_directories(eldennavigation-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME eldennavigation COMMAND eldennavigation-tests)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/components/eldencombat/imported_timings.hpp")
+        target_compile_definitions(eldenjump-tests PRIVATE OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+        # Keep the fallback behavior suite independent of local game data.
+        # Compile another controller with the real table to verify imported routing.
+        add_executable(eldencombat-imported-tests
+            components/eldencombat/combat.cpp components/eldencombat/animations.cpp components/eldencombat/importedtests.cpp)
+        target_compile_definitions(eldencombat-imported-tests PRIVATE OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+        add_test(NAME eldencombat-imported COMMAND eldencombat-imported-tests)
+        add_executable(eldendamage-imported-tests
+            components/eldencombat/combat.cpp components/eldencombat/damagetests.cpp)
+        target_compile_definitions(eldendamage-imported-tests PRIVATE OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+        add_test(NAME eldendamage-imported COMMAND eldendamage-imported-tests)
+        add_executable(eldenai-imported-tests components/eldencombat/combat.cpp
+            components/eldencombat/aitactics.cpp components/eldencombat/aitests.cpp)
+        target_compile_definitions(eldenai-imported-tests PRIVATE OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+        add_test(NAME eldenai-imported COMMAND eldenai-imported-tests)
+    endif()
+endif()
+if(BUILD_ELDENCOMBAT_ONLY)
+    return()
+endif()
+
 option(OPENMW_GL4ES_MANUAL_INIT "Manually initialize gl4es. This is more reliable on platforms without a windowing system. Requires gl4es to be configured with -DNOEGL=ON -DNO_LOADER=ON -DNO_INIT_CONSTRUCTOR=ON." OFF)
 if(OPENMW_GL4ES_MANUAL_INIT)
     add_compile_definitions(OPENMW_GL4ES_MANUAL_INIT)
@@ -522,6 +573,25 @@ if(OPENMW_USE_SYSTEM_OSG)
 endif()
 
 include_directories(BEFORE SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS})
+
+if(BUILD_ELDENCOMBAT_TESTS)
+    add_executable(eldenretarget-tests CI/eldenring-test-retarget.cpp components/eldencombat/animations.cpp)
+    target_include_directories(eldenretarget-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    # osg::Quat's inline methods are DLL imports in the Windows headers.
+    target_link_libraries(eldenretarget-tests PRIVATE ${OSG_LIBRARIES} ${OPENTHREADS_LIBRARIES})
+    add_test(NAME eldenretarget COMMAND eldenretarget-tests)
+    add_executable(eldengrip-tests CI/eldenring-test-grip.cpp)
+    target_include_directories(eldengrip-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_link_libraries(eldengrip-tests PRIVATE ${OSG_LIBRARIES} ${OPENTHREADS_LIBRARIES})
+    add_test(NAME eldengrip COMMAND eldengrip-tests)
+    # Uses the production NIF retarget callbacks, without a window or game assets.
+    add_executable(eldenspear-tests CI/eldenring-test-spear.cpp
+        apps/openmw/mwrender/eldenanimation.cpp components/eldencombat/animations.cpp
+        components/nifosg/matrixtransform.cpp)
+    target_include_directories(eldenspear-tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_link_libraries(eldenspear-tests PRIVATE ${OSG_LIBRARIES} ${OPENTHREADS_LIBRARIES})
+    add_test(NAME eldenspear COMMAND eldenspear-tests)
+endif()
 
 if(OSG_STATIC)
     if(NOT COLLADA_DOM_VERSION_MAJOR)
@@ -1237,10 +1307,9 @@ if (USE_QT)
         qt_add_translation(QM_FILES ${TS_FILES} OPTIONS -silent)
 
         if (DEPLOY_QT_TRANSLATIONS)
-            # Once we set a Qt 6.2.0 as a minimum required version, we may use "qtpaths --qt-query" instead.
+            include("${CMAKE_SOURCE_DIR}/cmake/QtTranslations.cmake")
             get_target_property(QT_QMAKE_EXECUTABLE Qt::qmake IMPORTED_LOCATION)
-            execute_process(COMMAND "${QT_QMAKE_EXECUTABLE}" -query QT_INSTALL_TRANSLATIONS
-                OUTPUT_VARIABLE QT_TRANSLATIONS_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+            openmw_get_qt_translations_dir(QT_TRANSLATIONS_DIR "${QT_QMAKE_EXECUTABLE}")
 
             foreach(QM_FILE ${QM_FILES})
                 get_filename_component(QM_BASENAME ${QM_FILE} NAME)

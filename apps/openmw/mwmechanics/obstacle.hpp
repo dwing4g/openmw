@@ -2,6 +2,7 @@
 #define OPENMW_MECHANICS_OBSTACLE_H
 
 #include "apps/openmw/mwworld/movementdirection.hpp"
+#include "obstacledirection.hpp"
 
 #include <osg/Vec3f>
 
@@ -51,7 +52,7 @@ namespace MWMechanics
         WalkState mWalkState = WalkState::Initial;
         float mStateDuration = 0;
         float mInitialDistance = 0;
-        std::size_t mEvadeDirectionIndex;
+        ObstacleDirection mEvadeDirection;
         osg::Vec3f mPrev;
         osg::Vec3f mDestination;
     };

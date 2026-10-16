@@ -1248,6 +1248,11 @@ namespace MWSound
         updateSounds(duration);
         if (state != MWBase::StateManager::State_NoGame)
         {
+            // The player can be between cells during loading or failed cleanup.
+            // General playback still updates, but ambience needs a valid cell.
+            const MWWorld::Ptr player = MWBase::Environment::get().getWorld()->getPlayerPtr();
+            if (player.isEmpty() || !player.isInCell())
+                return;
             warmCellSounds();
             updateRegionSound(duration);
             updateWaterSound();

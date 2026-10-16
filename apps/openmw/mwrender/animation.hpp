@@ -36,6 +36,11 @@ namespace Resource
     class ResourceSystem;
 }
 
+namespace EldenCombat
+{
+    class AnimationBank;
+}
+
 namespace SceneUtil
 {
     struct KeyframeHolder;
@@ -52,6 +57,7 @@ namespace MWRender
     class ResetAccumRootCallback;
     class RotateController;
     class TransparencyUpdater;
+    class EldenAnimation;
 
     using ActiveControllersVector = std::vector<std::pair<osg::ref_ptr<osg::Node>, osg::ref_ptr<osg::Callback>>>;
 
@@ -217,6 +223,9 @@ namespace MWRender
         mutable NodeMap mNodeMap;
         mutable bool mNodeMapCreated;
 
+        std::shared_ptr<const EldenCombat::AnimationBank> mEldenAnimationBank;
+        std::unique_ptr<EldenAnimation> mEldenAnimation;
+
         MWWorld::Ptr mPtr;
 
         Resource::ResourceSystem* mResourceSystem;
@@ -312,6 +321,8 @@ namespace MWRender
          * be necessary to ensure correct ordering.
          */
         virtual void addControllers();
+        // View-specific corrections (e.g. first-person camera offset) run after sampled body poses.
+        virtual void addPostPoseControllers() {}
 
         void removeFromSceneImpl();
 
@@ -448,6 +459,12 @@ namespace MWRender
         float getVelocity(std::string_view groupname) const;
 
         virtual osg::Vec3f runAnimation(float duration);
+
+        // The combat controller owns this clock, including hit-stop and weapon speed.
+        bool playEldenAnimation(std::string_view clip, float frame, bool loop, float duration, float yaw = 0.f,
+            std::string_view leftArm = {}, std::string_view rightArm = {}, std::string_view grip = {});
+        void clearEldenAnimation();
+        float getEldenAnimationLength(std::string_view clip) const;
 
         void setLoopingEnabled(std::string_view groupname, bool enabled);
 

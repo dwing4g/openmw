@@ -68,6 +68,17 @@ namespace MWInput
 
         A_TogglePostProcessorHUD = 50,
 
+        // Keep IDs stable: input_v3.xml persists these values.
+        A_HeavyAttack = 51,
+        A_Dodge = 52,
+        A_Block = 53,
+        A_LockOn = 54,
+        A_CriticalAttack = 55,
+        A_TwoHand = 56,
+        A_CycleOffhand = 57,
+        A_HeavyModifier = 58,
+        A_TwoHandLeft = 59,
+
         A_Last // Marker for the last item
     };
 }

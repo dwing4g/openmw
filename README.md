@@ -1,128 +1,295 @@
-OpenMW
-======
+# OpenMW with Elden Ring combat and music
 
-OpenMW is an open-source open-world RPG game engine that supports playing Morrowind by Bethesda Softworks. You need to own the game for OpenMW to play Morrowind.
+This fork adapts the combat state machine from
+[ELDEN-RING-Combat-Rewrite](https://github.com/Funny-Bones/ELDEN-RING-Combat-Rewrite)
+to [OpenMW](https://github.com/OpenMW/openmw). It adds buffered melee combos,
+charged attacks, dodging, guarding, lock-on, two-handed and off-hand combat,
+animation retargeting, and optional regional and boss music. Morrowind still
+provides the world, equipment, damage, spells, and game rules.
 
-OpenMW also comes with OpenMW-CS, a replacement for Bethesda's Construction Set.
+**No proprietary game assets are distributed in this repository.** To play,
+you need your own Morrowind installation. To use the imported animations,
+timings, music, and sound effects, you also need your own Elden Ring PC
+installation and must generate those files locally. Without that optional
+data, the combat integration uses fallback timings and native animations;
+missing music falls back to Morrowind's music.
 
-* Version: 0.52.0
-* License: GPLv3 (see [LICENSE](https://gitlab.com/OpenMW/openmw/-/raw/master/LICENSE) for more information)
-* Website: https://www.openmw.org
-* IRC: [#openmw on irc.libera.chat](https://web.libera.chat/#openmw)
-* Discord: [official server](https://discord.com/servers/openmw-260439894298460160)
-* Matrix #openmw-space:openmw.org
-* _Note_: IRC, Discord, and Matrix are bridged to each other.
+This is an independent fan project, not an official OpenMW release or a
+project affiliated with Bethesda, FromSoftware, or Bandai Namco.
 
-Font Licenses:
-* DejaVuLGCSansMono.ttf: custom (see [files/data/fonts/DejaVuFontLicense.txt](https://gitlab.com/OpenMW/openmw/-/raw/master/files/data/fonts/DejaVuFontLicense.txt) for more information)
-* DemonicLetters.ttf: SIL Open Font License (see [files/data/fonts/DemonicLettersFontLicense.txt](https://gitlab.com/OpenMW/openmw/-/raw/master/files/data/fonts/DemonicLettersFontLicense.txt) for more information)
-* MysticCards.ttf: SIL Open Font License (see [files/data/fonts/MysticCardsFontLicense.txt](https://gitlab.com/OpenMW/openmw/-/raw/master/files/data/fonts/MysticCardsFontLicense.txt) for more information)
+## Repositories and credits
 
-Current Status
---------------
+| Project | Link |
+| --- | --- |
+| This fork | [Smthri/openmw-eldenring](https://github.com/Smthri/openmw-eldenring) |
+| Official OpenMW GitHub repository | [OpenMW/openmw](https://github.com/OpenMW/openmw) |
+| OpenMW development repository | [OpenMW on GitLab](https://gitlab.com/OpenMW/openmw) |
+| Combat reference and extraction tools | [Funny-Bones/ELDEN-RING-Combat-Rewrite](https://github.com/Funny-Bones/ELDEN-RING-Combat-Rewrite) |
+| Linux reader for the locally installed Oodle DLL | [McSimp/linoodle](https://github.com/McSimp/linoodle) |
+| Public archive keys | [JKAnderson/BinderKeys](https://github.com/JKAnderson/BinderKeys) |
+| Wwise Vorbis conversion | [hcs64/ww2ogg](https://github.com/hcs64/ww2ogg) |
 
-The main quests in Morrowind, Tribunal and Bloodmoon are all completable. Some issues with side quests are to be expected (but rare). Check the [bug tracker](https://gitlab.com/OpenMW/openmw/-/issues/?milestone_title=openmw-1.0) for a list of issues we need to resolve before the "1.0" release. Even before the "1.0" release, however, OpenMW boasts some new [features](https://wiki.openmw.org/index.php?title=Features), such as improved graphics and user interfaces.
+The original OpenMW README is preserved in [README.openmw.md](README.openmw.md).
+See [ELDEN-COMBAT.txt](ELDEN-COMBAT.txt) for integration details and
+[components/eldencombat/README.txt](components/eldencombat/README.txt) for the
+combat component's behavior and limitations.
 
-Pre-existing modifications created for the original Morrowind engine can be hit-and-miss. The OpenMW script compiler performs more thorough error-checking than Morrowind does, meaning that a mod created for Morrowind may not necessarily run in OpenMW. Some mods also rely on quirky behaviour or engine bugs in order to work. We are considering such compatibility issues on a case-by-case basis - in some cases adding a workaround to OpenMW may be feasible, in other cases fixing the mod will be the only option. If you know of any mods that work or don't work, feel free to add them to the [Mod status](https://wiki.openmw.org/index.php?title=Mod_status) wiki page.
+## Get the source
 
-Platform Support
-------------------
+```sh
+git clone --branch elden-combat https://github.com/Smthri/openmw-eldenring.git
+cd openmw-eldenring
+```
 
-The officially supported platforms at this time are:
+Run the commands below from this `openmw` directory. Use a separate build
+directory and runtime package; do not copy game files into tracked source
+directories. These instructions build OpenMW itself, so Rust and Bevy are
+not required.
 
-- Windows 10 or later
-- macOS 14.8 or later
-- Linux
+## Generate optional game data locally
 
-We do not support 32-bit platforms.
+Python 3.10 or newer and Git are required. The extraction scripts need the
+Python `cryptography` and `zstandard` packages. The combat reference is pinned
+to `177a3b5ec14a9bde39b9ab458a3400b4038224e3`; the preparation helper applies
+the included [source patch](scripts/eldenring_reference.patch) for native
+Linux decompression, newer regulation containers, spell animations, and
+conditional attack events. It leaves generated game data in the neighboring
+checkout, outside this repository.
 
-We welcome efforts to add more supported platforms!
+### Linux / WSL
 
-Getting Started
----------------
+Use an x86-64 Linux host with Python's venv support, a C++ compiler, CMake,
+and Ninja installed. Replace the two game paths below with your installations.
 
-* [Installation instructions](https://openmw.readthedocs.io/en/latest/manuals/installation/index.html)
-* [Build from source](https://wiki.openmw.org/index.php?title=Development_Environment_Setup)
-* [Report a bug](https://gitlab.com/OpenMW/openmw/issues) - read the [guidelines](https://wiki.openmw.org/index.php?title=Bug_Reporting_Guidelines) before submitting your first bug!
-* [Known issues](https://gitlab.com/OpenMW/openmw/issues?label_name%5B%5D=Bug)
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python3 -m pip install cryptography zstandard
+python3 scripts/prepare_eldenring_reference.py --destination ../ELDEN-RING-Combat-Rewrite
 
-Contributing
----------
+export ER_GAME_DIR="/path/to/ELDEN RING/Game"
+export MORROWIND_DIR="/path/to/Morrowind"
+bash CI/eldenring-build-asset-decoder.sh
+export ER_KRAKEN_LIBRARY="$PWD/build-tools-local/elden-assets/build/liblinoodle.so"
 
-Not sure what to do with all your free time? OpenMW is always looking for new contributions. [See here for how to contribute.](./CONTRIBUTING.md)
+python3 scripts/unpack_eldenring_assets.py \
+  --game-dir "$ER_GAME_DIR" \
+  --keys-dir build-tools-local/elden-assets/BinderKeys/EldenRing_PC/Key \
+  --reference-dir ../ELDEN-RING-Combat-Rewrite --generate
+python3 scripts/import_eldenring_timings.py \
+  ../ELDEN-RING-Combat-Rewrite/src/sim/extracted.rs
+```
 
-The data path
--------------
+The decoder helper fetches pinned open-source dependencies. It reads
+`oo2core_6_win64.dll` from your installed game without copying it into the
+repository. This Linux path does not need Wine. The unpacker reads the game
+installation and writes selected archives and generated data to the neighboring
+checkout; it does not patch the installed game.
 
-The data path tells OpenMW where to find your Morrowind files. If you run the launcher, OpenMW should be able to pick up the location of these files on its own, if both Morrowind and OpenMW are installed properly (installing Morrowind under WINE is considered a proper install).
+For optional music and combat sounds, run:
 
-Command line options
---------------------
+```sh
+python3 scripts/import_eldenring_music.py --game-dir "$ER_GAME_DIR"
+python3 scripts/import_eldenring_sounds.py --game-dir "$ER_GAME_DIR"
+```
 
-    Syntax: openmw <options>
-    Allowed options:
-      --config arg                          additional config directories
-      --replace arg                         settings where the values from the
-                                            current source should replace those
-                                            from lower-priority sources instead of
-                                            being appended
-      --user-data arg                       set user data directory (used for
-                                            saves, screenshots, etc)
-      --resources arg (=resources)          set resources directory
-      --help                                print help message
-      --version                             print version information and quit
-      --data arg (=data)                    set data directories (later directories
-                                            have higher priority)
-      --data-local arg                      set local data directory (highest
-                                            priority)
-      --fallback-archive arg (=fallback-archive)
-                                            set fallback BSA archives (later
-                                            archives have higher priority)
-      --start arg                           set initial cell
-      --content arg                         content file(s): esm/esp, or
-                                            omwgame/omwaddon/omwscripts
-      --groundcover arg                     groundcover content file(s): esm/esp,
-                                            or omwgame/omwaddon
-      --no-sound [=arg(=1)] (=0)            disable all sounds
-      --script-all [=arg(=1)] (=0)          compile all scripts (excluding dialogue
-                                            scripts) at startup
-      --script-all-dialogue [=arg(=1)] (=0) compile all dialogue scripts at startup
-      --script-console [=arg(=1)] (=0)      enable console-only script
-                                            functionality
-      --script-run arg                      select a file containing a list of
-                                            console commands that is executed on
-                                            startup
-      --script-warn [=arg(=1)] (=1)         handling of warnings when compiling
-                                            scripts
-                                            0 - ignore warnings
-                                            1 - show warnings but consider script as
-                                            correctly compiled anyway
-                                            2 - treat warnings as errors
-      --load-savegame arg                   load a save game file on game startup
-                                            (specify an absolute filename or a
-                                            filename relative to the current
-                                            working directory)
-      --skip-menu [=arg(=1)] (=0)           skip main menu on game startup
-      --new-game [=arg(=1)] (=0)            run new game sequence (ignored if
-                                            skip-menu=0)
-      --encoding arg (=win1252)             Character encoding used in OpenMW game
-                                            messages:
+### Windows x64
 
-                                            win1250 - Central and Eastern European
-                                            such as Polish, Czech, Slovak,
-                                            Hungarian, Slovene, Bosnian, Croatian,
-                                            Serbian (Latin script), Romanian and
-                                            Albanian languages
+Use Python 3.10 or newer and Git for Windows. In PowerShell, replace the game
+paths below:
 
-                                            win1251 - Cyrillic alphabet such as
-                                            Russian, Bulgarian, Serbian Cyrillic
-                                            and other languages
+```powershell
+py -3 -m venv .venv
+$python = Join-Path $PWD '.venv\Scripts\python.exe'
+& $python -m pip install cryptography zstandard
+& $python scripts/prepare_eldenring_reference.py --destination ../ELDEN-RING-Combat-Rewrite
 
-                                            win1252 - Western European (Latin)
-                                            alphabet, used by default
-      --fallback arg                        fallback values
-      --no-grab [=arg(=1)] (=0)             Don't grab mouse cursor
-      --export-fonts [=arg(=1)] (=0)        Export Morrowind .fnt fonts to PNG
-                                            image and XML file in current directory
-      --activate-dist arg (=-1)             activation distance override
-      --random-seed arg (=<impl defined>)   seed value for random number generator
+$env:ER_GAME_DIR = 'D:\Steam\steamapps\common\ELDEN RING\Game'
+$morrowind = 'D:\Steam\steamapps\common\Morrowind'
+git clone https://github.com/JKAnderson/BinderKeys.git build-tools-local/elden-assets/BinderKeys
+git -C build-tools-local/elden-assets/BinderKeys checkout b95a32c509e35e5b18306c1d37a7778ea4034f38
+
+& $python scripts/unpack_eldenring_assets.py `
+  --game-dir $env:ER_GAME_DIR `
+  --keys-dir build-tools-local/elden-assets/BinderKeys/EldenRing_PC/Key `
+  --reference-dir ../ELDEN-RING-Combat-Rewrite --generate
+& $python scripts/import_eldenring_timings.py ../ELDEN-RING-Combat-Rewrite/src/sim/extracted.rs
+```
+
+Windows uses the Oodle DLL from your installed game directly. The Linux
+decoder build step is not needed. To generate optional music and sounds:
+
+```powershell
+& $python scripts/import_eldenring_music.py --game-dir $env:ER_GAME_DIR
+& $python scripts/import_eldenring_sounds.py --game-dir $env:ER_GAME_DIR
+```
+
+### Optional interior music classification
+
+Before building, you can generate the interior lookup from your own
+Morrowind, Tribunal, and Bloodmoon files. This command requires all three
+master files to be present in `Data Files`:
+
+```sh
+python3 scripts/eldenring_music/generate_cells.py \
+  --data-dir "$MORROWIND_DIR/Data Files" \
+  --output files/data-mw/scripts/omw/music/eldenring_cells.lua
+```
+
+On Windows, use `& $python` instead of `python3` and
+`--data-dir "$morrowind\Data Files"`. This generated lookup stays ignored by
+Git. Without it, the music selector uses its built-in name and region rules.
+Re-run CMake after generating it so the build includes it.
+
+## Build and install
+
+### Linux
+
+Install the development dependencies described in
+[OpenMW's build guide](https://wiki.openmw.org/index.php?title=Development_Environment_Setup).
+This source tree uses C++20 and needs CMake, Ninja, OpenSceneGraph, MyGUI,
+SDL2, OpenAL, FFmpeg, Bullet, Boost, Lua/LuaJIT, SQLite, ICU, yaml-cpp,
+and the other dependencies checked by CMake. The launcher and wizard also
+require Qt 6. Use CMake 3.22 or newer for the local install below.
+
+Generate/import the optional timing data **before** configuring the build.
+If you skipped extraction, set `MORROWIND_DIR` to your Morrowind installation
+for the profile command below. Then build a package with all runtime files
+in one directory:
+
+```sh
+cmake -S . -B build-eldenring-linux -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DOPENMW_LOCAL_INSTALL=ON \
+  -DBUILD_OPENCS=OFF \
+  -DBUILD_ELDENCOMBAT_TESTS=ON
+cmake --build build-eldenring-linux --parallel
+ctest --test-dir build-eldenring-linux --output-on-failure -R '^elden'
+cmake --install build-eldenring-linux --prefix "$PWD/build-eldenring-package-linux"
+```
+
+If you generated the optional assets, install them into that package:
+
+```sh
+python3 scripts/install_eldenring_animations.py \
+  --source ../ELDEN-RING-Combat-Rewrite/assets/player_anims.bin \
+  --package build-eldenring-package-linux
+python3 scripts/install_eldenring_music.py \
+  --source build-eldenring-assets/music/eldenring \
+  --package build-eldenring-package-linux
+python3 scripts/install_eldenring_sounds.py \
+  --source build-eldenring-assets/sound/eldenring/dodge \
+  --package build-eldenring-package-linux
+```
+
+Skip any installer whose corresponding assets you did not generate. Configure
+the Morrowind installation and start the game:
+
+```sh
+python3 scripts/configure_eldenring_profile.py \
+  --package build-eldenring-package-linux \
+  --morrowind "$MORROWIND_DIR" --target linux
+./build-eldenring-package-linux/Start-EldenCombat.sh
+```
+
+The profile helper accepts either the Morrowind directory or its `Data Files`
+directory. It creates a separate combat configuration and preserves an
+existing profile. Saves normally use OpenMW's standard user-data location;
+pass `--portable-saves` when creating a profile to keep saves inside the package.
+
+### Windows x64
+
+Install Visual Studio's **Desktop development with C++** workload and a
+Windows SDK, CMake, Python 3.10+, Git, and 7-Zip. The supplied helper supports
+Visual Studio 2022 with CMake 3.22+, or Visual Studio 2026 with CMake 4.2+.
+The explicit 2022 invocation is:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\CI\eldenring-build-windows.ps1 `
+  -VisualStudioVersion 2022 `
+  -MorrowindDirectory 'D:\Steam\steamapps\common\Morrowind'
+```
+
+Use `-VisualStudioVersion 2026` for that toolchain. The helper downloads and
+verifies the pinned OpenMW dependency bundle, builds the engine and launcher,
+runs the combat tests, configures the profile, and installs into
+`build-eldenring-package-x64`. It automatically finds locally generated
+timings and animations in the neighboring combat repository and music/sounds
+under `build-eldenring-assets`.
+
+Optional parameters include `-Jobs 8`, `-WithoutLauncher`, `-PortableSaves`,
+`-TimingsSource`, `-AnimationsSource`, `-MusicSource`, and `-SoundsSource`.
+Run `build-eldenring-package-x64\Start-EldenCombat.cmd` to play, or
+`Start-EldenCombat-Launcher.cmd` there to change settings.
+
+**The Windows helper also creates a local runtime ZIP. If generated game
+assets were installed, that ZIP contains them. Do not commit it or upload it
+to GitHub Releases. The same restriction applies to local Linux packages.**
+
+## Enable music and use the controls
+
+The generated profile enables combat. Music is a separate option and starts
+disabled: enable **Settings > Gameplay > Elden Ring regional and boss music**
+in the launcher, or add `elden ring music = true` under `[Game]` in the
+package's `elden-profile/settings.cfg`.
+
+| Action | Default keyboard / mouse |
+| --- | --- |
+| Roll / backstep; sprint | Tap/release Space; hold Space |
+| Jump; crouch | F; X |
+| Light attack | Left mouse |
+| Heavy / charged attack; guard counter | Shift + left mouse |
+| Guard / off-hand attack | Right mouse |
+| Two-hand right / left armament | E + left / right mouse |
+| Lock on / release | Q or middle mouse |
+| Draw weapon; ready magic | R; C |
+| Interact; inventory | E on release; Tab |
+
+Existing key bindings are preserved; use **Reset to Defaults** in Controls to
+adopt the new layout. See [ELDEN-COMBAT.txt](ELDEN-COMBAT.txt) for gamepad
+controls and the remaining bindings.
+
+## Keep proprietary data out of Git
+
+Only source code, authored configuration, documentation, tests, and explicitly
+licensed third-party tooling belong in this fork. Never add Elden Ring or
+Morrowind archives, DLLs, music, sounds, meshes, textures, skeletons, animation
+banks, extracted parameters, or generated timing/lookup tables. Data generated
+from a game remains game-derived even when its format is C++, Rust, Lua, JSON,
+or another text format.
+
+The relevant local paths are ignored, including `build-*`, `local-assets`,
+`components/eldencombat/imported_timings.hpp`, and the generated interior lookup.
+Do not use `git add -f` for these files. Before publishing source changes,
+review the staged diff and run the source audit:
+
+```sh
+git diff --cached --stat
+git diff --cached
+python3 CI/eldenring-audit-source.py
+```
+
+After committing, run `python3 CI/eldenring-audit-source.py --base origin/master --revision HEAD`
+to check every added or changed file version since the fork's upstream base,
+including files removed in later commits.
+
+The audit is an additional check, not a substitute for reviewing new files.
+After committing reviewed source on `elden-combat`, maintainers can run
+`python3 scripts/publish_eldenring_fork.py` with an authenticated GitHub CLI and
+Git SSH access. It audits every new commit, creates/verifies a public fork of
+OpenMW under the authenticated account, pushes only this branch without force,
+and makes it the fork's default branch.
+
+Never upload your game installations, extraction directories, local runtime
+packages, or their backups. The included ww2ogg codebook is licensed reusable
+format data, not an Elden Ring recording; its license is kept beside it.
+
+## License
+
+OpenMW and the combined application are covered by [GPLv3](LICENSE).
+The combat adaptation preserves the reference project's
+[MIT notice](components/eldencombat/LICENSE-MIT.txt). The audio conversion
+tools preserve their [MIT notice](scripts/eldenring_music/LICENSE-MIT.txt)
+and [ww2ogg BSD license](scripts/eldenring_music/ww2ogg/COPYING).
+These code licenses grant no rights to proprietary game assets or files
+generated from them.

@@ -31,6 +31,8 @@ set(BUILTIN_DATA_MW_FILES
     scripts/omw/combat/local.lua
     scripts/omw/combat/settingspage.lua
     scripts/omw/music/helpers.lua
+    scripts/omw/music/eldenring.lua
+    scripts/omw/music/eldenring_bosses.lua
     scripts/omw/music/music.lua
     scripts/omw/music/settings.lua
     scripts/omw/playerskillhandlers.lua
@@ -39,6 +41,11 @@ set(BUILTIN_DATA_MW_FILES
     scripts/omw/spellcasting/local.lua
     scripts/omw/spellcasting/lockable.lua
 )
+
+# Optional private record catalog generated from the user's Morrowind files.
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/omw/music/eldenring_cells.lua")
+    list(APPEND BUILTIN_DATA_MW_FILES scripts/omw/music/eldenring_cells.lua)
+endif()
 
 foreach (f ${BUILTIN_DATA_MW_FILES})
     copy_resource_file("${CMAKE_CURRENT_SOURCE_DIR}/${f}" "${OPENMW_RESOURCES_ROOT}" "resources/vfs-mw/${f}")

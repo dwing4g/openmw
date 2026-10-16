@@ -1,0 +1,92 @@
+Elden Ring asset extraction on Linux/WSL
+
+The supplied Steam installation is packed. The selective reader extracts only
+the eleven player animation/event archives and regulation parameters needed by
+ELDEN-RING-Combat-Rewrite. It reads the installed game without unpacking into,
+patching, or otherwise changing that installation. Generated game data stays
+in the recreation's ignored er-files/, src/sim/extracted.rs, assets/*.bin and
+OpenMW's ignored components/eldencombat/imported_timings.hpp.
+
+Run from the openmw directory with Python 3.10 or newer. The Python environment
+needs cryptography and zstandard. CMake, Ninja, a native x86-64 C++ compiler,
+and Git are needed to prepare the Linux reader. CI/eldenring-build-env.sh is
+used automatically if the workspace's local validation toolchain exists.
+
+1. Build the reader and fetch the public archive keys:
+
+   bash CI/eldenring-build-asset-decoder.sh
+
+   This fetches pinned source, preserves its licenses, and builds under the
+   ignored build-tools-local/elden-assets folder. It uses linoodle to load the
+   Oodle DLL from the locally owned game, with no Wine or Windows interop.
+   ER_OODLE_DLL is read-only input. The game DLL is neither copied nor packaged.
+   Modern regulation data additionally uses the native Python ZSTD reader.
+
+2. Set the native decoder and generate the recreation's data:
+
+   export ER_KRAKEN_LIBRARY="$PWD/build-tools-local/elden-assets/build/liblinoodle.so"
+   python3 scripts/unpack_eldenring_assets.py \
+     --game-dir '/mnt/c/Program Files (x86)/Steam/steamapps/common/ELDEN RING/Game' \
+     --keys-dir "$PWD/build-tools-local/elden-assets/BinderKeys/EldenRing_PC/Key" \
+     --generate
+
+   The wrapper sets ER_GAME_DIR and ER_FILES for the generator. The DCX reader
+   sets ER_OODLE_DLL to the installed Game/oo2core_6_win64.dll unless explicitly
+   overridden. The helper supports the original and current installed game's
+   BHD5 RSA headers, per-entry AES ranges, KRAK animation archives and ZSTD
+   regulation files. It validates each selected BND4 before writing it.
+
+3. Import the generated timings and reconfigure the OpenMW build:
+
+   python3 scripts/import_eldenring_timings.py \
+     ../ELDEN-RING-Combat-Rewrite/src/sim/extracted.rs
+
+   Re-run CMake so OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS is enabled. The Windows build
+   helper imports the sibling generated extracted.rs automatically.
+
+The unpacker records source-header and regulation SHA256 digests plus output
+sizes/digests in er-files/extraction-manifest.json. This manifest is local.
+Audio extraction is optional; no sound banks were extracted in this run.
+
+Validated local outputs, 2026-10-14:
+  Eleven player .anibnd.dcx archives and 194 regulation .param files.
+  extract.py generated 1,188 ground and 122 airborne source attacks.
+  bake_anims.py generated player_anims.bin containing 1,485 skeletal clips.
+  importer generated 1,080 OpenMW action definitions, including shield attacks.
+
+The generator omits special-state alternate attack hitboxes (including the
+a037 StateInfo=187 variants) so ordinary moves do not count both variants as
+separate hits. Two extraction regression fixtures cover conditional variants
+and legitimate simultaneous/paired hits. Nine importer fixture groups cover
+safe parsing, costs/windows/root motion, airborne attacks and shield grips.
+
+The imported timing table and baked animation bank are consumed by OpenMW.
+The renderer retargets the source poses onto Morrowind NPC skeletons. Generated
+data is not part of the source licenses and remains local to the user's installation.
+
+Seal / incantation addition, 2026-10-14:
+  chr/c0000_a9x.anibnd.dcx contains the casting HKX files. The common c0000
+  archive already supplies their TAE events. Re-run step 2 to unpack the extra
+  archive, then bake_anims.py (or use --generate) to include all six phases:
+    Self:   Urgent Heal  a433_045000 + a433_045010
+    Touch:  Catch Flame  a506_045000 + a506_045010
+    Target: Flame Sling a417_045000 + a417_045011 (uncharged)
+  The native spell release is aligned to the corresponding TAE release event.
+  Spell damage, costs and effects continue to come from Morrowind.
+  The bank contains 92,413 frames; all 1,479 earlier clip records remain
+  byte-identical. Flame Sling's authored seven-frame entrance blend is baked
+  into its continuation; all three release poses retain their exact samples.
+  Extraction/geometry evidence is recorded locally in
+  er-files/spell-animation-validation.json. Source-bank SHA256:
+  025408c3bc634a08edf56b265a71b570df2123b4b90be2bddaf42bb1d2c9047f
+
+Source pins and licenses are preserved in build-tools-local/elden-assets:
+  linoodle, McSimp, 90b8d825f7f89272f03f52b5d1db4708e07eb83f, MIT.
+  pe-parse, trailofbits, 76e3d41c4ca8e0490184460eb848db9cde534249, MIT.
+  BinderKeys, JKAnderson, b95a32c509e35e5b18306c1d37a7778ea4034f38, Apache-2.0.
+Local reader changes: include locale.h, configure the installed DLL through
+ER_OODLE_DLL, and export the elden_kraken_decompress C ABI. These are tooling
+dependencies only. None is linked into or required to run OpenMW.
+
+The build script can also use already fetched pinned repositories without
+network access: ELDEN_ASSET_DECODER_OFFLINE=1 bash CI/eldenring-build-asset-decoder.sh

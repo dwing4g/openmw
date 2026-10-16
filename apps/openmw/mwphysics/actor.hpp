@@ -1,12 +1,14 @@
 #ifndef OPENMW_MWPHYSICS_ACTOR_H
 #define OPENMW_MWPHYSICS_ACTOR_H
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 
 #include "ptrholder.hpp"
 
 #include <components/detournavigator/collisionshapetype.hpp>
+#include <components/eldencombat/landingmovement.hpp>
 
 #include <osg/Quat>
 #include <osg/Vec3f>
@@ -116,6 +118,10 @@ namespace MWPhysics
          */
         const osg::Vec3f& getInertialForce() const { return mForce; }
 
+        void getLandingMovement(EldenCombat::LandingMovement& movement, std::uint64_t& generation) const;
+        void setLandingMovement(const EldenCombat::LandingMovement& movement, std::uint64_t generation);
+        void clearLandingMovement();
+
         void setOnGround(bool grounded);
 
         bool getOnGround() const { return mOnGround; }
@@ -144,7 +150,12 @@ namespace MWPhysics
 
         bool isActive() const { return mActive; }
 
-        void setActive(bool value) { mActive = value; }
+        void setActive(bool value)
+        {
+            if (mActive && !value)
+                clearLandingMovement();
+            mActive = value;
+        }
 
         DetourNavigator::CollisionShapeType getCollisionShapeType() const { return mCollisionShapeType; }
 
@@ -183,6 +194,8 @@ namespace MWPhysics
         osg::Vec3f mLastStuckPosition;
 
         osg::Vec3f mForce;
+        EldenCombat::LandingMovement mLandingMovement;
+        std::uint64_t mLandingMovementGeneration = 0;
         bool mOnGround;
         bool mOnSlope;
         bool mInternalCollisionMode;

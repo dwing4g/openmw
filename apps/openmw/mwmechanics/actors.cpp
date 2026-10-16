@@ -943,6 +943,11 @@ namespace MWMechanics
 
         MWMechanics::CreatureStats& stats = ptr.getClass().getCreatureStats(ptr);
 
+        // The combat controller regenerates stamina once per action update, including
+        // its recovery delay and reduced regeneration while guarding.
+        if (Settings::game().mEldenRingCombat && stats.isEldenCombatActive())
+            return;
+
         // Current fatigue can be above base value due to a fortify effect.
         // In that case stop here and don't try to restore.
         DynamicStat<float> fatigue = stats.getFatigue();

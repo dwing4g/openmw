@@ -164,6 +164,8 @@ namespace MWPhysics
         mPositionOffset = osg::Vec3f();
         mStandingOnPtr = nullptr;
         mSkipSimulation = true;
+        mLandingMovement.reset();
+        ++mLandingMovementGeneration;
     }
 
     void Actor::setSimulationPosition(const osg::Vec3f& position)
@@ -216,6 +218,8 @@ namespace MWPhysics
     {
         std::scoped_lock lock(mPositionMutex);
         mPositionOffset += offset;
+        mLandingMovement.reset();
+        ++mLandingMovementGeneration;
     }
 
     osg::Vec3f Actor::applyOffsetChange()
@@ -279,6 +283,29 @@ namespace MWPhysics
     void Actor::setInertialForce(const osg::Vec3f& force)
     {
         mForce = force;
+    }
+
+    void Actor::getLandingMovement(EldenCombat::LandingMovement& movement, std::uint64_t& generation) const
+    {
+        std::scoped_lock lock(mPositionMutex);
+        movement = mLandingMovement;
+        generation = mLandingMovementGeneration;
+    }
+
+    void Actor::setLandingMovement(const EldenCombat::LandingMovement& movement, std::uint64_t generation)
+    {
+        std::scoped_lock lock(mPositionMutex);
+        // A teleport or scripted displacement can happen while physics is running.
+        // Never restore the old position's momentum from an outstanding result.
+        if (generation == mLandingMovementGeneration)
+            mLandingMovement = movement;
+    }
+
+    void Actor::clearLandingMovement()
+    {
+        std::scoped_lock lock(mPositionMutex);
+        mLandingMovement.reset();
+        ++mLandingMovementGeneration;
     }
 
     void Actor::setOnGround(bool grounded)

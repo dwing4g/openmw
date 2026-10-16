@@ -88,6 +88,7 @@ namespace MWPhysics
     osg::Vec3f MovementSolver::traceDown(const MWWorld::Ptr& ptr, const osg::Vec3f& position, Actor* actor,
         btCollisionWorld* collisionWorld, float maxHeight)
     {
+        actor->clearLandingMovement();
         osg::Vec3f offset = actor->getCollisionObjectPosition() - ptr.getRefData().getPosition().asVec3();
 
         ActorTracer tracer;
@@ -133,6 +134,7 @@ namespace MWPhysics
         // Anything to collide with?
         if (actor.mSkipCollisionDetection)
         {
+            actor.mLandingMovement.reset();
             actor.mPosition += (osg::Quat(actor.mRotation.x(), osg::Vec3f(-1, 0, 0))
                                    * osg::Quat(actor.mRotation.y(), osg::Vec3f(0, 0, -1)))
                 * actor.mMovement * time;
@@ -147,6 +149,11 @@ namespace MWPhysics
         actor.mPosition.z() += actor.mHalfExtentsZ; // vanilla-accurate
 
         float swimlevel = actor.mSwimLevel + actor.mHalfExtentsZ;
+        const bool wasOnWalkableGround = actor.mIsOnGround && !actor.mIsOnSlope;
+        const bool preserveLandingMomentum = actor.mPreserveLandingMomentum && !actor.mFlying
+            && actor.mPosition.z() >= swimlevel;
+        if (!preserveLandingMomentum)
+            actor.mLandingMovement.reset();
 
         ActorTracer tracer;
 
@@ -170,9 +177,17 @@ namespace MWPhysics
 
             if ((velocity.z() > 0.f && actor.mIsOnGround && !actor.mIsOnSlope)
                 || (velocity.z() > 0.f && velocity.z() + actor.mInertia.z() <= -velocity.z() && actor.mIsOnSlope))
+            {
                 actor.mInertia = velocity;
+                // A new jump takes its own launch impulse; never stack the old
+                // landing velocity on top of another takeoff.
+                actor.mLandingMovement.reset();
+            }
             else if (!actor.mIsOnGround || actor.mIsOnSlope)
+            {
                 velocity = velocity + actor.mInertia;
+                actor.mLandingMovement.reset();
+            }
         }
 
         // Now that we have the effective movement vector, apply wind forces to it
@@ -182,6 +197,16 @@ namespace MWPhysics
             const float fStromWalkMult = store.get<ESM::GameSetting>().find("fStromWalkMult")->mValue.getFloat();
             const float angleCos = worldData.mStormDirection * velocity / velocity.length();
             velocity *= 1.f + fStromWalkMult * angleCos;
+        }
+
+        if (preserveLandingMomentum && wasOnWalkableGround && velocity.z() <= 0.f)
+        {
+            // Blend absolute world velocity back to the controller's requested
+            // movement. Its direction already honors Smooth Movement. Applying
+            // this after wind avoids multiplying retained velocity every step.
+            const auto landing = actor.mLandingMovement.apply({ velocity.x(), velocity.y() }, time);
+            velocity.x() = landing.mX;
+            velocity.y() = landing.mY;
         }
 
         Stepper stepper(collisionWorld, actor.mCollisionObject);
@@ -355,7 +380,11 @@ namespace MWPhysics
                     {
                         perpendicular.normalize();
                         if (std::abs(perpendicular.z()) > 0.7071f)
+                        {
+                            if (preserveLandingMomentum)
+                                velocity = newVelocity;
                             break;
+                        }
                     }
                 }
 
@@ -425,6 +454,20 @@ namespace MWPhysics
                 isOnSlope = false;
             }
         }
+
+        if (preserveLandingMomentum && isOnGround && !isOnSlope && actor.mStuckFrames == 0
+            && newPosition.z() >= swimlevel && !actor.mWalkingOnWater)
+        {
+            const float maximumHorizontalSpeed = std::hypot(origVelocity.x(), origVelocity.y());
+            // Use velocity after wall/slope collision resolution, not the old
+            // launch impulse. Falling down a slope must not create extra speed.
+            if (!wasOnWalkableGround && actor.mInertia.z() <= 0.f)
+                actor.mLandingMovement.land({ velocity.x(), velocity.y() }, maximumHorizontalSpeed);
+            else
+                actor.mLandingMovement.collide({ velocity.x(), velocity.y() }, maximumHorizontalSpeed);
+        }
+        else
+            actor.mLandingMovement.reset();
 
         if ((isOnGround && !isOnSlope) || newPosition.z() < swimlevel || actor.mFlying)
             actor.mInertia = osg::Vec3f(0.f, 0.f, 0.f);

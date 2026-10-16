@@ -10,10 +10,14 @@
 #include <components/debug/debuglog.hpp>
 #include <components/files/conversion.hpp>
 #include <components/sdlutil/sdlmappings.hpp>
+#include <components/settings/values.hpp>
 
 #include "../mwbase/environment.hpp"
 #include "../mwbase/inputmanager.hpp"
+#include "../mwbase/statemanager.hpp"
 #include "../mwbase/windowmanager.hpp"
+#include "../mwbase/world.hpp"
+#include "../mwmechanics/eldencombat.hpp"
 
 #include "actions.hpp"
 
@@ -203,6 +207,7 @@ namespace MWInput
     {
         // update values of channels (as a result of pressed keys)
         mInputBinder->update(dt);
+        mCapturedActions = {};
     }
 
     bool BindingsManager::isLeftOrRightButton(int action, bool joystick) const
@@ -222,7 +227,8 @@ namespace MWInput
     {
         int playerChannels[] = { A_AutoMove, A_AlwaysRun, A_ToggleWeapon, A_ToggleSpell, A_Rest, A_QuickKey1,
             A_QuickKey2, A_QuickKey3, A_QuickKey4, A_QuickKey5, A_QuickKey6, A_QuickKey7, A_QuickKey8, A_QuickKey9,
-            A_QuickKey10, A_Use, A_Journal };
+            A_QuickKey10, A_Use, A_Journal, A_HeavyAttack, A_Dodge, A_Block, A_LockOn, A_CriticalAttack,
+            A_TwoHand, A_CycleOffhand, A_HeavyModifier, A_TwoHandLeft };
 
         for (int pc : playerChannels)
         {
@@ -237,12 +243,26 @@ namespace MWInput
 
     float BindingsManager::getActionValue(int id) const
     {
+        // Lua's native attack controls must see the same light button as the
+        // combat controller, so a heavy/grip chord cannot also start a light hit.
+        if ((id == A_Use || id >= A_HeavyAttack) && id < A_Last && eldenInputEnabled())
+            return mEldenInput.held(id) ? 1.f : 0.f;
         return mInputBinder->getChannel(id)->getValue();
     }
 
     bool BindingsManager::actionIsActive(int id) const
     {
         return getActionValue(id) == 1.0;
+    }
+
+    EldenCombat::Button BindingsManager::consumeActionButton(int id)
+    {
+        return mEldenInput.consume(id);
+    }
+
+    void BindingsManager::clearActionButtons()
+    {
+        mEldenInput.clear();
     }
 
     void BindingsManager::loadKeyDefaults(bool force)
@@ -291,10 +311,41 @@ namespace MWInput
         defaultKeyBindings[A_QuickSave] = SDL_SCANCODE_F5;
         defaultKeyBindings[A_QuickLoad] = SDL_SCANCODE_F9;
         defaultKeyBindings[A_TogglePostProcessorHUD] = SDL_SCANCODE_F2;
+        defaultKeyBindings[A_HeavyAttack] = SDL_SCANCODE_G;
+        defaultKeyBindings[A_Dodge] = SDL_SCANCODE_V;
+        defaultKeyBindings[A_Block] = SDL_SCANCODE_C;
+        defaultKeyBindings[A_CriticalAttack] = SDL_SCANCODE_B;
+        defaultKeyBindings[A_TwoHand] = SDL_SCANCODE_H;
+        defaultKeyBindings[A_CycleOffhand] = SDL_SCANCODE_N;
+
+        if (Settings::game().mEldenRingCombat)
+        {
+            defaultKeyBindings[A_Activate] = SDL_SCANCODE_E;
+            defaultKeyBindings[A_Dodge] = SDL_SCANCODE_SPACE;
+            defaultKeyBindings[A_Jump] = SDL_SCANCODE_F;
+            defaultKeyBindings[A_Sneak] = SDL_SCANCODE_X;
+            defaultKeyBindings[A_Run] = SDL_SCANCODE_LALT;
+            defaultKeyBindings[A_HeavyModifier] = SDL_SCANCODE_LSHIFT;
+            defaultKeyBindings[A_LockOn] = SDL_SCANCODE_Q;
+            defaultKeyBindings[A_CycleWeaponRight] = SDL_SCANCODE_RIGHT;
+            defaultKeyBindings[A_CycleOffhand] = SDL_SCANCODE_LEFT;
+            defaultKeyBindings[A_Inventory] = SDL_SCANCODE_TAB;
+            defaultKeyBindings[A_TogglePOV] = SDL_SCANCODE_V;
+            defaultKeyBindings[A_ToggleWeapon] = SDL_SCANCODE_R;
+            defaultKeyBindings[A_ToggleSpell] = SDL_SCANCODE_C;
+            defaultKeyBindings[A_AutoMove] = SDL_SCANCODE_Z;
+            defaultKeyBindings.erase(A_Block);
+        }
 
         std::map<int, int> defaultMouseButtonBindings;
         defaultMouseButtonBindings[A_Inventory] = SDL_BUTTON_RIGHT;
         defaultMouseButtonBindings[A_Use] = SDL_BUTTON_LEFT;
+        defaultMouseButtonBindings[A_LockOn] = SDL_BUTTON_MIDDLE;
+        if (Settings::game().mEldenRingCombat)
+        {
+            defaultMouseButtonBindings.erase(A_Inventory);
+            defaultMouseButtonBindings[A_Block] = SDL_BUTTON_RIGHT;
+        }
 
         std::map<int, ICS::InputControlSystem::MouseWheelClick> defaultMouseWheelBindings;
         defaultMouseWheelBindings[A_ZoomIn] = ICS::InputControlSystem::MouseWheelClick::UP;
@@ -329,7 +380,7 @@ namespace MWInput
                     control->setInitialValue(0.0f);
                     mInputBinder->addKeyBinding(control, defaultKeyBindings[i], ICS::Control::INCREASE);
                 }
-                else if (defaultMouseButtonBindings.find(i) != defaultMouseButtonBindings.end()
+                if (defaultMouseButtonBindings.find(i) != defaultMouseButtonBindings.end()
                     && (force || !mInputBinder->isMouseButtonBound(defaultMouseButtonBindings[i])))
                 {
                     control->setInitialValue(0.0f);
@@ -376,6 +427,13 @@ namespace MWInput
         defaultButtonBindings[A_Inventory] = SDL_CONTROLLER_BUTTON_B;
         defaultButtonBindings[A_GameMenu] = SDL_CONTROLLER_BUTTON_START;
         defaultButtonBindings[A_QuickSave] = SDL_CONTROLLER_BUTTON_GUIDE;
+        // These slots are free in the existing Morrowind controller layout.
+        // All combat actions remain configurable in the Controls menu.
+        defaultButtonBindings[A_HeavyAttack] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+        defaultButtonBindings[A_Dodge] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+        defaultButtonBindings[A_Block] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+        defaultButtonBindings[A_LockOn] = SDL_CONTROLLER_BUTTON_BACK;
+        defaultButtonBindings[A_CriticalAttack] = SDL_CONTROLLER_BUTTON_DPAD_UP;
 
         std::map<int, int> defaultAxisBindings;
         defaultAxisBindings[A_MoveForwardBackward] = SDL_CONTROLLER_AXIS_LEFTY;
@@ -384,6 +442,28 @@ namespace MWInput
         defaultAxisBindings[A_LookLeftRight] = SDL_CONTROLLER_AXIS_RIGHTX;
         defaultAxisBindings[A_Use] = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
         defaultAxisBindings[A_Jump] = SDL_CONTROLLER_AXIS_TRIGGERLEFT;
+
+        if (Settings::game().mEldenRingCombat)
+        {
+            defaultButtonBindings[A_Activate] = SDL_CONTROLLER_BUTTON_Y;
+            defaultButtonBindings[A_Use] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+            defaultButtonBindings[A_Block] = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
+            defaultButtonBindings[A_Dodge] = SDL_CONTROLLER_BUTTON_B;
+            defaultButtonBindings[A_Jump] = SDL_CONTROLLER_BUTTON_A;
+            defaultButtonBindings[A_LockOn] = SDL_CONTROLLER_BUTTON_RIGHTSTICK;
+            defaultButtonBindings[A_CycleWeaponRight] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+            defaultButtonBindings[A_CycleOffhand] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+            defaultButtonBindings[A_Inventory] = SDL_CONTROLLER_BUTTON_BACK;
+            defaultButtonBindings[A_ToggleSpell] = SDL_CONTROLLER_BUTTON_DPAD_UP;
+            defaultButtonBindings[A_Journal] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+            defaultButtonBindings.erase(A_Rest);
+            defaultButtonBindings.erase(A_TogglePOV);
+            defaultButtonBindings.erase(A_HeavyAttack);
+            defaultButtonBindings.erase(A_CriticalAttack);
+            defaultAxisBindings.erase(A_Use);
+            defaultAxisBindings.erase(A_Jump);
+            defaultAxisBindings[A_HeavyAttack] = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
+        }
 
         for (int i = 0; i < A_Last; i++)
         {
@@ -447,7 +527,7 @@ namespace MWInput
             case A_Use:
                 return "#{sUse}";
             case A_Activate:
-                return "#{sActivate}";
+                return Settings::game().mEldenRingCombat ? "Interact / grip modifier" : "#{sActivate}";
             case A_MoveBackward:
                 return "#{sBack}";
             case A_MoveForward:
@@ -471,7 +551,7 @@ namespace MWInput
             case A_Console:
                 return "#{OMWEngine:ConsoleWindow}";
             case A_Run:
-                return "#{sRun}";
+                return Settings::game().mEldenRingCombat ? "Walk (hold)" : "#{sRun}";
             case A_Sneak:
                 return "#{sCrouch_Sneak}";
             case A_AutoMove:
@@ -516,6 +596,24 @@ namespace MWInput
                 return "#{sQuickLoadCmd}";
             case A_TogglePostProcessorHUD:
                 return "#{OMWEngine:TogglePostProcessorHUD}";
+            case A_HeavyAttack:
+                return "Heavy attack / guard counter";
+            case A_Dodge:
+                return "Dodge / hold to sprint";
+            case A_Block:
+                return "Guard / off-hand attack";
+            case A_LockOn:
+                return "Lock on";
+            case A_CriticalAttack:
+                return "Critical attack";
+            case A_TwoHand:
+                return "Toggle right two-handed grip";
+            case A_TwoHandLeft:
+                return "Toggle left two-handed grip";
+            case A_HeavyModifier:
+                return "Heavy attack modifier (hold with attack)";
+            case A_CycleOffhand:
+                return "Cycle off-hand armament";
             default:
                 return {}; // not configurable
         }
@@ -532,7 +630,12 @@ namespace MWInput
         unsigned int mouse = mInputBinder->getMouseButtonBinding(c, ICS::Control::INCREASE);
         ICS::InputControlSystem::MouseWheelClick wheel = mInputBinder->getMouseWheelBinding(c, ICS::Control::INCREASE);
         if (key != SDL_SCANCODE_UNKNOWN)
-            return MyGUI::TextIterator::toTagsString(mInputBinder->scancodeToString(key));
+        {
+            std::string name = MyGUI::TextIterator::toTagsString(mInputBinder->scancodeToString(key));
+            if (mouse != ICS_MAX_DEVICE_BUTTONS)
+                name += " / #{sMouse} " + std::to_string(mouse);
+            return name;
+        }
         else if (mouse != ICS_MAX_DEVICE_BUTTONS)
             return "#{sMouse} " + std::to_string(mouse);
         else if (wheel != ICS::InputControlSystem::MouseWheelClick::UNASSIGNED)
@@ -579,7 +682,8 @@ namespace MWInput
             A_ToggleSpell, A_CycleSpellLeft, A_CycleSpellRight, A_CycleWeaponLeft, A_CycleWeaponRight, A_AutoMove,
             A_Jump, A_Inventory, A_Journal, A_Rest, A_Console, A_QuickSave, A_QuickLoad, A_ToggleHUD, A_Screenshot,
             A_QuickKeysMenu, A_QuickKey1, A_QuickKey2, A_QuickKey3, A_QuickKey4, A_QuickKey5, A_QuickKey6, A_QuickKey7,
-            A_QuickKey8, A_QuickKey9, A_QuickKey10, A_TogglePostProcessorHUD };
+            A_QuickKey8, A_QuickKey9, A_QuickKey10, A_TogglePostProcessorHUD, A_HeavyAttack, A_Dodge, A_Block,
+            A_LockOn, A_CriticalAttack, A_TwoHand, A_CycleOffhand, A_HeavyModifier, A_TwoHandLeft };
 
         return actions;
     }
@@ -590,7 +694,8 @@ namespace MWInput
             A_Jump, A_Inventory, A_Journal, A_Rest, A_QuickSave, A_QuickLoad, A_ToggleHUD, A_Screenshot,
             A_QuickKeysMenu, A_QuickKey1, A_QuickKey2, A_QuickKey3, A_QuickKey4, A_QuickKey5, A_QuickKey6, A_QuickKey7,
             A_QuickKey8, A_QuickKey9, A_QuickKey10, A_CycleSpellLeft, A_CycleSpellRight, A_CycleWeaponLeft,
-            A_CycleWeaponRight };
+            A_CycleWeaponRight, A_HeavyAttack, A_Dodge, A_Block, A_LockOn, A_CriticalAttack, A_TwoHand,
+            A_CycleOffhand, A_TwoHandLeft };
 
         return actions;
     }
@@ -607,13 +712,51 @@ namespace MWInput
         return mInputBinder->detectingBindingState();
     }
 
+    bool BindingsManager::eldenInputEnabled() const
+    {
+        const auto& environment = MWBase::Environment::get();
+        if (!Settings::game().mEldenRingCombat
+            || environment.getStateManager()->getState() != MWBase::StateManager::State_Running)
+            return false;
+        const auto manager = environment.getInputManager();
+        return !manager->controlsDisabled() && manager->getControlSwitch("playercontrols")
+            && !environment.getWindowManager()->isGuiMode()
+            && manager->getCursorMode() == MWBase::CursorMode::Locked;
+    }
+
+    bool BindingsManager::captureEldenAction(int action, bool down, EldenInput::Source source)
+    {
+        if (isDetectingBindingState() || !eldenInputEnabled())
+            return false;
+        const auto& environment = MWBase::Environment::get();
+        const auto player = environment.getWorld()->getPlayerPtr();
+        const bool melee = MWMechanics::useEldenMelee(player)
+            && environment.getInputManager()->getControlSwitch("playerfighting");
+        const bool wasHeld = mEldenInput.sourceHeld(action);
+        mCapturedActions.at(action) = true;
+        mEldenInput.set(action, down, melee, source);
+        if (down && !wasHeld && action != A_Activate)
+            environment.getInputManager()->executeAction(action);
+        return true;
+    }
+
     void BindingsManager::mousePressed(const SDL_MouseButtonEvent& arg, Uint8 deviceID)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+                if (mInputBinder->getMouseButtonBinding(mInputBinder->getControl(action), ICS::Control::INCREASE)
+                    == deviceID)
+                    captureEldenAction(action, true, EldenInput::Source::Mouse);
         mInputBinder->mousePressed(arg, deviceID);
     }
 
     void BindingsManager::mouseReleased(const SDL_MouseButtonEvent& arg, Uint8 deviceID)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+                if (mInputBinder->getMouseButtonBinding(mInputBinder->getControl(action), ICS::Control::INCREASE)
+                    == deviceID)
+                    captureEldenAction(action, false, EldenInput::Source::Mouse);
         mInputBinder->mouseReleased(arg, deviceID);
     }
 
@@ -624,16 +767,54 @@ namespace MWInput
 
     void BindingsManager::mouseWheelMoved(const SDL_MouseWheelEvent& arg)
     {
+        if (!isDetectingBindingState())
+        {
+            using Click = ICS::InputControlSystem::MouseWheelClick;
+            // Use the same vertical precedence and flipped direction as ICS.
+            const int value = arg.y != 0 ? arg.y : arg.x;
+            const bool positive = (value > 0) != (arg.direction == SDL_MOUSEWHEEL_FLIPPED);
+            const Click click = value == 0 ? Click::UNASSIGNED
+                : arg.y != 0 ? (positive ? Click::UP : Click::DOWN)
+                             : (positive ? Click::RIGHT : Click::LEFT);
+            if (click != Click::UNASSIGNED)
+                for (int action = 0; action < A_Last; ++action)
+                    if (mInputBinder->getMouseWheelBinding(mInputBinder->getControl(action), ICS::Control::INCREASE)
+                        == click)
+                    {
+                        captureEldenAction(action, true, EldenInput::Source::MouseWheel);
+                        captureEldenAction(action, false, EldenInput::Source::MouseWheel);
+                    }
+        }
         mInputBinder->mouseWheelMoved(arg);
     }
 
     void BindingsManager::keyPressed(const SDL_KeyboardEvent& arg)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+            {
+                const SDL_Scancode key = getKeyBinding(action);
+                const bool rightShift = action == A_HeavyModifier && key == SDL_SCANCODE_LSHIFT
+                    && arg.keysym.scancode == SDL_SCANCODE_RSHIFT;
+                if (key == arg.keysym.scancode || rightShift)
+                    captureEldenAction(action, true,
+                        rightShift ? EldenInput::Source::AlternateShift : EldenInput::Source::Keyboard);
+            }
         mInputBinder->keyPressed(arg);
     }
 
     void BindingsManager::keyReleased(const SDL_KeyboardEvent& arg)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+            {
+                const SDL_Scancode key = getKeyBinding(action);
+                const bool rightShift = action == A_HeavyModifier && key == SDL_SCANCODE_LSHIFT
+                    && arg.keysym.scancode == SDL_SCANCODE_RSHIFT;
+                if (key == arg.keysym.scancode || rightShift)
+                    captureEldenAction(action, false,
+                        rightShift ? EldenInput::Source::AlternateShift : EldenInput::Source::Keyboard);
+            }
         mInputBinder->keyReleased(arg);
     }
 
@@ -644,22 +825,48 @@ namespace MWInput
 
     void BindingsManager::controllerRemoved(const SDL_ControllerDeviceEvent& arg)
     {
+        mEldenInput.release(EldenInput::Source::ControllerButton);
+        mEldenInput.release(EldenInput::Source::ControllerAxis);
         mInputBinder->controllerRemoved(arg);
     }
 
     void BindingsManager::controllerButtonPressed(int deviceID, const SDL_ControllerButtonEvent& arg)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+                if (mInputBinder->getJoystickButtonBinding(
+                        mInputBinder->getControl(action), deviceID, ICS::Control::INCREASE) == arg.button)
+                    captureEldenAction(action, true, EldenInput::Source::ControllerButton);
         mInputBinder->buttonPressed(deviceID, arg);
     }
 
     void BindingsManager::controllerButtonReleased(int deviceID, const SDL_ControllerButtonEvent& arg)
     {
+        if (!isDetectingBindingState())
+            for (int action = 0; action < A_Last; ++action)
+                if (mInputBinder->getJoystickButtonBinding(
+                        mInputBinder->getControl(action), deviceID, ICS::Control::INCREASE) == arg.button)
+                    captureEldenAction(action, false, EldenInput::Source::ControllerButton);
         mInputBinder->buttonReleased(deviceID, arg);
     }
 
     void BindingsManager::controllerAxisMoved(int deviceID, const SDL_ControllerAxisEvent& arg)
     {
+        std::vector<int> captured;
+        if (!isDetectingBindingState() && eldenInputEnabled())
+            for (int action = 0; action < A_Last; ++action)
+                if (action != A_MoveForwardBackward && action != A_MoveLeftRight
+                    && action != A_LookUpDown && action != A_LookLeftRight
+                    && mInputBinder->getJoystickAxisBinding(
+                           mInputBinder->getControl(action), deviceID, ICS::Control::INCREASE) == arg.axis)
+                {
+                    mCapturedActions.at(action) = true;
+                    captured.push_back(action);
+                }
         mInputBinder->axisMoved(deviceID, arg);
+        for (int action : captured)
+            captureEldenAction(action, mInputBinder->getChannel(action)->getValue() > 0.6f,
+                EldenInput::Source::ControllerAxis);
     }
 
     SDL_Scancode BindingsManager::getKeyBinding(int actionId)
@@ -684,7 +891,11 @@ namespace MWInput
         if (mDragDrop && action != A_GameMenu && action != A_Inventory)
             return;
 
-        if (manager->joystickLastUsed() && manager->getControlSwitch("playercontrols"))
+        if (mCapturedActions.at(action))
+            return;
+
+        if (!Settings::game().mEldenRingCombat && manager->joystickLastUsed()
+            && manager->getControlSwitch("playercontrols"))
         {
             if (action == A_Use && actionIsActive(A_ToggleWeapon))
                 action = A_CycleWeaponRight;

@@ -31,13 +31,15 @@ namespace MWInput
 
     void KeyboardManager::keyPressed(const SDL_KeyboardEvent& arg)
     {
+        const auto windowManager = MWBase::Environment::get().getWindowManager();
+        const auto input = MWBase::Environment::get().getInputManager();
         // HACK: to make default keybinding for the console work without printing an extra "^" upon closing
         // This assumes that SDL_TextInput events always come *after* the key event
         // (which is somewhat reasonable, and hopefully true for all SDL platforms)
         auto kc = SDLUtil::sdlKeyToMyGUI(arg.keysym.sym);
         if (mBindingsManager->getKeyBinding(A_Console) == arg.keysym.scancode
             // HACK: allow upper case variant of console keybinding.
-            && (arg.keysym.mod & KMOD_SHIFT) == 0 && MWBase::Environment::get().getWindowManager()->isConsoleMode())
+            && (arg.keysym.mod & KMOD_SHIFT) == 0 && windowManager->isConsoleMode())
             SDL_StopTextInput();
 
         bool consumed = SDL_IsTextInputActive() && // Little trick to check if key is printable
@@ -45,9 +47,22 @@ namespace MWInput
                 // Don't trust isprint for symbols outside the extended ASCII range
                 ((kc == MyGUI::KeyCode::None && arg.keysym.sym > 0xff)
                     || (arg.keysym.sym >= 0 && arg.keysym.sym <= 255 && std::isprint(arg.keysym.sym))));
-        if (kc != MyGUI::KeyCode::None && !mBindingsManager->isDetectingBindingState())
+        // Inventory is a toggle in both the player and container windows. Give
+        // its current binding priority over GUI focus navigation (notably Tab),
+        // then use the normal binding/Lua trigger so overrides still apply.
+        // Printable rebound keys remain available to text fields, and modal or
+        // unrelated menus retain their own keyboard handling.
+        const bool inventoryShortcut = mBindingsManager->getKeyBinding(A_Inventory) == arg.keysym.scancode
+            && !mBindingsManager->isDetectingBindingState() && !input->controlsDisabled() && !consumed
+            && !MyGUI::InputManager::getInstance().isModalAny() && !windowManager->isConsoleMode()
+            && !windowManager->isPostProcessorHudVisible()
+            && (!windowManager->isGuiMode() || windowManager->getMode() == MWGui::GM_Inventory
+                || windowManager->getMode() == MWGui::GM_Container);
+        if (inventoryShortcut)
+            mBindingsManager->setPlayerControlsEnabled(!windowManager->isGuiMode());
+        else if (kc != MyGUI::KeyCode::None && !mBindingsManager->isDetectingBindingState())
         {
-            if (MWBase::Environment::get().getWindowManager()->injectKeyPress(kc, 0, arg.repeat))
+            if (windowManager->injectKeyPress(kc, 0, arg.repeat))
                 consumed = true;
             mBindingsManager->setPlayerControlsEnabled(!consumed);
         }
@@ -55,7 +70,6 @@ namespace MWInput
         if (arg.repeat)
             return;
 
-        MWBase::InputManager* input = MWBase::Environment::get().getInputManager();
         if (!input->controlsDisabled() && !consumed)
             mBindingsManager->keyPressed(arg);
 

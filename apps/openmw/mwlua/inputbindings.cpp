@@ -224,6 +224,7 @@ namespace MWLua
             = [manager = context.mLuaManager](std::string_view key) { manager->inputTriggers().activate(key); };
 
         api["isIdle"] = [input]() { return input->isIdle(); };
+        api["_isEldenCombatEnabled"] = []() { return Settings::game().mEldenRingCombat.get(); };
         api["isActionPressed"] = [input](int action) { return input->actionIsActive(action); };
         api["isKeyPressed"] = [](SDL_Scancode code) -> bool {
             int maxCode;
@@ -288,6 +289,15 @@ namespace MWLua
                 { "CycleWeaponRight", MWInput::A_CycleWeaponRight },
                 { "AlwaysRun", MWInput::A_AlwaysRun },
                 { "Sneak", MWInput::A_Sneak },
+                { "HeavyAttack", MWInput::A_HeavyAttack },
+                { "Dodge", MWInput::A_Dodge },
+                { "Block", MWInput::A_Block },
+                { "LockOn", MWInput::A_LockOn },
+                { "CriticalAttack", MWInput::A_CriticalAttack },
+                { "TwoHand", MWInput::A_TwoHand },
+                { "TwoHandLeft", MWInput::A_TwoHandLeft },
+                { "CycleOffhand", MWInput::A_CycleOffhand },
+                { "HeavyModifier", MWInput::A_HeavyModifier },
 
                 { "QuickSave", MWInput::A_QuickSave },
                 { "QuickLoad", MWInput::A_QuickLoad },

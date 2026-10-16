@@ -13,6 +13,7 @@ namespace MWInput
         ActionManager(BindingsManager* bindingsManager, std::function<void()> takeScreenshot);
 
         void update(float dt);
+        void clearCombatInput();
 
         void executeAction(int action);
 
@@ -35,6 +36,7 @@ namespace MWInput
 
     private:
         void handleGuiArrowKey(int action);
+        void updateCombatInput();
 
         BindingsManager* mBindingsManager;
         std::function<void()> mTakeScreenshot;

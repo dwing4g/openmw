@@ -182,6 +182,9 @@ namespace MWMechanics
                 mTimeOfDeath = MWBase::Environment::get().getWorld()->getTimeStamp();
 
             mDead = true;
+            mEldenCombat.setDead(true);
+            mEldenCombatInput = {};
+            mEldenCombatActive = false;
 
             mDynamic[index].setCurrent(0);
         }
@@ -266,6 +269,9 @@ namespace MWMechanics
             mDynamic[0].setCurrent(mDynamic[0].getBase());
             mDead = false;
             mDeathAnimationFinished = false;
+            mEldenCombat.reset();
+            mEldenCombatInput = {};
+            mEldenCombatActive = false;
         }
     }
 
@@ -558,6 +564,9 @@ namespace MWMechanics
 
     void CreatureStats::readState(const ESM::CreatureStats& state)
     {
+        mEldenCombat.reset();
+        mEldenCombatInput = {};
+        mEldenCombatActive = false;
         if (!state.mMissingACDT)
         {
             for (const auto& [attribute, value] : state.mAttributes)

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <memory>
@@ -15,6 +16,7 @@
 #include <osg/Quat>
 #include <osg/Timer>
 
+#include <components/eldencombat/landingmovement.hpp>
 #include <components/vfs/pathutil.hpp>
 
 #include "../mwworld/ptr.hpp"
@@ -79,9 +81,12 @@ namespace MWPhysics
 
     struct ActorFrameData
     {
-        ActorFrameData(Actor& actor, bool inert, bool waterCollision, float slowFall, float waterlevel, bool isPlayer);
+        ActorFrameData(Actor& actor, bool inert, bool waterCollision, float slowFall, float waterlevel, bool isPlayer,
+            bool preserveLandingMomentum);
         osg::Vec3f mPosition;
         osg::Vec3f mInertia;
+        EldenCombat::LandingMovement mLandingMovement;
+        std::uint64_t mLandingMovementGeneration = 0;
         const btCollisionObject* mStandingOn;
         bool mIsOnGround;
         bool mIsOnSlope;
@@ -98,11 +103,12 @@ namespace MWPhysics
         float mOldHeight;
         unsigned int mStuckFrames;
         const bool mFlying;
-        const bool mWasOnGround;
+        bool mWasOnGround;
         const bool mIsAquatic;
         const bool mWaterCollision;
         const bool mSkipCollisionDetection;
         const bool mIsPlayer;
+        const bool mPreserveLandingMomentum;
     };
 
     struct ProjectileFrameData

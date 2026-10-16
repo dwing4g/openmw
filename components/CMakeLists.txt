@@ -57,6 +57,18 @@ list(APPEND COMPONENT_FILES "${OpenMW_BINARY_DIR}/${OSG_PLUGIN_CHECKER_CPP_FILE}
 
 # source files
 
+add_component_dir (eldencombat
+    combat animations aitactics
+    )
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/eldencombat/imported_timings.hpp")
+    set_source_files_properties(eldencombat/combat.cpp PROPERTIES
+        COMPILE_DEFINITIONS OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+    if(OPENMW_UNITY_BUILD)
+        set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/ub_eldencombat.cpp" PROPERTIES
+            COMPILE_DEFINITIONS OPENMW_ELDENCOMBAT_IMPORTED_TIMINGS)
+    endif()
+endif()
+
 add_component_dir (lua
     luastate scriptscontainer asyncpackage utilpackage serialization configuration l10n storage utf8
     shapes/box inputactions yamlloader scripttracker luastateptr

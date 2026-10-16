@@ -48,6 +48,11 @@ namespace MWMechanics
     /// @note if the weapon is unequipped as result of condition damage, a new Ptr will be assigned to \a weapon.
     void reduceWeaponCondition(float damage, bool hit, MWWorld::Ptr& weapon, const MWWorld::Ptr& attacker);
 
+    /// Native weapon range, using weapon skill for active Elden melee and charge otherwise.
+    /// This returns base damage; condition, Strength, and per-hit multipliers are separate.
+    float getMeleeWeaponDamage(
+        const MWWorld::Ptr& weapon, const MWWorld::Ptr& attacker, int attackType, float attackStrength);
+
     /// Adjust weapon damage based on its condition. A used weapon will be less effective.
     void adjustWeaponDamage(float& damage, const MWWorld::Ptr& weapon, const MWWorld::Ptr& attacker);
 

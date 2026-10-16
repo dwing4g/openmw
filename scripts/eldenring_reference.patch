@@ -1,0 +1,340 @@
+Source-only changes for ELDEN-RING-Combat-Rewrite revision
+177a3b5ec14a9bde39b9ab458a3400b4038224e3 (Funny-Bones and contributors).
+MIT license: scripts/eldenring_music/LICENSE-MIT.txt.
+Contains no generated timings, animation poses, or game archives.
+
+diff --git a/tools/bake_anims.py b/tools/bake_anims.py
+index 96c3368..706e4d5 100644
+--- a/tools/bake_anims.py
++++ b/tools/bake_anims.py
+@@ -8,8 +8,10 @@ into the sandbox's right-handed space (+X left, +Y up, +Z forward).
+ 
+ Usage: python tools/bake_anims.py
+ """
++import math
+ import struct
+ import sys
++import tempfile
+ from pathlib import Path
+ 
+ sys.path.insert(0, str(Path(__file__).parent))
+@@ -22,6 +24,7 @@ from skel import fk, qrot
+ SRC = paths.er_files() / "chr"
+ OUT = Path(__file__).parent.parent / "assets" / "player_anims.bin"
+ PACKS = ("c0000_a00_hi", "c0000_a00_lo", "c0000_a00_md", "c0000_a0x", "c0000_a1x", "c0000_a2x", "c0000_a3x", "c0000_a4x", "c0000_a5x")
++SPELL_PACK = "c0000_a9x"
+ 
+ JOINTS = [
+     "Pelvis", "Spine", "Spine1", "Spine2", "Neck", "Head",
+@@ -50,8 +53,30 @@ EXTRA = [
+     ("a00", 202040),   # airborne loop, for jumps and falls alike
+     ("a00", 4000),     # start of a fall off a ledge
+     ("a00", 17002),    # death
++    ("a433", 45000), ("a433", 45010),  # Urgent Heal: windup, cast (self)
++    ("a506", 45000), ("a506", 45010),  # Catch Flame: windup, cast (touch)
++    ("a417", 45000), ("a417", 45011),  # Flame Sling: windup, uncharged cast (target)
+ ]
+ 
++# These right-hand seal gestures are selected by Magic rows 6420, 6000, 6010.
++# In current MAGIC_PARAM_ST the category byte is at 0x26 and motion category
++# at 0x29; each is incantation category 1 with TAE = 400 + motion category.
++# TAE event 64 (CastHighlightedMagic) releases at local cast frames 30, 5, 18.
++# The source windups end at frames 45, 25, 33 (endpoint samples included).
++# The first two seams already agree within compression error. Flame Sling's
++# uncharged cast uses an authored 7-frame blend; bake that entrance blend in
++# local bone space so its small seam is smooth without delaying the release.
++# Disable an additional runtime blend on all continuation clips. OpenMW maps
++# its own spell release onto the source event and owns all spell mechanics.
++# Format references:
++# https://dasaav-dsv.github.io/libER/d6/d4f/MAGIC__PARAM__ST_8hpp_source.html
++# https://github.com/Meowmaritus/DSAnimStudio/blob/master/DSAnimStudioNETCore/Res/TAE.Template.ER.xml
++SPELL_CONTINUATIONS = {
++    ("a433", 45010): (45000, 0),
++    ("a506", 45010): (45000, 0),
++    ("a417", 45011): (45000, 7),
++}
++
+ STANCE_IDLE, STANCE_GUARD = 0, 100
+ # ...and the run's stop in each direction.
+ STANCE_LOCOMOTION = (20000, 20001, 20002, 20003, 20100, 20101, 20102, 20103, 20200, 22100, 22101, 22102, 22103)
+@@ -65,6 +90,32 @@ def mirror(v):
+     return (v[0], v[1], -v[2])
+ 
+ 
++def sample_local(anim, rest, frame):
++    local = list(rest)
++    for bone, transform in zip(anim.bones, anim.sample_seconds(frame / 30.0)):
++        local[bone] = transform
++    return local
++
++
++def continuation_pose(previous, current, frame, blend):
++    """Bake a continuation's entrance blend, leaving its later samples exact."""
++    if blend <= 0 or frame >= blend:
++        return current
++    if frame <= 0:
++        return previous
++    weight = frame / blend
++    result = []
++    for (old_pos, old_rot), (pos, rot) in zip(previous, current):
++        position = tuple(a + (b - a) * weight for a, b in zip(old_pos, pos))
++        # Quaternions q and -q represent the same orientation. Normalized
++        # shortest-path interpolation avoids a zero quaternion at the seam.
++        sign = -1 if sum(a * b for a, b in zip(old_rot, rot)) < 0 else 1
++        rotation = tuple(a + (sign * b - a) * weight for a, b in zip(old_rot, rot))
++        length = math.sqrt(sum(value * value for value in rotation))
++        result.append((position, tuple(value / length for value in rotation)))
++    return result
++
++
+ def wanted_clips(src, gathered=None):
+     """(TAE file, animation id) of every clip the sandbox plays, in a stable order.
+     `gathered` is extract.gather(src), if the caller already has it."""
+@@ -93,6 +144,15 @@ def main():
+         for _, n, d in open_bnd(SRC / f"{pack}.anibnd.dcx"):
+             if n.endswith(".hkx"):
+                 hkx.setdefault(PureWindowsPath(n).stem, d)
++    # Only add the selected spell sources. Loading every special moveset in
++    # a9x here would also change which melee clips extract.gather discovers.
++    spell_names = {clip_name(file, anim_id) for file, anim_id in EXTRA if int(file[1:]) >= 400}
++    for _, n, d in open_bnd(SRC / f"{SPELL_PACK}.anibnd.dcx"):
++        if n.endswith(".hkx") and PureWindowsPath(n).stem in spell_names:
++            hkx[PureWindowsPath(n).stem] = d
++    missing = spell_names - hkx.keys()
++    if missing:
++        raise ValueError("Missing seal animations: " + ", ".join(sorted(missing)))
+     src.hkx = hkx
+ 
+     joint_index = [names.index(j) for j in JOINTS]
+@@ -105,13 +165,20 @@ def main():
+         source = src.hkx_name(file, anim_id)
+         anim = hkanim.Animation(hkx[source])
+         blend = blend_frames(src, file, anim_id)
++        previous, entrance_blend = None, 0
++        if (file, anim_id) in SPELL_CONTINUATIONS:
++            windup, entrance_blend = SPELL_CONTINUATIONS[file, anim_id]
++            blend = 0.0
++            if entrance_blend:
++                windup_anim = hkanim.Animation(hkx[src.hkx_name(file, windup)])
++                previous = sample_local(windup_anim, rest, windup_anim.frames_at_30fps())
+ 
+         frames = []
+         # Always bake at 30 fps, by time: some clips are authored at 60.
+         for frame in range(anim.frames_at_30fps() + 1):
+-            local = list(rest)
+-            for bone, transform in zip(anim.bones, anim.sample_seconds(frame / 30.0)):
+-                local[bone] = transform
++            local = sample_local(anim, rest, frame)
++            if previous is not None:
++                local = continuation_pose(previous, local, frame, entrance_blend)
+             model = fk(parents, local)
+             row = []
+             for i in joint_index:
+@@ -124,7 +191,9 @@ def main():
+         clips.append((name, blend, frames))
+ 
+     OUT.parent.mkdir(exist_ok=True)
+-    with open(OUT, "wb") as f:
++    # Interrupted generation must leave the previous usable bank in place.
++    with tempfile.NamedTemporaryFile(dir=OUT.parent, prefix=OUT.name + ".", suffix=".tmp", delete=False) as f:
++        temporary = Path(f.name)
+         f.write(b"ERAN")
+         f.write(struct.pack("<III", len(JOINTS), len(ORIENTED), len(clips)))
+         for group in (JOINTS, ORIENTED):
+@@ -137,6 +206,7 @@ def main():
+             f.write(struct.pack("<fI", blend, len(frames)))
+             for row in frames:
+                 f.write(struct.pack("<%df" % len(row), *row))
++    temporary.replace(OUT)
+     print("wrote", OUT, OUT.stat().st_size, "bytes,", len(clips), "clips")
+ 
+ 
+diff --git a/tools/erfmt.py b/tools/erfmt.py
+index 381669a..ae0d605 100644
+--- a/tools/erfmt.py
++++ b/tools/erfmt.py
+@@ -13,6 +13,7 @@ import subprocess
+ import atexit
+ 
+ _oodle = None
++_native_kraken = None
+ _server_proc = None
+ 
+ 
+@@ -140,6 +141,29 @@ def _get_server():
+ 
+ def _oodle_decompress(data: bytes, raw_size: int) -> bytes:
+     global _oodle
++    global _native_kraken
++    # An optional native decoder also works in WSL installations where Wine
++    # and Windows interop are unavailable. The library must export the C ABI
++    # elden_kraken_decompress(source, source_length, output, output_length).
++    native_path = os.environ.get("ER_KRAKEN_LIBRARY")
++    if native_path:
++        if _native_kraken is None:
++            # The native linoodle helper loads the installed game's DLL at
++            # library initialization; keep its path explicit and read-only.
++            if "ER_OODLE_DLL" not in os.environ:
++                os.environ["ER_OODLE_DLL"] = str(paths.game_dir() / "oo2core_6_win64.dll")
++            _native_kraken = ctypes.CDLL(native_path)
++            _native_kraken.elden_kraken_decompress.restype = ctypes.c_int
++            _native_kraken.elden_kraken_decompress.argtypes = [
++                ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p, ctypes.c_size_t,
++            ]
++        # Native decoders may read a small SIMD tail beyond the input/output.
++        source = ctypes.create_string_buffer(data, len(data) + 64)
++        output = ctypes.create_string_buffer(raw_size + 64)
++        count = _native_kraken.elden_kraken_decompress(source, len(data), output, raw_size)
++        if count != raw_size:
++            raise ValueError(f"Native Kraken returned {count}, expected {raw_size}")
++        return output.raw[:raw_size]
+     # This is to allow our script here to work for mac/linux
+     # Does require that the invoker has wine installed
+     if sys.platform != "win32" and sys.platform != "win64":
+@@ -172,10 +196,26 @@ def _oodle_decompress(data: bytes, raw_size: int) -> bytes:
+ def dcx(data: bytes) -> bytes:
+     if data[:4] != b"DCX\0":
+         return data
+-    assert data[0x18:0x1C] == b"DCS\0" and data[0x28:0x2C] == b"KRAK", data[0x28:0x2C]
++    if len(data) < 0x4C or data[0x18:0x1C] != b"DCS\0" or data[0x44:0x48] != b"DCA\0":
++        raise ValueError("Unsupported or truncated DCX header")
+     raw_size, comp_size = struct.unpack_from(">II", data, 0x1C)
+-    assert data[0x44:0x48] == b"DCA\0"
+-    return _oodle_decompress(data[0x4C:0x4C + comp_size], raw_size)
++    if comp_size > len(data) - 0x4C:
++        raise ValueError("Truncated DCX payload")
++    compressed = data[0x4C:0x4C + comp_size]
++    codec = data[0x28:0x2C]
++    if codec == b"KRAK":
++        return _oodle_decompress(compressed, raw_size)
++    if codec == b"ZSTD":
++        # Newer game versions use Zstandard for regulation data.
++        try:
++            import zstandard
++        except ImportError as exc:
++            raise RuntimeError("ZSTD data requires the Python zstandard package") from exc
++        output = zstandard.ZstdDecompressor().decompress(compressed, max_output_size=raw_size)
++        if len(output) != raw_size:
++            raise ValueError(f"ZSTD returned {len(output)}, expected {raw_size}")
++        return output
++    raise ValueError(f"Unsupported DCX codec {codec!r}")
+ 
+ 
+ def _wstr(data: bytes, off: int) -> str:
+diff --git a/tools/extract.py b/tools/extract.py
+index 49ab59e..bb57506 100644
+--- a/tools/extract.py
++++ b/tools/extract.py
+@@ -397,7 +397,16 @@ def fnum(v):
+ 
+ 
+ def hit_events(anim):
+-    return sorted((frames(e.start), frames(e.end), e.s32(2)) for e in anim.events if e.type == 1)
++    # AttackBehavior ends with a signed StateInfo condition at offset 14:
++    # https://github.com/Meowmaritus/DSAnimStudio/blob/master/DSAnimStudioNETCore/Res/TAE.Template.ER.xml
++    # The generic a037 moveset also carries StateInfo=187 alternate hitboxes
++    # with judges 5000..5008 alongside its ordinary hits. The simulation does
++    # not activate this special condition; counting both would duplicate hits
++    # and may resolve an unrelated weapon's behavior row by numeric overlap.
++    return sorted(
++        (frames(e.start), frames(e.end), e.s32(2)) for e in anim.events
++        if e.type == 1 and struct.unpack_from("<h", e.params, 14)[0] in (0, -1)
++    )
+ 
+ 
+ def blend_frames(src, file, anim_id):
+diff --git a/tools/test_bake_anims.py b/tools/test_bake_anims.py
+new file mode 100644
+index 0000000..f6e5970
+--- /dev/null
++++ b/tools/test_bake_anims.py
+@@ -0,0 +1,42 @@
++"""Checks for the seal gesture continuation blend; no game assets are read."""
++import math
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++import paths
++
++with patch.object(paths, "er_files", return_value=Path("unused")):
++    import bake_anims
++
++
++class ContinuationTests(unittest.TestCase):
++    def test_entrance_starts_at_windup_endpoint_and_preserves_release(self):
++        old = [((0., 1., 2.), (0., 0., 0., 1.))]
++        new = [((2., 3., 4.), (0., 1., 0., 0.))]
++        self.assertIs(bake_anims.continuation_pose(old, new, 0, 7), old)
++        self.assertIs(bake_anims.continuation_pose(old, new, 7, 7), new)
++        # Flame Sling's real cast event is frame 18: smoothing must leave
++        # both the event pose and the rest of the recovery bit-for-bit exact.
++        for frame in range(18, 63):
++            self.assertIs(bake_anims.continuation_pose(old, new, frame, 7), new)
++        position, rotation = bake_anims.continuation_pose(old, new, 3.5, 7)[0]
++        self.assertEqual(position, (1., 2., 3.))
++        self.assertAlmostEqual(sum(v * v for v in rotation), 1.)
++        self.assertAlmostEqual(rotation[1], math.sqrt(.5))
++        self.assertAlmostEqual(rotation[3], math.sqrt(.5))
++
++    def test_equivalent_quaternion_signs_do_not_invert_or_collapse(self):
++        old = [((0., 0., 0.), (0., 0., 0., 1.))]
++        new = [((0., 0., 0.), (0., 0., 0., -1.))]
++        for frame in range(1, 7):
++            self.assertEqual(bake_anims.continuation_pose(old, new, frame, 7)[0][1], old[0][1])
++
++    def test_exact_seams_need_no_second_blend(self):
++        old = [((0., 0., 0.), (0., 0., 0., 1.))]
++        new = [((1., 2., 3.), (0., 0., 1., 0.))]
++        self.assertIs(bake_anims.continuation_pose(old, new, 0, 0), new)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tools/test_extract.py b/tools/test_extract.py
+new file mode 100644
+index 0000000..1a58170
+--- /dev/null
++++ b/tools/test_extract.py
+@@ -0,0 +1,41 @@
++"""Small regression fixtures for the generator's attack-event selection."""
++import os
++from pathlib import Path
++import struct
++import tempfile
++import unittest
++
++from tae import Anim, Event
++
++# Importing the extractor validates ER_FILES. These fixtures require no game
++# data: its Source is never created and only pure event selection is exercised.
++with tempfile.TemporaryDirectory() as temporary:
++    Path(temporary, "chr").mkdir()
++    previous_files = os.environ.get("ER_FILES")
++    os.environ["ER_FILES"] = temporary
++    import extract
++    if previous_files is None:
++        del os.environ["ER_FILES"]
++    else:
++        os.environ["ER_FILES"] = previous_files
++
++
++def hit(start, end, judge, source=1, condition=0):
++    return Event(1, start, end, struct.pack("<iiiBBh", 0, 0, judge, 0, source, condition))
++
++
++class HitEventTests(unittest.TestCase):
++    def test_conditional_alternative_does_not_duplicate_real_hit(self):
++        animation = Anim(30000, [hit(.6, .7, 0), hit(.6, .7, 5000, condition=187)])
++        self.assertEqual(extract.hit_events(animation), [(18., 21., 0)])
++
++    def test_simultaneous_paired_hits_and_later_hits_remain_distinct(self):
++        animation = Anim(34000, [
++            hit(.6, .7, 800), hit(.6, .7, 805, source=2), hit(.8, .9, 810),
++            hit(.6, .7, 5000, condition=187), hit(.6, .7, 5006, source=2, condition=187),
++        ])
++        self.assertEqual(extract.hit_events(animation), [(18., 21., 800), (18., 21., 805), (24., 27., 810)])
++
++
++if __name__ == "__main__":
++    unittest.main()

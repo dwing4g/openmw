@@ -23,7 +23,7 @@ add_openmw_dir (mwrender
     bulletdebugdraw globalmap characterpreview camera localmap water terrainstorage ripplesimulation
     renderbin actoranimation landmanager navmesh actorspaths recastmesh fogmanager objectpaging groundcover
     postprocessor pingpongcull luminancecalculator pingpongcanvas transparentpass opaqueblit waterawaretransparentbin precipitationocclusion ripples
-    actorutil distortion animationpriority bonegroup blendmask animblendcontroller
+    actorutil distortion animationpriority bonegroup blendmask animblendcontroller eldenanimation
     )
 
 add_openmw_dir (mwinput
@@ -104,7 +104,7 @@ add_openmw_dir (mwmechanics
     aicast aiescort aiface aiactivate aicombat recharge repair enchanting pathfinding pathgrid security spellcasting spellresistance
     disease pickpocket levelledlist combat steering obstacle autocalcspell difficultyscaling aicombataction summoning
     character actors objects aistate weaponpriority spellpriority weapontype spellutil
-    spelleffects
+    spelleffects eldencombat
     )
 
 add_openmw_dir (mwstate

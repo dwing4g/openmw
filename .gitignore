@@ -86,7 +86,56 @@ moc_*.cxx
 *.[ao]
 *.so
 venv/
+.venv/
 
 ## operating system files
 .DS_Store
 Thumbs.db
+
+# Generated locally from a user's Elden Ring installation.
+components/eldencombat/imported_timings.hpp
+/local-assets/
+# Local executable packages also embed imported game-derived timings.
+/OpenMW-EldenCombat-Windows-x64.zip
+/OpenMW-EldenCombat-Windows-x64.zip.sha256
+
+# Generated record catalogs are game data too, even when stored as source text.
+/files/data-mw/scripts/omw/music/eldenring_cells.lua
+**/extracted.rs
+**/er-files/
+
+# Never add local game archives, recordings, animation banks or runtime packages.
+*.anibnd*
+*.bnd
+*.bhd
+*.bdt
+*.dcx
+*.hkx
+*.tae
+*.param
+*.bnk
+*.wem
+*.ogg
+*.wav
+*.mp3
+*.flac
+*.nif
+*.kf
+*.dds
+*.bsa
+*.esm
+*.esp
+*.dll
+*.exe
+*.zip
+*.7z
+*.bin
+# This BSD-licensed decoder format table is not game content.
+!/scripts/eldenring_music/ww2ogg/packed_codebooks_aoTuV_603.bin
+
+# Local runtime profiles and saves are not source.
+/elden-profile/
+/saves/
+*.omwsave
+.env
+.env.*

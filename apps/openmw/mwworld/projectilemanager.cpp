@@ -50,6 +50,7 @@
 #include "../mwmechanics/actorutil.hpp"
 #include "../mwmechanics/combat.hpp"
 #include "../mwmechanics/creaturestats.hpp"
+#include "../mwmechanics/eldencombat.hpp"
 #include "../mwmechanics/spellcasting.hpp"
 
 #include "../mwrender/animation.hpp"
@@ -654,6 +655,14 @@ namespace MWWorld
             const Ptr target = !active ? projectile->getTarget() : Ptr();
 
             assert(target != caster);
+
+            if (MWMechanics::dodgeEldenMagicProjectile(target))
+            {
+                // Consume the bolt before Lua applies direct and area effects;
+                // removing only the target would still let its explosion hit the dodger.
+                magicBoltState.mToDelete = true;
+                continue;
+            }
 
             auto hitPos = !active ? Misc::Convert::makeOsgVec3f(projectile->getHitPosition()) : pos;
             auto hitNormal = Misc::Convert::makeOsgVec3f(projectile->getHitNormal());

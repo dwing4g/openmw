@@ -57,6 +57,11 @@ namespace MWRender
 
         void rotateCameraToTrackingPtr();
 
+        void toggleCombatLockOn();
+        void clearCombatLockOn();
+        void cancelCombatRecenter() { mCombatRecenterYaw.reset(); }
+        MWWorld::Ptr getCombatLockOnTarget() const;
+
         float getPitch() const { return mPitch; }
         float getYaw() const { return mYaw; }
         float getRoll() const { return mRoll; }
@@ -159,6 +164,13 @@ namespace MWRender
         osg::Vec2d mPreviousExtraOffset;
 
         bool mShowCrosshair;
+
+        // RefNum-based SafePtr resolves actors again after cell transfers or deletion.
+        MWWorld::SafePtr mCombatLockOnTarget;
+        std::optional<float> mCombatRecenterYaw;
+        float mCombatTargetOccludedTime = 0.f;
+
+        void updateCombatLockOn(float duration);
 
         osg::Vec3d calculateTrackedPosition() const;
         osg::Vec3d calculateFirstPersonPosition(const osg::Vec3d& trackedPosition) const;

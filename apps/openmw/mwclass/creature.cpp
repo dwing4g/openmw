@@ -14,6 +14,7 @@
 #include "../mwmechanics/actorutil.hpp"
 #include "../mwmechanics/aisetting.hpp"
 #include "../mwmechanics/combat.hpp"
+#include "../mwmechanics/eldencombat.hpp"
 #include "../mwmechanics/creaturecustomdataresetter.hpp"
 #include "../mwmechanics/creaturestats.hpp"
 #include "../mwmechanics/difficultyscaling.hpp"
@@ -239,6 +240,8 @@ namespace MWClass
                 weapon = *weaponslot;
         }
 
+        if (MWMechanics::useEldenMelee(ptr))
+            weapon = MWMechanics::eldenAttackWeapon(ptr);
         MWBase::World* world = MWBase::Environment::get().getWorld();
 
         const float dist = MWMechanics::getMeleeWeaponReach(ptr, weapon);
@@ -250,6 +253,9 @@ namespace MWClass
         // This is because hitting nothing is not a "miss" and should be handled as such character controller-side.
         victim = result.first;
         hitPosition = result.second;
+
+        if (MWMechanics::useEldenCombat(ptr))
+            return true;
 
         float hitchance = MWMechanics::getHitChance(ptr, victim, ptr.get<ESM::Creature>()->mBase->mData.mCombat);
         return Misc::Rng::roll0to99(world->getPrng()) < hitchance;
@@ -272,6 +278,8 @@ namespace MWClass
                 weapon = *weaponslot;
         }
 
+        if (MWMechanics::useEldenMelee(ptr))
+            weapon = MWMechanics::eldenAttackWeapon(ptr);
         MWMechanics::applyFatigueLoss(ptr, weapon, attackStrength);
 
         if (victim.isEmpty())
@@ -316,29 +324,32 @@ namespace MWClass
         bool healthdmg = true;
         if (!weapon.isEmpty())
         {
-            const unsigned char* attack = nullptr;
-            if (type == ESM::Weapon::AT_Chop)
-                attack = weapon.get<ESM::Weapon>()->mBase->mData.mChop.data();
-            else if (type == ESM::Weapon::AT_Slash)
-                attack = weapon.get<ESM::Weapon>()->mBase->mData.mSlash.data();
-            else if (type == ESM::Weapon::AT_Thrust)
-                attack = weapon.get<ESM::Weapon>()->mBase->mData.mThrust.data();
-            if (attack)
+            if (type == ESM::Weapon::AT_Chop || type == ESM::Weapon::AT_Slash || type == ESM::Weapon::AT_Thrust)
             {
-                damage = attack[0] + ((attack[1] - attack[0]) * attackStrength);
+                damage = MWMechanics::getMeleeWeaponDamage(weapon, ptr, type, attackStrength);
                 MWMechanics::adjustWeaponDamage(damage, weapon, ptr);
-                MWMechanics::reduceWeaponCondition(damage, true, weapon, ptr);
+                if (!MWMechanics::useEldenCombat(ptr))
+                    MWMechanics::reduceWeaponCondition(damage, true, weapon, ptr);
                 MWMechanics::resistNormalWeapon(victim, ptr, weapon, damage);
             }
 
-            // Apply "On hit" enchanted weapons
-            MWMechanics::applyOnStrikeEnchantment(ptr, victim, weapon, hitPosition);
         }
         else if (isBipedal(ptr))
         {
             MWMechanics::getHandToHandDamage(ptr, victim, damage, healthdmg, attackStrength);
         }
 
+        damage *= MWMechanics::eldenDamageMultiplier(ptr);
+        if (!MWMechanics::resolveEldenHit(ptr, victim, damage))
+        {
+            MWBase::Environment::get().getLuaManager()->onHit(ptr, victim, weapon, MWWorld::Ptr(), type, attackStrength,
+                attackWindUp, 0.f, false, hitPosition, false, MWMechanics::DamageSourceType::Melee);
+            return;
+        }
+        if (!weapon.isEmpty() && MWMechanics::useEldenCombat(ptr))
+            MWMechanics::reduceWeaponCondition(damage, true, weapon, ptr);
+        if (!weapon.isEmpty())
+            MWMechanics::applyOnStrikeEnchantment(ptr, victim, weapon, hitPosition);
         MWMechanics::applyElementalShields(ptr, victim);
 
         if (MWMechanics::blockMeleeAttack(ptr, victim, weapon, damage, attackStrength))

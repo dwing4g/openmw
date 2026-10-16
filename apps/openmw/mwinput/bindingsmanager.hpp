@@ -1,12 +1,17 @@
 #ifndef MWINPUT_MWBINDINGSMANAGER_H
 #define MWINPUT_MWBINDINGSMANAGER_H
 
+#include <array>
 #include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include <components/eldencombat/combat.hpp>
 #include <components/sdlutil/events.hpp>
+
+#include "actions.hpp"
+#include "eldeninput.hpp"
 
 namespace MWInput
 {
@@ -45,6 +50,10 @@ namespace MWInput
         bool actionIsActive(int id) const;
         float getActionValue(int id) const; // returns value in range [0, 1]
 
+        // Press/release edges are latched so taps between simulation frames survive.
+        EldenCombat::Button consumeActionButton(int id);
+        void clearActionButtons();
+
         SDL_GameController* getControllerOrNull() const;
 
         void mousePressed(const SDL_MouseButtonEvent& evt, Uint8 deviceID);
@@ -69,6 +78,8 @@ namespace MWInput
 
     private:
         void setupSDLKeyMappings();
+        bool captureEldenAction(int action, bool down, EldenInput::Source source);
+        bool eldenInputEnabled() const;
 
         std::unique_ptr<InputControlSystem> mInputBinder;
         std::unique_ptr<BindingsListener> mListener;
@@ -76,6 +87,9 @@ namespace MWInput
         std::filesystem::path mUserFile;
 
         bool mDragDrop;
+        EldenInput mEldenInput;
+        // Avoid dispatching a physical press twice when ICS updates its channel.
+        std::array<bool, A_Last> mCapturedActions{};
     };
 }
 #endif
