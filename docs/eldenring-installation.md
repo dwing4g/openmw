@@ -1,7 +1,80 @@
-# Other installation options
+# Installation details
 
-For the complete Windows setup, follow the [README](../README.md#windows-installation).
+For the short Windows release setup, follow the [README](../README.md#windows-x64-download-and-installation).
 After cloning, run commands from the `openmw-eldenring` repository root.
+
+
+## Windows release ZIP
+
+Before extracting, compare this PowerShell result with the supplied `.sha256` file:
+
+```powershell
+Get-FileHash .\OpenMW-EldenCombat-Windows-x64.zip -Algorithm SHA256
+```
+
+Extract the complete archive into a writable folder outside `Program Files`.
+Open PowerShell in that extracted folder. These commands perform the same setup
+as the double-click entry points; replace both example paths with your own:
+
+```powershell
+.\Setup-EldenCombat.cmd -MorrowindDirectory 'D:\Games\Morrowind'
+.\Import-EldenRing.cmd -EldenRingDirectory 'D:\Steam\steamapps\common\ELDEN RING\Game'
+.\Start-EldenCombat-Launcher.cmd
+.\Start-EldenCombat.cmd
+```
+
+Run each command only after the preceding one succeeds. If setup or extraction
+fails, correct the reported path/prerequisite and repeat that step. No compiler
+is needed. Import uses Python 3.14 and a private Python environment under `.elden-assets` and
+reads the Oodle DLL from your own Elden Ring installation; that DLL is never
+bundled. The included public archive keys are licensed format tooling.
+
+Settings, controls and content order live in `elden-profile`. Saves use your
+Windows Documents folder's `My Games\OpenMW\saves`, including Documents
+redirection. For a new installation with separate saves, add `-PortableSaves`
+to setup. For a Russian Morrowind installation use `-GameEncoding win1251`.
+Rerunning setup preserves an existing configured profile.
+
+To update, extract the new ZIP into a new folder, copy your `elden-profile`
+from the old installation, and run `Import-EldenRing.cmd` again. Keep the old
+folder until the new installation works. On another computer, create a new
+profile so it selects that computer's Morrowind path.
+
+## Windows source build
+
+Source builds require Git, 64-bit Python 3.10+, 7-Zip, Visual Studio 2026 with
+**Desktop development with C++** and a Windows SDK, and CMake 4.2+.
+
+```powershell
+git clone --branch elden-combat https://github.com/Smthri/openmw-eldenring.git
+cd openmw-eldenring
+powershell -NoProfile -ExecutionPolicy Bypass -File .\CI\eldenring-build-windows.ps1 `
+  -MorrowindDirectory 'D:\Games\Morrowind'
+```
+
+The build helper produces a configured local package. For the complete locally
+compiled timing path, prepare and generate the Elden Ring data before building:
+
+```powershell
+$env:ER_GAME_DIR = 'D:\Steam\steamapps\common\ELDEN RING\Game'
+py -3 -m venv .venv
+$python = Join-Path $PWD '.venv\Scripts\python.exe'
+& $python -m pip install cryptography zstandard
+& $python scripts/prepare_eldenring_reference.py
+git clone https://github.com/JKAnderson/BinderKeys.git build-tools-local/elden-assets/BinderKeys
+& $python scripts/unpack_eldenring_assets.py --game-dir $env:ER_GAME_DIR `
+  --keys-dir build-tools-local/elden-assets/BinderKeys/EldenRing_PC/Key --generate
+& $python scripts/import_eldenring_music.py --game-dir $env:ER_GAME_DIR
+& $python scripts/import_eldenring_sounds.py --game-dir $env:ER_GAME_DIR
+```
+
+Re-run the build command after generation. This local build embeds extracted
+timings and includes generated assets, so **do not distribute its executable
+or ZIP**. For a shareable engine use a clean source snapshot, an empty install
+directory, `-ShareableRelease`, and `scripts/package_eldenring_release.py`.
+That mode explicitly disables compiled timing data and excludes personal
+configuration. Keep the matching source archive and dependency license notices
+with the release.
 
 ## Get the source for Linux / WSL
 
@@ -154,6 +227,7 @@ Re-run CMake after generating it so the build includes it.
 
 ## Local packages
 
-The Windows helper creates a runtime ZIP. Packages and ZIPs containing generated
-game assets must stay local; do not commit them or upload them to GitHub Releases.
-The same restriction applies to Linux packages.
+The ordinary Windows build helper creates a local runtime ZIP. It can contain
+compiled timing tables, imported game assets and a personal profile; never
+upload it. Only the separately audited `-ShareableRelease` package excludes
+those files. Generated game assets remain local on Windows and Linux.
