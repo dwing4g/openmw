@@ -402,6 +402,14 @@ do domyślnych czcionek Morrowind. Zaznacz to pole, jeśli nadal wolisz oryginal
         <source>&amp;Open Path in File Explorer</source>
         <translation>&amp;Otwórz ścieżkę w Eksploratorze plików</translation>
     </message>
+    <message>
+        <source>UTF-8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Launcher::GraphicsPage</name>

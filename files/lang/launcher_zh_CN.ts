@@ -400,6 +400,14 @@ to default Morrowind fonts. Check this box if you still prefer original fonts ov
         <source>&amp;Open Path in File Explorer</source>
         <translation>在文件资源管理器中打开路径(&amp;O)</translation>
     </message>
+    <message>
+        <source>UTF-8</source>
+        <translation>UTF-8</translation>
+    </message>
+    <message>
+        <source>Chinese(GBK)</source>
+        <translation>简体中文(GBK)</translation>
+    </message>
 </context>
 <context>
     <name>Launcher::GraphicsPage</name>
@@ -1331,126 +1339,6 @@ Logs and settings changed through the launcher and in-game will be saved here.</
         <translation> 地块</translation>
     </message>
     <message>
-        <source>Shadows</source>
-        <translation>阴影</translation>
-    </message>
-    <message>
-        <source>Bounds</source>
-        <translation>bounds</translation>
-    </message>
-    <message>
-        <source>Primitives</source>
-        <translation>primitives</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation>none</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of &quot;compute scene bounds&quot; computation method to be used. Bounds (default) for good balance between performance and shadow quality, primitives for better looking shadows or none for no computation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用“计算场景边界”的计算方法类型。bounds(默认)用于在性能和阴影质量之间取得良好平衡，primitives用于获得更好的阴影效果，none用于不进行计算。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Shadow Planes Computation Method</source>
-        <translation>阴影平面计算方法</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;64 game units is 1 real life yard or about 0.9 m&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;游戏中的64单位是现实中的1码(约0.9144米)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source> unit(s)</source>
-        <translation> 单位</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable shadows for NPCs and creatures besides the player character. May have a minor performance impact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;为除玩家角色以外的NPC和生物启用阴影。可能会对性能产生轻微影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable Actor Shadows</source>
-        <translation>开启NPC阴影</translation>
-    </message>
-    <message>
-        <source>512</source>
-        <translation>512</translation>
-    </message>
-    <message>
-        <source>1024</source>
-        <translation>1024</translation>
-    </message>
-    <message>
-        <source>2048</source>
-        <translation>2048</translation>
-    </message>
-    <message>
-        <source>4096</source>
-        <translation>4096</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The fraction of the limit above at which shadows begin to gradually fade away.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;阴影开始逐渐淡出的限制比率。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Fade Start Multiplier</source>
-        <translation>衰减起始倍数</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable shadows exclusively for the player character. May have a very minor performance impact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;专门为玩家角色启用阴影。可能会对性能产生非常微小的影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable Player Shadows</source>
-        <translation>开启玩家阴影</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The resolution of each individual shadow map. Increasing it significantly improves shadow quality but may have a minor performance impact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;每个单独阴影贴图的分辨率。提高它能明显改善阴影质量，但可能会对性能产生轻微影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Shadow Map Resolution</source>
-        <translation>阴影贴图分辨率</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The distance from the camera at which shadows completely disappear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;阴影完全消失时与摄像机的距离。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Shadow Distance Limit:</source>
-        <translation>阴影距离限制:</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable shadows for primarily inanimate objects. May have a significant performance impact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主要为非动态物体启用阴影。可能会对性能产生重大影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable Object Shadows</source>
-        <translation>开启物体阴影</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Due to limitations with Morrowind&apos;s data, only actors can cast shadows indoors, which some might feel is distracting.&lt;/p&gt;&lt;p&gt;Has no effect if actor/player shadows are not enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;由于晨风数据的限制，只有NPC才能在室内投射阴影，有些人可能会觉得这会分散注意力。&lt;/p&gt;&lt;p&gt;如果未启用NPC/玩家阴影，则没有任何效果。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable Indoor Shadows</source>
-        <translation>开启室内阴影</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable shadows for the terrain including distant terrain. May have a significant performance and shadow quality impact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用包括远处地形在内的地形阴影。这可能会对性能和阴影质量产生重大影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable Terrain Shadows</source>
-        <translation>开启地形阴影</translation>
-    </message>
-    <message>
-        <source>Lighting</source>
-        <translation>光照</translation>
-    </message>
-    <message>
-        <source>Lighting Method</source>
-        <translation>光照方式</translation>
-    </message>
-    <message>
         <source>Audio Device</source>
         <translation>音频设备</translation>
     </message>
@@ -1481,18 +1369,6 @@ Logs and settings changed through the launcher and in-game will be saved here.</
     <message>
         <source>Screenshot Format</source>
         <translation>屏幕截图格式</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the internal handling of light sources.&lt;/p&gt;
-&lt;p&gt;&quot;Shaders (compatibility)&quot; It is recommended to use this with older hardware and a light limit closer to 8.&lt;/p&gt;
-&lt;p&gt; &quot;Shaders&quot; carries all of the benefits that &quot;Shaders (compatibility)&quot; does, but uses a modern approach that allows for a higher max lights count with little to no performance penalties on modern hardware.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设置光源的内部处理。&lt;/p&gt;
-&lt;p&gt;&quot;着色器 (兼容)&quot; 建议在较旧的硬件和接近8个灯光限制下使用此模式。&lt;/p&gt;
-&lt;p&gt; &quot;着色器&quot; 具有“着色器 (兼容)”的所有优点，还使用了一种现代方法，允许更高的最大灯光数量，在现代硬件上几乎没有性能损失。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Shaders (compatibility)</source>
-        <translation>着色器 (兼容)</translation>
     </message>
     <message>
         <source>In third-person view, use the camera as the sound listener instead of the player character.</source>
